@@ -5,14 +5,14 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, HasRoles;
 
     /**
      * The attributes that are mass assignable.
@@ -23,7 +23,12 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'phone',
         'organization_type_id',
+        'is_approved',
+        'temp_password',
+        'temp_password_expires_at',
+        'must_change_password',
     ];
 
     /**
@@ -33,6 +38,7 @@ class User extends Authenticatable
      */
     protected $hidden = [
         'password',
+        'temp_password',
         'remember_token',
     ];
 
@@ -46,6 +52,10 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'temp_password' => 'hashed',
+            'temp_password_expires_at' => 'datetime',
+            'is_approved' => 'boolean',
+            'must_change_password' => 'boolean',
         ];
     }
 
@@ -57,80 +67,6 @@ class User extends Authenticatable
         return $this->belongsTo(OrganizationType::class);
     }
 
-    /**
-     * Get the roles that belong to the user.
-     */
-    public function roles(): BelongsToMany
-    {
-        return $this->belongsToMany(Role::class);
-    }
-
-    /**
-     * Check if the user has a specific role.
-     */
-    public function hasRole(string $roleSlug): bool
-    {
-        return $this->roles()->where('slug', $roleSlug)->exists();
-    }
-
-    /**
-     * Check if the user has any of the given roles.
-     */
-    public function hasAnyRole(array $roleSlugs): bool
-    {
-        return $this->roles()->whereIn('slug', $roleSlugs)->exists();
-    }
-
-    /**
-     * Check if the user has all of the given roles.
-     */
-    public function hasAllRoles(array $roleSlugs): bool
-    {
-        $roleCount = $this->roles()->whereIn('slug', $roleSlugs)->count();
-        return $roleCount === count($roleSlugs);
-    }
-
-    /**
-     * Check if the user has a specific permission.
-     */
-    public function hasPermission(string $permissionSlug): bool
-    {
-        return $this->roles()->whereHas('permissions', function ($query) use ($permissionSlug) {
-            $query->where('slug', $permissionSlug);
-        })->exists();
-    }
-
-    /**
-     * Check if the user has any of the given permissions.
-     */
-    public function hasAnyPermission(array $permissionSlugs): bool
-    {
-        return $this->roles()->whereHas('permissions', function ($query) use ($permissionSlugs) {
-            $query->whereIn('slug', $permissionSlugs);
-        })->exists();
-    }
-
-    /**
-     * Check if the user has all of the given permissions.
-     */
-    public function hasAllPermissions(array $permissionSlugs): bool
-    {
-        $permissionCount = $this->roles()->whereHas('permissions', function ($query) use ($permissionSlugs) {
-            $query->whereIn('slug', $permissionSlugs);
-        })->count();
-        return $permissionCount === count($permissionSlugs);
-    }
-
-    /**
-     * Get all permissions for the user through their roles.
-     */
-    public function getAllPermissions()
-    {
-        return $this->roles()->with('permissions')->get()
-            ->pluck('permissions')
-            ->flatten()
-            ->unique('id');
-    }
 
     /**
      * Check if user is super admin.
@@ -162,5 +98,63 @@ class User extends Authenticatable
     public function isViewer(): bool
     {
         return $this->hasRole('viewer');
+    }
+
+    /**
+     * Check if user is approved.
+     */
+    public function isApproved(): bool
+    {
+        return $this->is_approved;
+    }
+
+    /**
+     * Check if user has a valid temporary password.
+     */
+    public function hasValidTempPassword(): bool
+    {
+        return $this->temp_password && 
+               $this->temp_password_expires_at && 
+               $this->temp_password_expires_at->isFuture();
+    }
+
+    /**
+     * Check if user must change password.
+     */
+    public function mustChangePassword(): bool
+    {
+        return $this->must_change_password || $this->hasValidTempPassword();
+    }
+
+    /**
+     * Generate a temporary password.
+     */
+    public function generateTempPassword(): string
+    {
+        return strtoupper(substr(md5(uniqid()), 0, 8));
+    }
+
+    /**
+     * Set temporary password with expiration.
+     */
+    public function setTempPassword(string $password, int $hours = 24): void
+    {
+        $this->update([
+            'temp_password' => $password,
+            'temp_password_expires_at' => now()->addHours($hours),
+            'must_change_password' => true,
+        ]);
+    }
+
+    /**
+     * Clear temporary password.
+     */
+    public function clearTempPassword(): void
+    {
+        $this->update([
+            'temp_password' => null,
+            'temp_password_expires_at' => null,
+            'must_change_password' => false,
+        ]);
     }
 }

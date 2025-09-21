@@ -58,8 +58,11 @@ class RolePermissionSeeder extends Seeder
 
         foreach ($permissions as $permissionData) {
             Permission::firstOrCreate(
-                ['slug' => $permissionData['slug']],
-                $permissionData
+                ['name' => $permissionData['slug']],
+                [
+                    'name' => $permissionData['slug'],
+                    'guard_name' => 'web'
+                ]
             );
         }
 
@@ -140,13 +143,16 @@ class RolePermissionSeeder extends Seeder
             unset($roleData['permissions']);
 
             $role = Role::firstOrCreate(
-                ['slug' => $roleData['slug']],
-                $roleData
+                ['name' => $roleData['slug']],
+                [
+                    'name' => $roleData['slug'],
+                    'guard_name' => 'web'
+                ]
             );
 
             // Attach permissions to role
-            $permissionIds = Permission::whereIn('slug', $permissions)->pluck('id');
-            $role->permissions()->sync($permissionIds);
+            $permissionModels = Permission::whereIn('name', $permissions)->get();
+            $role->syncPermissions($permissionModels);
         }
     }
 }

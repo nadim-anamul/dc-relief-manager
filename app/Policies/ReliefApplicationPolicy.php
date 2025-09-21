@@ -109,7 +109,7 @@ class ReliefApplicationPolicy
      */
     public function approve(User $user, ReliefApplication $reliefApplication): bool
     {
-        return $user->hasPermission('relief-applications.approve') && 
+        return $user->hasPermissionTo('relief-applications.approve') && 
                $reliefApplication->status === 'pending';
     }
 
@@ -118,7 +118,7 @@ class ReliefApplicationPolicy
      */
     public function reject(User $user, ReliefApplication $reliefApplication): bool
     {
-        return $user->hasPermission('relief-applications.reject') && 
+        return $user->hasPermissionTo('relief-applications.reject') && 
                $reliefApplication->status === 'pending';
     }
 

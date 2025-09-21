@@ -52,9 +52,9 @@ class UserSeeder extends Seeder
             );
             
             // Assign role if not already assigned
-            $roleModel = Role::where('slug', $role)->first();
-            if ($roleModel && !$user->roles()->where('role_id', $roleModel->id)->exists()) {
-                $user->roles()->attach($roleModel->id);
+            $roleModel = Role::where('name', $role)->first();
+            if ($roleModel && !$user->hasRole($roleModel->name)) {
+                $user->assignRole($roleModel->name);
             }
         }
     }

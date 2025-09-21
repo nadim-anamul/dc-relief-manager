@@ -241,7 +241,7 @@
 			<a href="{{ route('admin.relief-applications.index') }}" class="btn-secondary">
 				Back to Applications
 			</a>
-			@if(auth()->user()->hasPermission('relief-applications.approve') || auth()->user()->hasPermission('relief-applications.reject'))
+			@if(auth()->user()->hasPermissionTo('relief-applications.approve') || auth()->user()->hasPermissionTo('relief-applications.reject'))
 				<a href="{{ route('admin.relief-applications.edit', $reliefApplication) }}" class="btn-primary">
 					Review & Approve/Reject
 				</a>

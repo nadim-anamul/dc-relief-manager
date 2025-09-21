@@ -16,7 +16,12 @@ Route::get('/', function () {
     
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::patch('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    
+    // Password change for users with temporary passwords
+    Route::get('/change-password', [ProfileController::class, 'showPasswordChangeForm'])->name('profile.change-password');
+    Route::post('/change-password', [ProfileController::class, 'changePassword'])->name('profile.change-password.store');
 
         // Admin routes for administrative divisions
         Route::prefix('admin')->name('admin.')->middleware(['role:super-admin,district-admin'])->group(function () {
@@ -56,6 +61,19 @@ Route::get('/', function () {
         Route::resource('relief-applications', App\Http\Controllers\Admin\ReliefApplicationController::class)->middleware(['permission:relief-applications.approve,relief-applications.reject']);
         Route::get('projects-by-relief-type', [App\Http\Controllers\Admin\ReliefApplicationController::class, 'getProjectsByReliefType'])->name('projects.by-relief-type');
         Route::get('project-budget', [App\Http\Controllers\Admin\ReliefApplicationController::class, 'getProjectBudget'])->name('project.budget');
+        
+        // User management
+        Route::resource('users', App\Http\Controllers\Admin\UserController::class)->middleware(['permission:users.manage']);
+        Route::post('users/{user}/approve', [App\Http\Controllers\Admin\UserController::class, 'approve'])->name('users.approve');
+        Route::post('users/{user}/reject', [App\Http\Controllers\Admin\UserController::class, 'reject'])->name('users.reject');
+        Route::post('users/{user}/generate-temp-password', [App\Http\Controllers\Admin\UserController::class, 'generateTempPassword'])->name('users.generate-temp-password');
+        Route::post('users/{user}/clear-temp-password', [App\Http\Controllers\Admin\UserController::class, 'clearTempPassword'])->name('users.clear-temp-password');
+        
+        // Role management
+        Route::resource('roles', App\Http\Controllers\Admin\RoleController::class)->middleware(['permission:roles.manage']);
+        
+        // Permission management
+        Route::resource('permissions', App\Http\Controllers\Admin\PermissionController::class)->middleware(['permission:permissions.manage']);
         
         // Audit Log management
         Route::resource('audit-logs', App\Http\Controllers\Admin\AuditLogController::class)->only(['index', 'show', 'destroy']);

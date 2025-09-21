@@ -187,7 +187,7 @@
 			<a href="{{ route('relief-applications.index') }}" class="btn-secondary">
 				Back to Applications
 			</a>
-			@if(auth()->user()->hasPermission('relief-applications.update') || auth()->user()->hasPermission('relief-applications.update-own'))
+			@if(auth()->user()->hasPermissionTo('relief-applications.update') || auth()->user()->hasPermissionTo('relief-applications.update-own'))
 				<a href="{{ route('relief-applications.edit', $reliefApplication) }}" class="btn-primary">
 					Edit Application
 				</a>
