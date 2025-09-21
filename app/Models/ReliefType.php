@@ -28,13 +28,12 @@ class ReliefType extends Model
 	];
 
 	/**
-	 * Get the relief requests for this relief type.
-	 * Note: ReliefRequest model will be created later
+	 * Get the projects for this relief type.
 	 */
-	// public function reliefRequests(): HasMany
-	// {
-	// 	return $this->hasMany(ReliefRequest::class);
-	// }
+	public function projects(): HasMany
+	{
+		return $this->hasMany(Project::class);
+	}
 
 	/**
 	 * Scope to get only active relief types.

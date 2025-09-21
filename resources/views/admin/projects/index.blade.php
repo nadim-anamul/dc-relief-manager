@@ -33,7 +33,18 @@
 		<!-- Filter Section -->
 		<div class="card p-6">
 			<form method="GET" action="{{ route('admin.projects.index') }}" class="flex flex-wrap gap-4">
-				<div class="flex-1 min-w-64">
+				<div class="flex-1 min-w-48">
+					<label for="status" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+						Filter by Status
+					</label>
+					<select name="status" id="status" class="input-field">
+						<option value="">All Statuses</option>
+						<option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>Active (Current Year)</option>
+						<option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}>Completed</option>
+						<option value="upcoming" {{ request('status') == 'upcoming' ? 'selected' : '' }}>Upcoming</option>
+					</select>
+				</div>
+				<div class="flex-1 min-w-48">
 					<label for="economic_year_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
 						Filter by Economic Year
 					</label>
@@ -46,7 +57,7 @@
 						@endforeach
 					</select>
 				</div>
-				<div class="flex-1 min-w-64">
+				<div class="flex-1 min-w-48">
 					<label for="relief_type_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
 						Filter by Relief Type
 					</label>
@@ -59,23 +70,11 @@
 						@endforeach
 					</select>
 				</div>
-				<div class="flex-1 min-w-64">
-					<label for="start_date" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-						Start Date From
-					</label>
-					<input type="date" name="start_date" id="start_date" value="{{ request('start_date') }}" class="input-field">
-				</div>
-				<div class="flex-1 min-w-64">
-					<label for="end_date" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-						End Date To
-					</label>
-					<input type="date" name="end_date" id="end_date" value="{{ request('end_date') }}" class="input-field">
-				</div>
 				<div class="flex items-end">
 					<button type="submit" class="btn-primary">
 						Filter
 					</button>
-					@if(request('economic_year_id') || request('relief_type_id') || request('start_date') || request('end_date'))
+					@if(request('economic_year_id') || request('relief_type_id') || request('status'))
 						<a href="{{ route('admin.projects.index') }}" class="btn-secondary ml-2">
 							Clear
 						</a>
@@ -85,7 +84,7 @@
 		</div>
 
 		<!-- Stats Cards -->
-		<div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+		<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
 			<div class="card p-6">
 				<div class="flex items-center">
 					<div class="p-2 bg-indigo-100 dark:bg-indigo-900 rounded-lg">
@@ -95,7 +94,7 @@
 					</div>
 					<div class="ml-4">
 						<p class="text-sm font-medium text-gray-500 dark:text-gray-400">Total Projects</p>
-						<p class="text-2xl font-semibold text-gray-900 dark:text-white">{{ $projects->total() }}</p>
+						<p class="text-2xl font-semibold text-gray-900 dark:text-white">{{ $stats['total'] }}</p>
 					</div>
 				</div>
 			</div>
@@ -108,20 +107,7 @@
 					</div>
 					<div class="ml-4">
 						<p class="text-sm font-medium text-gray-500 dark:text-gray-400">Active Projects</p>
-						<p class="text-2xl font-semibold text-gray-900 dark:text-white">{{ $projects->where('is_active', true)->count() }}</p>
-					</div>
-				</div>
-			</div>
-			<div class="card p-6">
-				<div class="flex items-center">
-					<div class="p-2 bg-blue-100 dark:bg-blue-900 rounded-lg">
-						<svg class="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
-						</svg>
-					</div>
-					<div class="ml-4">
-						<p class="text-sm font-medium text-gray-500 dark:text-gray-400">Total Budget</p>
-						<p class="text-2xl font-semibold text-gray-900 dark:text-white">৳{{ number_format($projects->sum('budget'), 0) }}</p>
+						<p class="text-2xl font-semibold text-gray-900 dark:text-white">{{ $stats['active'] }}</p>
 					</div>
 				</div>
 			</div>
@@ -133,12 +119,44 @@
 						</svg>
 					</div>
 					<div class="ml-4">
-						<p class="text-sm font-medium text-gray-500 dark:text-gray-400">Upcoming Projects</p>
-						<p class="text-2xl font-semibold text-gray-900 dark:text-white">{{ $projects->where('is_upcoming', true)->count() }}</p>
+						<p class="text-sm font-medium text-gray-500 dark:text-gray-400">Completed Projects</p>
+						<p class="text-2xl font-semibold text-gray-900 dark:text-white">{{ $stats['completed'] }}</p>
 					</div>
 				</div>
 			</div>
 		</div>
+
+		<!-- Relief Type Allocation Cards -->
+		@if($stats['reliefTypeStats'] && $stats['reliefTypeStats']->count() > 0)
+		<div class="card">
+			<div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+				<h3 class="text-lg font-medium text-gray-900 dark:text-white">
+					Allocation by Relief Type
+					@if(request()->hasAny(['status', 'economic_year_id', 'relief_type_id']))
+						<span class="text-sm font-normal text-gray-500 dark:text-gray-400">(Filtered Results)</span>
+					@endif
+				</h3>
+			</div>
+			<div class="p-6">
+				<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+					@foreach($stats['reliefTypeStats'] as $allocation)
+					<div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
+						<div class="flex items-center">
+							<div class="p-2 rounded-lg" style="background-color: {{ $allocation->reliefType->color_code ?? '#6366f1' }}20;">
+								<div class="w-3 h-3 rounded-full" style="background-color: {{ $allocation->reliefType->color_code ?? '#6366f1' }}"></div>
+							</div>
+							<div class="ml-3">
+								<p class="text-sm font-medium text-gray-900 dark:text-white">{{ $allocation->reliefType->name ?? 'Unknown Type' }}</p>
+								<p class="text-lg font-semibold text-gray-900 dark:text-white">{{ $allocation->formatted_total }}</p>
+								<p class="text-xs text-gray-500 dark:text-gray-400">{{ $allocation->project_count }} {{ $allocation->project_count == 1 ? 'project' : 'projects' }}</p>
+							</div>
+						</div>
+					</div>
+					@endforeach
+				</div>
+			</div>
+		</div>
+		@endif
 
 		<!-- Projects Table -->
 		<div class="card">
@@ -152,8 +170,7 @@
 							<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Project Name</th>
 							<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Economic Year</th>
 							<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Relief Type</th>
-							<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Budget</th>
-							<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Duration</th>
+							<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Allocated Amount</th>
 							<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
 							<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
 						</tr>
@@ -184,28 +201,20 @@
 									</div>
 								</td>
 								<td class="px-6 py-4 whitespace-nowrap">
-									<div class="text-sm font-medium text-gray-900 dark:text-white">{{ $project->formatted_budget }}</div>
+									<div class="text-sm font-medium text-gray-900 dark:text-white">{{ $project->formatted_allocated_amount }}</div>
 								</td>
 								<td class="px-6 py-4 whitespace-nowrap">
-									<div class="text-sm text-gray-900 dark:text-white">
-										{{ $project->start_date->format('M d, Y') }} - {{ $project->end_date->format('M d, Y') }}
-									</div>
-									<div class="text-xs text-gray-500 dark:text-gray-400">
-										{{ $project->duration_in_months }} months
-									</div>
-								</td>
-								<td class="px-6 py-4 whitespace-nowrap">
-									@if($project->is_active)
-										<span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200">
-											Active
+									@if($project->status === 'Active')
+										<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+											{{ $project->status }}
 										</span>
-									@elseif($project->is_completed)
-										<span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200">
-											Completed
+									@elseif($project->status === 'Completed')
+										<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200">
+											{{ $project->status }}
 										</span>
-									@elseif($project->is_upcoming)
-										<span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200">
-											Upcoming
+									@else
+										<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">
+											{{ $project->status }}
 										</span>
 									@endif
 								</td>

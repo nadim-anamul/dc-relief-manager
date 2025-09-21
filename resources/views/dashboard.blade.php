@@ -46,36 +46,56 @@
 				</div>
 			</div>
 
-			<!-- Remaining Project Budget -->
+			<!-- Total Projects -->
 			<div class="card p-6">
 				<div class="flex items-center">
-					<div class="p-3 bg-purple-100 dark:bg-purple-900 rounded-lg">
-						<svg class="w-8 h-8 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+					<div class="p-3 bg-indigo-100 dark:bg-indigo-900 rounded-lg">
+						<svg class="w-8 h-8 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
 						</svg>
 					</div>
 					<div class="ml-4">
-						<p class="text-sm font-medium text-gray-500 dark:text-gray-400">Remaining Budget</p>
-						<p class="text-2xl font-semibold text-gray-900 dark:text-white">৳{{ number_format($stats['remainingProjectBudget'], 2) }}</p>
+						<p class="text-sm font-medium text-gray-500 dark:text-gray-400">Total Projects</p>
+						<p class="text-2xl font-semibold text-gray-900 dark:text-white">{{ $stats['totalProjects'] }}</p>
 					</div>
 				</div>
 			</div>
 
-			<!-- Active Projects -->
+			<!-- Active Projects (Current Year) -->
 			<div class="card p-6">
 				<div class="flex items-center">
-					<div class="p-3 bg-orange-100 dark:bg-orange-900 rounded-lg">
-						<svg class="w-8 h-8 text-orange-600 dark:text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+					<div class="p-3 bg-green-100 dark:bg-green-900 rounded-lg">
+						<svg class="w-8 h-8 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
 						</svg>
 					</div>
 					<div class="ml-4">
-						<p class="text-sm font-medium text-gray-500 dark:text-gray-400">Active Projects</p>
+						<p class="text-sm font-medium text-gray-500 dark:text-gray-400">Active Projects (Current Year)</p>
 						<p class="text-2xl font-semibold text-gray-900 dark:text-white">{{ $stats['activeProjects'] }}</p>
 					</div>
 				</div>
 			</div>
 		</div>
+
+		<!-- Relief Type Allocation Cards (Current Year Active Projects) -->
+		@if($stats['reliefTypeAllocationStats'] && $stats['reliefTypeAllocationStats']->count() > 0)
+		<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+			@foreach($stats['reliefTypeAllocationStats'] as $allocation)
+			<div class="card p-6">
+				<div class="flex items-center">
+					<div class="p-3 rounded-lg" style="background-color: {{ $allocation->reliefType->color_code ?? '#6366f1' }}20;">
+						<div class="w-3 h-3 rounded-full" style="background-color: {{ $allocation->reliefType->color_code ?? '#6366f1' }}"></div>
+					</div>
+					<div class="ml-4">
+						<p class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ $allocation->reliefType->name ?? 'Unknown Type' }}</p>
+						<p class="text-xl font-semibold text-gray-900 dark:text-white">{{ $allocation->formatted_total }}</p>
+						<p class="text-xs text-gray-400">{{ $allocation->project_count }} {{ $allocation->project_count == 1 ? 'project' : 'projects' }}</p>
+					</div>
+				</div>
+			</div>
+			@endforeach
+		</div>
+		@endif
 
 		<!-- Inventory Statistics Cards -->
 		<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -389,7 +409,7 @@
 		<!-- Project Budget Remaining -->
 		<div class="card">
 			<div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-				<h3 class="text-lg font-medium text-gray-900 dark:text-white">Remaining Fund per Project</h3>
+				<h3 class="text-lg font-medium text-gray-900 dark:text-white">Active Project Allocations (Current Year)</h3>
 			</div>
 			<div class="overflow-x-auto">
 				<table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
@@ -397,12 +417,12 @@
 						<tr>
 							<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Project Name</th>
 							<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Relief Type</th>
-							<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Remaining Budget</th>
-							<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
+							<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Allocated Amount</th>
+							<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Economic Year</th>
 						</tr>
 					</thead>
 					<tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
-						@forelse($stats['projectBudgetStats'] as $project)
+						@forelse($stats['projectAllocationStats'] as $project)
 							<tr>
 								<td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">{{ $project->name }}</td>
 								<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
@@ -413,12 +433,8 @@
 										{{ $project->reliefType->name }}
 									</div>
 								</td>
-								<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">৳{{ number_format($project->budget, 2) }}</td>
-								<td class="px-6 py-4 whitespace-nowrap">
-									<span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full {{ $project->budget > 0 ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200' : 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200' }}">
-										{{ $project->budget > 0 ? 'Active' : 'Exhausted' }}
-									</span>
-								</td>
+								<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ $project->formatted_allocated_amount }}</td>
+								<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{{ $project->economicYear->name ?? 'N/A' }}</td>
 							</tr>
 						@empty
 							<tr>

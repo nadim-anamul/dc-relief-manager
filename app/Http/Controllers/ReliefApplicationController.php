@@ -62,9 +62,25 @@ class ReliefApplicationController extends Controller
 		$organizationTypes = OrganizationType::ordered()->get();
 		$zillas = Zilla::where('is_active', true)->orderBy('name')->get();
 		$reliefTypes = ReliefType::where('is_active', true)->ordered()->get();
-		$reliefItems = ReliefItem::where('is_active', true)->orderBy('type')->orderBy('name')->get();
+		
+		// Get active projects with their relief types and economic years
+		$projects = \App\Models\Project::with(['reliefType', 'economicYear'])
+			->active() // Only current year projects
+			->select('id', 'name', 'relief_type_id', 'economic_year_id')
+			->get()
+			->map(function($project) {
+				return [
+					'id' => $project->id,
+					'name' => $project->name,
+					'relief_type_id' => $project->relief_type_id,
+					'relief_type_name' => $project->reliefType->name ?? 'N/A',
+					'relief_type_unit' => $project->reliefType->unit ?? 'Unit',
+					'relief_type_unit_bn' => $project->reliefType->unit_bn ?? $project->reliefType->unit ?? 'Unit',
+					'economic_year' => $project->economicYear->name ?? 'N/A'
+				];
+			});
 
-		return view('relief-applications.create', compact('organizationTypes', 'zillas', 'reliefTypes', 'reliefItems'));
+		return view('relief-applications.create', compact('organizationTypes', 'zillas', 'reliefTypes', 'projects'));
 	}
 
 	/**
@@ -82,38 +98,16 @@ class ReliefApplicationController extends Controller
 			$validated['application_file'] = $filePath;
 		}
 
-		// Calculate total amount from relief items (only monetary items)
-		$totalAmount = 0;
-		if ($request->has('relief_items')) {
-			foreach ($request->relief_items as $item) {
-				if (isset($item['quantity_requested']) && isset($item['unit_price']) && !empty($item['unit_price'])) {
-					$totalAmount += floatval($item['quantity_requested']) * floatval($item['unit_price']);
-				}
+		// Get relief_type_id from selected project
+		if (isset($validated['project_id'])) {
+			$project = \App\Models\Project::find($validated['project_id']);
+			if ($project) {
+				$validated['relief_type_id'] = $project->relief_type_id;
 			}
 		}
-		$validated['amount_requested'] = $totalAmount;
 
 		// Create the relief application
 		$reliefApplication = ReliefApplication::create($validated);
-
-		// Create relief application items
-		if ($request->has('relief_items')) {
-			foreach ($request->relief_items as $item) {
-				if (!empty($item['relief_item_id']) && !empty($item['quantity_requested'])) {
-					$unitPrice = $item['unit_price'] ?? 0;
-					$totalAmount = floatval($item['quantity_requested']) * floatval($unitPrice);
-					
-					ReliefApplicationItem::create([
-						'relief_application_id' => $reliefApplication->id,
-						'relief_item_id' => $item['relief_item_id'],
-						'quantity_requested' => $item['quantity_requested'],
-						'unit_price' => $unitPrice,
-						'total_amount' => $totalAmount,
-						'remarks' => $item['remarks'] ?? null,
-					]);
-				}
-			}
-		}
 
 		return redirect()->route('relief-applications.index')
 			->with('success', 'Relief application submitted successfully.');
@@ -140,9 +134,25 @@ class ReliefApplicationController extends Controller
 		$unions = Union::where('upazila_id', $reliefApplication->upazila_id)->where('is_active', true)->orderBy('name')->get();
 		$wards = Ward::where('union_id', $reliefApplication->union_id)->where('is_active', true)->orderBy('name')->get();
 		$reliefTypes = ReliefType::where('is_active', true)->ordered()->get();
-		$reliefItems = ReliefItem::where('is_active', true)->orderBy('type')->orderBy('name')->get();
+		
+		// Get active projects with their relief types and economic years
+		$projects = \App\Models\Project::with(['reliefType', 'economicYear'])
+			->active() // Only current year projects
+			->select('id', 'name', 'relief_type_id', 'economic_year_id')
+			->get()
+			->map(function($project) {
+				return [
+					'id' => $project->id,
+					'name' => $project->name,
+					'relief_type_id' => $project->relief_type_id,
+					'relief_type_name' => $project->reliefType->name ?? 'N/A',
+					'relief_type_unit' => $project->reliefType->unit ?? 'Unit',
+					'relief_type_unit_bn' => $project->reliefType->unit_bn ?? $project->reliefType->unit ?? 'Unit',
+					'economic_year' => $project->economicYear->name ?? 'N/A'
+				];
+			});
 
-		return view('relief-applications.edit', compact('reliefApplication', 'organizationTypes', 'zillas', 'upazilas', 'unions', 'wards', 'reliefTypes', 'reliefItems'));
+		return view('relief-applications.edit', compact('reliefApplication', 'organizationTypes', 'zillas', 'upazilas', 'unions', 'wards', 'reliefTypes', 'projects'));
 	}
 
 	/**
@@ -165,41 +175,16 @@ class ReliefApplicationController extends Controller
 			$validated['application_file'] = $filePath;
 		}
 
-		// Calculate total amount from relief items (only monetary items)
-		$totalAmount = 0;
-		if ($request->has('relief_items')) {
-			foreach ($request->relief_items as $item) {
-				if (isset($item['quantity_requested']) && isset($item['unit_price']) && !empty($item['unit_price'])) {
-					$totalAmount += floatval($item['quantity_requested']) * floatval($item['unit_price']);
-				}
+		// Get relief_type_id from selected project
+		if (isset($validated['project_id'])) {
+			$project = \App\Models\Project::find($validated['project_id']);
+			if ($project) {
+				$validated['relief_type_id'] = $project->relief_type_id;
 			}
 		}
-		$validated['amount_requested'] = $totalAmount;
 
 		// Update the relief application
 		$reliefApplication->update($validated);
-
-		// Delete existing relief application items
-		$reliefApplication->reliefApplicationItems()->delete();
-
-		// Create new relief application items
-		if ($request->has('relief_items')) {
-			foreach ($request->relief_items as $item) {
-				if (!empty($item['relief_item_id']) && !empty($item['quantity_requested'])) {
-					$unitPrice = $item['unit_price'] ?? 0;
-					$totalAmount = floatval($item['quantity_requested']) * floatval($unitPrice);
-					
-					ReliefApplicationItem::create([
-						'relief_application_id' => $reliefApplication->id,
-						'relief_item_id' => $item['relief_item_id'],
-						'quantity_requested' => $item['quantity_requested'],
-						'unit_price' => $unitPrice,
-						'total_amount' => $totalAmount,
-						'remarks' => $item['remarks'] ?? null,
-					]);
-				}
-			}
-		}
 
 		return redirect()->route('relief-applications.index')
 			->with('success', 'Relief application updated successfully.');

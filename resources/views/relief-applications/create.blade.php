@@ -10,19 +10,72 @@
 		</div>
 	</x-slot>
 
-	<div class="max-w-4xl mx-auto">
-		<div class="card">
-			<div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-				<h3 class="text-lg font-medium text-gray-900 dark:text-white">Relief Application Form</h3>
-				<p class="mt-1 text-sm text-gray-600 dark:text-gray-400">Please fill out all required fields to submit your relief application.</p>
+	<div class="max-w-5xl mx-auto">
+		<!-- Progress Indicator -->
+		<div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 p-6 mb-8">
+			<div class="flex items-center justify-between text-sm font-medium text-gray-600 dark:text-gray-400 mb-4">
+				<span class="flex items-center">
+					<span class="w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center text-xs mr-3">1</span>
+					Organization
+				</span>
+				<span class="flex items-center">
+					<span class="w-8 h-8 bg-gray-300 dark:bg-gray-600 text-gray-600 dark:text-gray-400 rounded-full flex items-center justify-center text-xs mr-3">2</span>
+					Location
+				</span>
+				<span class="flex items-center">
+					<span class="w-8 h-8 bg-gray-300 dark:bg-gray-600 text-gray-600 dark:text-gray-400 rounded-full flex items-center justify-center text-xs mr-3">3</span>
+					Relief Info
+				</span>
+				<span class="flex items-center">
+					<span class="w-8 h-8 bg-gray-300 dark:bg-gray-600 text-gray-600 dark:text-gray-400 rounded-full flex items-center justify-center text-xs mr-3">4</span>
+					Applicant
+				</span>
+				<span class="flex items-center">
+					<span class="w-8 h-8 bg-gray-300 dark:bg-gray-600 text-gray-600 dark:text-gray-400 rounded-full flex items-center justify-center text-xs mr-3">5</span>
+					Documents
+				</span>
 			</div>
-			<div class="p-6">
+			<div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+				<div class="bg-gradient-to-r from-blue-500 to-indigo-600 h-2 rounded-full transition-all duration-300 ease-in-out" style="width: 20%"></div>
+			</div>
+		</div>
+
+		<!-- Main Form Card -->
+		<div class="bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+			<div class="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-gray-700 dark:to-gray-800 px-8 py-6 border-b border-gray-200 dark:border-gray-700">
+				<div class="flex items-center">
+					<div class="flex-shrink-0">
+						<div class="w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center">
+							<svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+							</svg>
+						</div>
+					</div>
+					<div class="ml-4">
+						<h3 class="text-xl font-bold text-gray-900 dark:text-white">Relief Application Form</h3>
+						<p class="text-sm text-gray-600 dark:text-gray-400">Please complete all sections to submit your relief request</p>
+					</div>
+				</div>
+			</div>
+			<div class="p-8">
 				<form action="{{ route('relief-applications.store') }}" method="POST" enctype="multipart/form-data" class="space-y-8" x-data="reliefApplicationForm()">
 					@csrf
 
 					<!-- Organization Information Section -->
 					<div class="border-b border-gray-200 dark:border-gray-700 pb-8">
-						<h4 class="text-lg font-medium text-gray-900 dark:text-white mb-6">Organization Information</h4>
+						<div class="flex items-center mb-6">
+							<div class="flex-shrink-0">
+								<div class="w-8 h-8 bg-gradient-to-r from-green-400 to-green-600 rounded-lg flex items-center justify-center">
+									<svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+									</svg>
+								</div>
+							</div>
+							<div class="ml-3">
+								<h4 class="text-lg font-semibold text-gray-900 dark:text-white">Organization Information</h4>
+								<p class="text-sm text-gray-500 dark:text-gray-400">Tell us about your organization</p>
+							</div>
+						</div>
 						
 						<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 							<!-- Organization Name -->
@@ -98,7 +151,20 @@
 
 					<!-- Location Information Section -->
 					<div class="border-b border-gray-200 dark:border-gray-700 pb-8">
-						<h4 class="text-lg font-medium text-gray-900 dark:text-white mb-6">Location Information</h4>
+						<div class="flex items-center mb-6">
+							<div class="flex-shrink-0">
+								<div class="w-8 h-8 bg-gradient-to-r from-purple-400 to-purple-600 rounded-lg flex items-center justify-center">
+									<svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+									</svg>
+								</div>
+							</div>
+							<div class="ml-3">
+								<h4 class="text-lg font-semibold text-gray-900 dark:text-white">Location Information</h4>
+								<p class="text-sm text-gray-500 dark:text-gray-400">Specify your geographic location</p>
+							</div>
+						</div>
 						
 						<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 							<!-- Zilla Selection -->
@@ -171,14 +237,13 @@
 							<!-- Ward Selection -->
 							<div>
 								<label for="ward_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-									Ward <span class="text-red-500">*</span>
+									Ward
 								</label>
 								<select name="ward_id" 
 									id="ward_id" 
 									x-model="selectedWard"
 									class="input-field @error('ward_id') border-red-500 dark:border-red-400 @enderror"
-									:disabled="!selectedUnion"
-									required>
+									:disabled="!selectedUnion">
 									<option value="">Select a Ward</option>
 									<template x-for="ward in wards" :key="ward.id">
 										<option :value="ward.id" x-text="ward.name + ' (' + ward.name_bn + ')'"></option>
@@ -191,13 +256,80 @@
 						</div>
 					</div>
 
+
 					<!-- Relief Information Section -->
 					<div class="border-b border-gray-200 dark:border-gray-700 pb-8">
-						<h4 class="text-lg font-medium text-gray-900 dark:text-white mb-6">Relief Information</h4>
+						<div class="flex items-center mb-6">
+							<div class="flex-shrink-0">
+								<div class="w-8 h-8 bg-gradient-to-r from-blue-400 to-blue-600 rounded-lg flex items-center justify-center">
+									<svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+									</svg>
+								</div>
+							</div>
+							<div class="ml-3">
+								<h4 class="text-lg font-semibold text-gray-900 dark:text-white">Relief Information</h4>
+								<p class="text-sm text-gray-500 dark:text-gray-400">Details about your relief request</p>
+							</div>
+						</div>
 						
 						<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-							<!-- Subject -->
+							<!-- Project Selection -->
 							<div class="md:col-span-2">
+								<label for="project_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+									Project <span class="text-red-500">*</span>
+								</label>
+								<select name="project_id" 
+									id="project_id" 
+									class="input-field @error('project_id') border-red-500 dark:border-red-400 @enderror"
+									required
+									x-model="selectedProject"
+									@change="updateProjectDetails()">
+									<option value="">Select Project</option>
+									<template x-for="project in projects" :key="project.id">
+										<option :value="project.id" 
+											:data-unit="project.relief_type_unit_bn || project.relief_type_unit"
+											:data-relief-type="project.relief_type_name"
+											x-text="project.name + ' (' + project.economic_year + ') - ' + project.relief_type_name"></option>
+									</template>
+								</select>
+								<p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+									Only current economic year active projects are shown
+								</p>
+								@error('project_id')
+									<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+								@enderror
+							</div>
+
+							<!-- Amount Requested -->
+							<div>
+								<label for="amount_requested" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+									Amount Requested <span class="text-red-500">*</span>
+								</label>
+								<div class="relative">
+									<input type="number" 
+										name="amount_requested" 
+										id="amount_requested" 
+										value="{{ old('amount_requested') }}"
+										class="input-field @error('amount_requested') border-red-500 dark:border-red-400 @enderror pr-20"
+										placeholder="Enter requested amount"
+										min="0.01"
+										step="0.01"
+										required>
+									<div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+										<span class="text-gray-500 dark:text-gray-400 text-sm" x-text="projectUnit || 'Select project first'"></span>
+									</div>
+								</div>
+								<p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+									Amount will be displayed with appropriate unit based on selected project's relief type
+								</p>
+								@error('amount_requested')
+									<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+								@enderror
+							</div>
+
+							<!-- Subject -->
+							<div>
 								<label for="subject" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
 									Subject <span class="text-red-500">*</span>
 								</label>
@@ -206,30 +338,9 @@
 									id="subject" 
 									value="{{ old('subject') }}"
 									class="input-field @error('subject') border-red-500 dark:border-red-400 @enderror"
-									placeholder="Enter application subject"
+									placeholder="Brief description of your relief request"
 									required>
 								@error('subject')
-									<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-								@enderror
-							</div>
-
-							<!-- Relief Type -->
-							<div>
-								<label for="relief_type_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-									Relief Type <span class="text-red-500">*</span>
-								</label>
-								<select name="relief_type_id" 
-									id="relief_type_id" 
-									class="input-field @error('relief_type_id') border-red-500 dark:border-red-400 @enderror"
-									required>
-									<option value="">Select Relief Type</option>
-									@foreach($reliefTypes as $reliefType)
-										<option value="{{ $reliefType->id }}" {{ old('relief_type_id') == $reliefType->id ? 'selected' : '' }}>
-											{{ $reliefType->name }} ({{ $reliefType->name_bn }})
-										</option>
-									@endforeach
-								</select>
-								@error('relief_type_id')
 									<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
 								@enderror
 							</div>
@@ -252,129 +363,21 @@
 						</div>
 					</div>
 
-					<!-- Relief Items Section -->
-					<div class="border-b border-gray-200 dark:border-gray-700 pb-8">
-						<div class="flex items-center justify-between mb-6">
-							<h4 class="text-lg font-medium text-gray-900 dark:text-white">Relief Items Requested</h4>
-							<button type="button" @click="addReliefItem()" class="btn-secondary">
-								<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-								</svg>
-								Add Relief Item
-							</button>
-						</div>
-
-						<div x-data="{ reliefItems: [] }" class="space-y-4">
-							<!-- Dynamic Relief Items -->
-							<template x-for="(item, index) in reliefItems" :key="index">
-								<div class="border border-gray-200 dark:border-gray-600 rounded-lg p-4">
-									<div class="flex items-center justify-between mb-4">
-										<h5 class="text-md font-medium text-gray-900 dark:text-white">Relief Item <span x-text="index + 1"></span></h5>
-										<button type="button" @click="removeReliefItem(index)" class="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300">
-											<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-												<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-											</svg>
-										</button>
-									</div>
-									
-									<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-										<!-- Relief Item Selection -->
-										<div>
-											<label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-												Relief Item <span class="text-red-500">*</span>
-											</label>
-											<select :name="`relief_items[${index}][relief_item_id]`" 
-												x-model="item.relief_item_id"
-												@change="updateItemDetails(index)"
-												class="input-field"
-												required>
-												<option value="">Select Relief Item</option>
-												@foreach($reliefItems as $reliefItem)
-													<option value="{{ $reliefItem->id }}" 
-														data-type="{{ $reliefItem->type }}"
-														data-unit="{{ $reliefItem->unit }}"
-														data-name="{{ $reliefItem->name }}">
-														{{ $reliefItem->name }} ({{ $reliefItem->name_bn }}) - {{ $reliefItem->formatted_unit }}
-													</option>
-												@endforeach
-											</select>
-										</div>
-
-										<!-- Quantity Requested -->
-										<div>
-											<label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-												Quantity Requested <span class="text-red-500">*</span>
-											</label>
-											<input type="number" 
-												:name="`relief_items[${index}][quantity_requested]`"
-												x-model="item.quantity_requested"
-												class="input-field"
-												placeholder="0.000"
-												min="0"
-												step="0.001"
-												required>
-											<p class="mt-1 text-xs text-gray-500 dark:text-gray-400" x-text="item.unit ? 'Unit: ' + item.unit : ''"></p>
-										</div>
-
-										<!-- Unit Price (for monetary items only) -->
-										<div x-show="item.type === 'monetary'">
-											<label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-												Unit Price (৳) <span class="text-red-500">*</span>
-											</label>
-											<input type="number" 
-												:name="`relief_items[${index}][unit_price]`"
-												x-model="item.unit_price"
-												class="input-field"
-												placeholder="0.00"
-												min="0"
-												step="0.01"
-												required>
-											<p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Required for cash relief only</p>
-										</div>
-										
-										<!-- Physical Item Info -->
-										<div x-show="item.type !== 'monetary'" class="md:col-span-1">
-											<label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-												Item Type
-											</label>
-											<div class="p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
-												<p class="text-sm text-gray-600 dark:text-gray-400">
-													<span x-text="item.type ? item.type.charAt(0).toUpperCase() + item.type.slice(1) : 'Physical Item'"></span>
-												</p>
-												<p class="text-xs text-gray-500 dark:text-gray-500 mt-1">
-													Physical items are provided directly, no monetary value needed
-												</p>
-											</div>
-										</div>
-
-										<!-- Remarks -->
-										<div class="md:col-span-3">
-											<label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-												Remarks
-											</label>
-											<input type="text" 
-												:name="`relief_items[${index}][remarks]`"
-												x-model="item.remarks"
-												class="input-field"
-												placeholder="Additional notes for this item">
-										</div>
-									</div>
-								</div>
-							</template>
-
-							<!-- No Items Message -->
-							<div x-show="reliefItems.length === 0" class="text-center py-8 text-gray-500 dark:text-gray-400">
-								<svg class="mx-auto h-12 w-12 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
-								</svg>
-								<p>No relief items added yet. Click "Add Relief Item" to get started.</p>
-							</div>
-						</div>
-					</div>
-
 					<!-- Applicant Information Section -->
 					<div class="border-b border-gray-200 dark:border-gray-700 pb-8">
-						<h4 class="text-lg font-medium text-gray-900 dark:text-white mb-6">Applicant Information</h4>
+						<div class="flex items-center mb-6">
+							<div class="flex-shrink-0">
+								<div class="w-8 h-8 bg-gradient-to-r from-orange-400 to-orange-600 rounded-lg flex items-center justify-center">
+									<svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+									</svg>
+								</div>
+							</div>
+							<div class="ml-3">
+								<h4 class="text-lg font-semibold text-gray-900 dark:text-white">Applicant Information</h4>
+								<p class="text-sm text-gray-500 dark:text-gray-400">Contact person details</p>
+							</div>
+						</div>
 						
 						<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 							<!-- Applicant Name -->
@@ -447,7 +450,19 @@
 
 					<!-- File Upload Section -->
 					<div class="pb-8">
-						<h4 class="text-lg font-medium text-gray-900 dark:text-white mb-6">Supporting Documents</h4>
+						<div class="flex items-center mb-6">
+							<div class="flex-shrink-0">
+								<div class="w-8 h-8 bg-gradient-to-r from-indigo-400 to-indigo-600 rounded-lg flex items-center justify-center">
+									<svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+									</svg>
+								</div>
+							</div>
+							<div class="ml-3">
+								<h4 class="text-lg font-semibold text-gray-900 dark:text-white">Supporting Documents</h4>
+								<p class="text-sm text-gray-500 dark:text-gray-400">Attach supporting documents (optional)</p>
+							</div>
+						</div>
 						
 						<div>
 							<label for="application_file" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -484,14 +499,25 @@
 						</div>
 					</div>
 
-					<!-- Submit Buttons -->
-					<div class="flex justify-end space-x-3">
-						<a href="{{ route('relief-applications.index') }}" class="btn-secondary">
-							Cancel
-						</a>
-						<button type="submit" class="btn-primary">
-							Submit Application
-						</button>
+					<!-- Submit Section -->
+					<div class="bg-gradient-to-r from-gray-50 to-blue-50 dark:from-gray-700 dark:to-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-600">
+						<div class="flex items-center justify-between">
+							<div>
+								<h5 class="text-lg font-semibold text-gray-900 dark:text-white">Ready to Submit?</h5>
+								<p class="text-sm text-gray-600 dark:text-gray-400">Please review all information before submitting your application.</p>
+							</div>
+							<div class="flex space-x-3">
+								<a href="{{ route('relief-applications.index') }}" class="px-6 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors font-medium">
+									Cancel
+								</a>
+								<button type="submit" class="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-semibold py-3 px-8 rounded-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 flex items-center space-x-2">
+									<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+									</svg>
+									<span>Submit Application</span>
+								</button>
+							</div>
+						</div>
 					</div>
 				</form>
 			</div>
@@ -509,7 +535,10 @@
 				unions: [],
 				wards: [],
 				selectedFile: null,
-				reliefItems: [],
+				selectedProject: '{{ old('project_id') }}',
+				projectUnit: '',
+				selectedReliefType: '',
+				projects: @json($projects ?? []),
 				
 				loadUpazilas() {
 					if (this.selectedZilla) {
@@ -574,40 +603,25 @@
 					}
 				},
 				
+				updateProjectDetails() {
+					const selectElement = document.getElementById('project_id');
+					const selectedOption = selectElement.options[selectElement.selectedIndex];
+					
+					if (selectedOption.value) {
+						this.projectUnit = selectedOption.dataset.unit;
+						this.selectedReliefType = selectedOption.dataset.reliefType;
+					} else {
+						this.projectUnit = '';
+						this.selectedReliefType = '';
+					}
+				},
+				
 				handleFileChange(event) {
 					const file = event.target.files[0];
 					if (file) {
 						this.selectedFile = file.name;
 					} else {
 						this.selectedFile = null;
-					}
-				},
-				
-				addReliefItem() {
-					this.reliefItems.push({
-						relief_item_id: '',
-						quantity_requested: '',
-						unit_price: '',
-						remarks: '',
-						type: '',
-						unit: ''
-					});
-				},
-				
-				removeReliefItem(index) {
-					this.reliefItems.splice(index, 1);
-				},
-				
-				updateItemDetails(index) {
-					const selectElement = document.querySelector(`select[name="relief_items[${index}][relief_item_id]"]`);
-					const selectedOption = selectElement.options[selectElement.selectedIndex];
-					
-					if (selectedOption.value) {
-						this.reliefItems[index].type = selectedOption.dataset.type;
-						this.reliefItems[index].unit = selectedOption.dataset.unit;
-					} else {
-						this.reliefItems[index].type = '';
-						this.reliefItems[index].unit = '';
 					}
 				},
 				
@@ -622,9 +636,9 @@
 						this.loadWards();
 					}
 					
-					// Add at least one relief item by default
-					if (this.reliefItems.length === 0) {
-						this.addReliefItem();
+					// Initialize project details if already selected
+					if (this.selectedProject) {
+						this.updateProjectDetails();
 					}
 				}
 			}

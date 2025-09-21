@@ -60,7 +60,7 @@ class ReliefTypeController extends Controller
 	 */
 	public function show(ReliefType $reliefType): View
 	{
-		// $reliefType->load(['reliefRequests']); // Will be enabled when ReliefRequest model is created
+		$reliefType->load(['projects.economicYear']);
 		
 		return view('admin.relief-types.show', compact('reliefType'));
 	}

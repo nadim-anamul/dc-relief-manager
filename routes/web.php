@@ -52,10 +52,19 @@ Route::get('/', function () {
         // Organization Type management
         Route::resource('organization-types', App\Http\Controllers\Admin\OrganizationTypeController::class);
         
-        // Relief Item management
-        Route::resource('relief-items', App\Http\Controllers\Admin\ReliefItemController::class);
-        Route::post('relief-items/{id}/restore', [App\Http\Controllers\Admin\ReliefItemController::class, 'restore'])->name('relief-items.restore');
-        Route::get('relief-items-by-type', [App\Http\Controllers\Admin\ReliefItemController::class, 'getByType'])->name('relief-items.by-type');
+        // Redirect relief-items routes to relief-types
+        Route::get('relief-items', function() {
+            return redirect()->route('admin.relief-types.index');
+        })->name('relief-items.index');
+        Route::get('relief-items/create', function() {
+            return redirect()->route('admin.relief-types.create');
+        })->name('relief-items.create');
+        Route::get('relief-items/{id}', function($id) {
+            return redirect()->route('admin.relief-types.show', $id);
+        })->name('relief-items.show');
+        Route::get('relief-items/{id}/edit', function($id) {
+            return redirect()->route('admin.relief-types.edit', $id);
+        })->name('relief-items.edit');
         
         // Relief Application management
         Route::resource('relief-applications', App\Http\Controllers\Admin\ReliefApplicationController::class)->middleware(['permission:relief-applications.approve,relief-applications.reject']);

@@ -194,7 +194,7 @@ class ReliefApplication extends Model
 	 */
 	public function getFormattedAmountAttribute(): string
 	{
-		return '৳' . number_format($this->amount_requested, 2);
+		return '৳' . number_format((float)$this->amount_requested, 2);
 	}
 
 	/**
@@ -244,7 +244,7 @@ class ReliefApplication extends Model
 	 */
 	public function getFormattedApprovedAmountAttribute(): string
 	{
-		return $this->approved_amount ? '৳' . number_format($this->approved_amount, 2) : '-';
+		return $this->approved_amount ? '৳' . number_format((float)$this->approved_amount, 2) : '-';
 	}
 
 	/**

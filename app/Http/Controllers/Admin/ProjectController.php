@@ -30,20 +30,76 @@ class ProjectController extends Controller
 			$query->where('relief_type_id', $request->relief_type_id);
 		}
 
-		// Filter by date range if provided
-		if ($request->filled('start_date')) {
-			$query->where('start_date', '>=', $request->start_date);
+		// Filter by status if provided
+		if ($request->filled('status')) {
+			switch ($request->status) {
+				case 'active':
+					$query->active();
+					break;
+				case 'completed':
+					$query->completed();
+					break;
+				case 'upcoming':
+					$query->upcoming();
+					break;
+			}
 		}
 
-		if ($request->filled('end_date')) {
-			$query->where('end_date', '<=', $request->end_date);
-		}
-
-		$projects = $query->orderBy('start_date', 'desc')->paginate(15);
+		$projects = $query->orderBy('created_at', 'desc')->paginate(15);
 		$economicYears = EconomicYear::where('is_active', true)->orderBy('start_date', 'desc')->get();
 		$reliefTypes = ReliefType::where('is_active', true)->ordered()->get();
 
-		return view('admin.projects.index', compact('projects', 'economicYears', 'reliefTypes'));
+		// Calculate summary statistics
+		$stats = [
+			'total' => Project::count(),
+			'active' => Project::active()->count(),
+			'completed' => Project::completed()->count(),
+			'upcoming' => Project::upcoming()->count(),
+		];
+
+		// Calculate relief type allocation statistics with proper unit handling
+		$reliefTypeStats = Project::query()
+			->when($request->filled('economic_year_id'), function($q) use ($request) {
+				$q->where('economic_year_id', $request->economic_year_id);
+			})
+			->when($request->filled('relief_type_id'), function($q) use ($request) {
+				$q->where('relief_type_id', $request->relief_type_id);
+			})
+			->when($request->filled('status'), function($q) use ($request) {
+				switch ($request->status) {
+					case 'active':
+						$q->active();
+						break;
+					case 'completed':
+						$q->completed();
+						break;
+					case 'upcoming':
+						$q->upcoming();
+						break;
+				}
+			})
+			->selectRaw('relief_type_id, SUM(allocated_amount) as total_allocated, COUNT(*) as project_count')
+			->with('reliefType')
+			->groupBy('relief_type_id')
+			->orderBy('total_allocated', 'desc')
+			->get()
+			->map(function($stat) {
+				$unit = $stat->reliefType?->unit_bn ?? $stat->reliefType?->unit ?? '';
+				$amount = number_format((float)$stat->total_allocated, 2);
+				
+				// Format based on unit type
+				if (in_array($unit, ['টাকা', 'Taka'])) {
+					$stat->formatted_total = '৳' . $amount;
+				} else {
+					$stat->formatted_total = $amount . ' ' . $unit;
+				}
+				
+				return $stat;
+			});
+
+		$stats['reliefTypeStats'] = $reliefTypeStats;
+
+		return view('admin.projects.index', compact('projects', 'economicYears', 'reliefTypes', 'stats'));
 	}
 
 	/**

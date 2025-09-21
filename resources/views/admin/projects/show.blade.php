@@ -45,40 +45,8 @@
 						</dd>
 					</div>
 					<div>
-						<dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Budget</dt>
-						<dd class="mt-1 text-sm text-gray-900 dark:text-white font-semibold text-lg">{{ $project->formatted_budget }}</dd>
-					</div>
-					<div>
-						<dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Start Date</dt>
-						<dd class="mt-1 text-sm text-gray-900 dark:text-white">{{ $project->start_date->format('F d, Y') }}</dd>
-					</div>
-					<div>
-						<dt class="text-sm font-medium text-gray-500 dark:text-gray-400">End Date</dt>
-						<dd class="mt-1 text-sm text-gray-900 dark:text-white">{{ $project->end_date->format('F d, Y') }}</dd>
-					</div>
-					<div>
-						<dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Duration</dt>
-						<dd class="mt-1 text-sm text-gray-900 dark:text-white">
-							{{ $project->duration_in_months }} months ({{ $project->duration_in_days }} days)
-						</dd>
-					</div>
-					<div>
-						<dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Status</dt>
-						<dd class="mt-1 text-sm text-gray-900 dark:text-white">
-							@if($project->is_active)
-								<span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200">
-									Active
-								</span>
-							@elseif($project->is_completed)
-								<span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200">
-									Completed
-								</span>
-							@elseif($project->is_upcoming)
-								<span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200">
-									Upcoming
-								</span>
-							@endif
-						</dd>
+						<dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Allocated Amount</dt>
+						<dd class="mt-1 text-sm text-gray-900 dark:text-white font-semibold text-lg">{{ $project->formatted_allocated_amount }}</dd>
 					</div>
 					<div>
 						<dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Created</dt>
@@ -126,8 +94,8 @@
 									</div>
 									<div class="min-w-0 flex-1 pt-1.5 flex justify-between space-x-4">
 										<div>
-											<p class="text-sm text-gray-500 dark:text-gray-400">Project Started</p>
-											<p class="text-sm font-medium text-gray-900 dark:text-white">{{ $project->start_date->format('F d, Y') }}</p>
+										<p class="text-sm text-gray-500 dark:text-gray-400">Created</p>
+										<p class="text-sm font-medium text-gray-900 dark:text-white">{{ $project->created_at->format('F d, Y') }}</p>
 										</div>
 									</div>
 								</div>
@@ -145,8 +113,8 @@
 									</div>
 									<div class="min-w-0 flex-1 pt-1.5 flex justify-between space-x-4">
 										<div>
-											<p class="text-sm text-gray-500 dark:text-gray-400">Project Ends</p>
-											<p class="text-sm font-medium text-gray-900 dark:text-white">{{ $project->end_date->format('F d, Y') }}</p>
+										<p class="text-sm text-gray-500 dark:text-gray-400">Economic Year</p>
+										<p class="text-sm font-medium text-gray-900 dark:text-white">{{ $project->economicYear->name }}</p>
 										</div>
 									</div>
 								</div>

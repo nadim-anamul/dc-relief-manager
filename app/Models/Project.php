@@ -17,9 +17,7 @@ class Project extends Model
 		'name',
 		'economic_year_id',
 		'relief_type_id',
-		'budget',
-		'start_date',
-		'end_date',
+		'allocated_amount',
 		'remarks',
 		'created_by',
 		'updated_by',
@@ -27,9 +25,7 @@ class Project extends Model
 	];
 
 	protected $casts = [
-		'budget' => 'decimal:2',
-		'start_date' => 'date',
-		'end_date' => 'date',
+		'allocated_amount' => 'decimal:2',
 	];
 
 	/**
@@ -97,59 +93,73 @@ class Project extends Model
 	}
 
 	/**
-	 * Scope to filter by date range.
+	 * Scope a query to only include active projects (current economic year).
 	 */
-	public function scopeInDateRange($query, $startDate, $endDate)
+	public function scopeActive($query)
 	{
-		return $query->whereBetween('start_date', [$startDate, $endDate]);
+		return $query->whereHas('economicYear', function($q) {
+			$q->where('is_current', true);
+		});
 	}
 
 	/**
-	 * Get the duration of the project in days.
+	 * Scope a query to only include completed projects.
 	 */
-	public function getDurationInDaysAttribute(): int
+	public function scopeCompleted($query)
 	{
-		return $this->start_date->diffInDays($this->end_date);
+		return $query->whereHas('economicYear', function($q) {
+			$q->where('end_date', '<', now());
+		});
 	}
 
 	/**
-	 * Get the duration of the project in months.
+	 * Scope a query to only include upcoming projects.
 	 */
-	public function getDurationInMonthsAttribute(): int
+	public function scopeUpcoming($query)
 	{
-		return $this->start_date->diffInMonths($this->end_date);
+		return $query->whereHas('economicYear', function($q) {
+			$q->where('start_date', '>', now());
+		});
 	}
 
 	/**
-	 * Check if the project is currently active (within date range).
+	 * Get formatted allocated amount with appropriate unit.
+	 */
+	public function getFormattedAllocatedAmountAttribute(): string
+	{
+		$unit = $this->reliefType?->unit_bn ?? $this->reliefType?->unit ?? '';
+		$amount = number_format((float)$this->allocated_amount, 2);
+		
+		// For Taka/Cash, show with currency symbol
+		if (in_array($unit, ['টাকা', 'Taka'])) {
+			return '৳' . $amount;
+		}
+		
+		// For other units, show with unit name
+		return $amount . ' ' . $unit;
+	}
+
+	/**
+	 * Check if this project is active (belongs to current economic year).
 	 */
 	public function getIsActiveAttribute(): bool
 	{
-		$now = now();
-		return $now->between($this->start_date, $this->end_date);
+		return $this->economicYear?->is_current ?? false;
 	}
 
 	/**
-	 * Check if the project is completed (past end date).
+	 * Get the status of this project.
 	 */
-	public function getIsCompletedAttribute(): bool
+	public function getStatusAttribute(): string
 	{
-		return now()->isAfter($this->end_date);
-	}
-
-	/**
-	 * Check if the project is upcoming (before start date).
-	 */
-	public function getIsUpcomingAttribute(): bool
-	{
-		return now()->isBefore($this->start_date);
-	}
-
-	/**
-	 * Get formatted budget amount.
-	 */
-	public function getFormattedBudgetAttribute(): string
-	{
-		return '৳' . number_format($this->budget, 2);
+		if ($this->economicYear?->is_current) {
+			return 'Active';
+		}
+		
+		if ($this->economicYear && now()->isAfter($this->economicYear->end_date)) {
+			return 'Completed';
+		}
+		
+		return 'Upcoming';
 	}
 }

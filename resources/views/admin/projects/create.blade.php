@@ -79,53 +79,29 @@
 						@enderror
 					</div>
 
-					<!-- Budget -->
+					<!-- Allocated Amount -->
 					<div>
-						<label for="budget" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-							Budget (৳) <span class="text-red-500">*</span>
+						<label for="allocated_amount" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+							Allocated Amount <span class="text-red-500">*</span>
 						</label>
-						<input type="number" 
-							name="budget" 
-							id="budget" 
-							value="{{ old('budget') }}"
-							class="input-field @error('budget') border-red-500 dark:border-red-400 @enderror"
-							placeholder="Enter budget amount"
-							min="0"
-							step="0.01"
-							required>
-						@error('budget')
-							<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-						@enderror
-					</div>
-
-					<!-- Start Date -->
-					<div>
-						<label for="start_date" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-							Start Date <span class="text-red-500">*</span>
-						</label>
-						<input type="date" 
-							name="start_date" 
-							id="start_date" 
-							value="{{ old('start_date') }}"
-							class="input-field @error('start_date') border-red-500 dark:border-red-400 @enderror"
-							required>
-						@error('start_date')
-							<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-						@enderror
-					</div>
-
-					<!-- End Date -->
-					<div>
-						<label for="end_date" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-							End Date <span class="text-red-500">*</span>
-						</label>
-						<input type="date" 
-							name="end_date" 
-							id="end_date" 
-							value="{{ old('end_date') }}"
-							class="input-field @error('end_date') border-red-500 dark:border-red-400 @enderror"
-							required>
-						@error('end_date')
+						<div class="relative">
+							<input type="number" 
+								name="allocated_amount" 
+								id="allocated_amount" 
+								value="{{ old('allocated_amount') }}"
+								class="input-field @error('allocated_amount') border-red-500 dark:border-red-400 @enderror pr-20"
+								placeholder="Enter allocated amount"
+								min="0.01"
+								step="0.01"
+								required>
+							<div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+								<span class="text-gray-500 dark:text-gray-400 text-sm" id="unit-display">Unit</span>
+							</div>
+						</div>
+						<p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+							Amount allocated for <span id="relief-type-display">this relief type</span> in this economic year
+						</p>
+						@error('allocated_amount')
 							<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
 						@enderror
 					</div>
@@ -158,4 +134,53 @@
 			</div>
 		</div>
 	</div>
+
+	<script>
+		// Relief types data for unit display
+		const reliefTypes = {
+			@foreach($reliefTypes as $reliefType)
+				{{ $reliefType->id }}: {
+					unit: '{{ $reliefType->unit ?? "Unit" }}',
+					unit_bn: '{{ $reliefType->unit_bn ?? "" }}'
+				},
+			@endforeach
+		};
+
+		// Update relief type display and unit when relief type changes
+		document.getElementById('relief_type_id').addEventListener('change', function() {
+			const reliefTypeId = this.value;
+			const reliefTypeDisplay = document.getElementById('relief-type-display');
+			const unitDisplay = document.getElementById('unit-display');
+			
+			if (reliefTypeId && reliefTypes[reliefTypeId]) {
+				const selectedOption = this.options[this.selectedIndex];
+				const reliefTypeName = selectedOption.textContent;
+				const unit = reliefTypes[reliefTypeId].unit_bn || reliefTypes[reliefTypeId].unit;
+				
+				reliefTypeDisplay.textContent = reliefTypeName;
+				unitDisplay.textContent = unit;
+				
+				// Update placeholder and validation based on unit type
+				const amountInput = document.getElementById('allocated_amount');
+				if (unit === 'টাকা' || unit === 'Taka') {
+					amountInput.placeholder = 'Enter amount in Taka';
+					amountInput.min = '1000';
+				} else {
+					amountInput.placeholder = 'Enter quantity';
+					amountInput.min = '0.01';
+				}
+			} else {
+				reliefTypeDisplay.textContent = 'this relief type';
+				unitDisplay.textContent = 'Unit';
+			}
+		});
+
+		// Initialize relief type display on page load
+		document.addEventListener('DOMContentLoaded', function() {
+			const reliefTypeSelect = document.getElementById('relief_type_id');
+			if (reliefTypeSelect.value) {
+				reliefTypeSelect.dispatchEvent(new Event('change'));
+			}
+		});
+	</script>
 </x-main-layout>

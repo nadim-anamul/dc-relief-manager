@@ -53,7 +53,7 @@ class ReliefApplicationRequest extends FormRequest
                 Rule::exists('unions', 'id')->where('upazila_id', $this->upazila_id),
             ],
             'ward_id' => [
-                'required',
+                'nullable',
                 'exists:wards,id',
                 Rule::exists('wards', 'id')->where('union_id', $this->union_id),
             ],
@@ -61,11 +61,6 @@ class ReliefApplicationRequest extends FormRequest
                 'required',
                 'string',
                 'max:500',
-                'min:10',
-            ],
-            'relief_type_id' => [
-                'required',
-                'exists:relief_types,id',
             ],
             'applicant_name' => [
                 'required',
@@ -98,8 +93,12 @@ class ReliefApplicationRequest extends FormRequest
             'amount_requested' => [
                 'required',
                 'numeric',
-                'min:1000',
-                'max:10000000',
+                'min:0.01',
+                'max:999999999.99',
+            ],
+            'project_id' => [
+                'required',
+                'exists:projects,id',
             ],
             'details' => [
                 'required',
@@ -176,11 +175,7 @@ class ReliefApplicationRequest extends FormRequest
             'ward_id.exists' => 'Selected ward is invalid or does not belong to the selected union.',
             
             'subject.required' => 'Subject is required.',
-            'subject.min' => 'Subject must be at least 10 characters.',
             'subject.max' => 'Subject cannot exceed 500 characters.',
-            
-            'relief_type_id.required' => 'Please select a relief type.',
-            'relief_type_id.exists' => 'Selected relief type is invalid.',
             
             'applicant_name.required' => 'Applicant name is required.',
             'applicant_name.min' => 'Applicant name must be at least 2 characters.',
@@ -199,8 +194,8 @@ class ReliefApplicationRequest extends FormRequest
             
             'amount_requested.required' => 'Amount requested is required.',
             'amount_requested.numeric' => 'Amount must be a valid number.',
-            'amount_requested.min' => 'Amount must be at least ৳1,000.',
-            'amount_requested.max' => 'Amount cannot exceed ৳1,00,00,000.',
+            'amount_requested.min' => 'Amount must be greater than 0.',
+            'amount_requested.max' => 'Amount cannot exceed 999,999,999.99.',
             
             'details.required' => 'Details are required.',
             'details.min' => 'Details must be at least 50 characters.',
@@ -219,6 +214,7 @@ class ReliefApplicationRequest extends FormRequest
             'approved_amount.max' => 'Approved amount cannot exceed ৳1,00,00,000.',
             
             'project_id.required_if' => 'Project selection is required when approving.',
+            'project_id.required' => 'Project selection is required.',
             'project_id.exists' => 'Selected project is invalid.',
             
             'admin_remarks.required_if' => 'Admin remarks are required when rejecting.',
@@ -238,16 +234,15 @@ class ReliefApplicationRequest extends FormRequest
             'upazila_id' => 'upazila',
             'union_id' => 'union',
             'ward_id' => 'ward',
-            'relief_type_id' => 'relief type',
             'applicant_name' => 'applicant name',
             'applicant_designation' => 'applicant designation',
             'applicant_phone' => 'phone number',
             'applicant_address' => 'applicant address',
             'organization_address' => 'organization address',
             'amount_requested' => 'amount requested',
+            'project_id' => 'project',
             'application_file' => 'application file',
             'approved_amount' => 'approved amount',
-            'project_id' => 'project',
             'admin_remarks' => 'admin remarks',
         ];
     }

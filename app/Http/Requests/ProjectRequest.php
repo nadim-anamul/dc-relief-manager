@@ -26,7 +26,6 @@ class ProjectRequest extends FormRequest
                 'required',
                 'string',
                 'max:255',
-                'min:3',
                 'unique:projects,name,' . $this->route('project'),
             ],
             'economic_year_id' => [
@@ -37,21 +36,11 @@ class ProjectRequest extends FormRequest
                 'required',
                 'exists:relief_types,id',
             ],
-            'budget' => [
+            'allocated_amount' => [
                 'required',
                 'numeric',
-                'min:10000',
-                'max:1000000000',
-            ],
-            'start_date' => [
-                'required',
-                'date',
-                'after_or_equal:today',
-            ],
-            'end_date' => [
-                'required',
-                'date',
-                'after:start_date',
+                'min:0.01',
+                'max:999999999.99',
             ],
             'remarks' => [
                 'nullable',
@@ -78,18 +67,10 @@ class ProjectRequest extends FormRequest
             'relief_type_id.required' => 'Please select a relief type.',
             'relief_type_id.exists' => 'Selected relief type is invalid.',
             
-            'budget.required' => 'Budget is required.',
-            'budget.numeric' => 'Budget must be a valid number.',
-            'budget.min' => 'Budget must be at least ৳10,000.',
-            'budget.max' => 'Budget cannot exceed ৳1,00,00,00,000.',
-            
-            'start_date.required' => 'Start date is required.',
-            'start_date.date' => 'Please enter a valid start date.',
-            'start_date.after_or_equal' => 'Start date cannot be in the past.',
-            
-            'end_date.required' => 'End date is required.',
-            'end_date.date' => 'Please enter a valid end date.',
-            'end_date.after' => 'End date must be after the start date.',
+            'allocated_amount.required' => 'Allocated amount is required.',
+            'allocated_amount.numeric' => 'Allocated amount must be a valid number.',
+            'allocated_amount.min' => 'Allocated amount must be greater than 0.',
+            'allocated_amount.max' => 'Allocated amount cannot exceed 999,999,999.99.',
             
             'remarks.max' => 'Remarks cannot exceed 1000 characters.',
         ];
@@ -103,8 +84,7 @@ class ProjectRequest extends FormRequest
         return [
             'economic_year_id' => 'economic year',
             'relief_type_id' => 'relief type',
-            'start_date' => 'start date',
-            'end_date' => 'end date',
+            'allocated_amount' => 'allocated amount',
         ];
     }
 }

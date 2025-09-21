@@ -45,15 +45,13 @@ class DashboardController extends Controller
 		$approvedApplications = ReliefApplication::where('status', 'approved')->count();
 		$rejectedApplications = ReliefApplication::where('status', 'rejected')->count();
 		
-		// Project statistics
+		// Project statistics - updated to use new scopes and current economic year logic
 		$totalProjects = Project::count();
-		$activeProjects = Project::where('start_date', '<=', now())
-			->where('end_date', '>=', now())
-			->count();
-		$totalProjectBudget = Project::sum('budget');
-		$remainingProjectBudget = Project::where('start_date', '<=', now())
-			->where('end_date', '>=', now())
-			->sum('budget');
+		$activeProjects = Project::active()->count(); // Projects in current economic year
+		$completedProjects = Project::completed()->count();
+		$upcomingProjects = Project::upcoming()->count();
+		$totalAllocatedAmount = Project::sum('allocated_amount');
+		$currentYearAllocatedAmount = Project::active()->sum('allocated_amount');
 		
 		// Area-wise statistics
 		$areaWiseStats = ReliefApplication::where('status', 'approved')
@@ -79,13 +77,34 @@ class DashboardController extends Controller
 			->orderBy('total_amount', 'desc')
 			->get();
 		
-		// Project budget remaining
-		$projectBudgetStats = Project::where('start_date', '<=', now())
-			->where('end_date', '>=', now())
-			->select('name', 'budget', 'relief_type_id')
-			->with('reliefType')
-			->orderBy('budget', 'desc')
+		// Project allocated amounts for current economic year (active projects)
+		$projectAllocationStats = Project::active()
+			->select('name', 'allocated_amount', 'relief_type_id')
+			->with(['reliefType', 'economicYear'])
+			->orderBy('allocated_amount', 'desc')
+			->take(10) // Limit to top 10 for better display
 			->get();
+
+		// Relief type allocation statistics for current year - with proper unit handling
+		$reliefTypeAllocationStats = Project::active()
+			->selectRaw('relief_type_id, SUM(allocated_amount) as total_allocated, COUNT(*) as project_count')
+			->with('reliefType')
+			->groupBy('relief_type_id')
+			->orderBy('total_allocated', 'desc')
+			->get()
+			->map(function($stat) {
+				$unit = $stat->reliefType?->unit_bn ?? $stat->reliefType?->unit ?? '';
+				$amount = number_format((float)$stat->total_allocated, 2);
+				
+				// Format based on unit type
+				if (in_array($unit, ['টাকা', 'Taka'])) {
+					$stat->formatted_total = '৳' . $amount;
+				} else {
+					$stat->formatted_total = $amount . ' ' . $unit;
+				}
+				
+				return $stat;
+			});
 
 		// Inventory statistics
 		$totalInventoryValue = Inventory::sum(DB::raw('current_stock * unit_price'));
@@ -115,12 +134,15 @@ class DashboardController extends Controller
 			'rejectedApplications' => $rejectedApplications,
 			'totalProjects' => $totalProjects,
 			'activeProjects' => $activeProjects,
-			'totalProjectBudget' => $totalProjectBudget,
-			'remainingProjectBudget' => $remainingProjectBudget,
+			'completedProjects' => $completedProjects,
+			'upcomingProjects' => $upcomingProjects,
+			'totalAllocatedAmount' => $totalAllocatedAmount,
+			'currentYearAllocatedAmount' => $currentYearAllocatedAmount,
 			'areaWiseStats' => $areaWiseStats,
 			'orgTypeStats' => $orgTypeStats,
 			'reliefTypeStats' => $reliefTypeStats,
-			'projectBudgetStats' => $projectBudgetStats,
+			'projectAllocationStats' => $projectAllocationStats,
+			'reliefTypeAllocationStats' => $reliefTypeAllocationStats,
 			// Inventory statistics
 			'totalInventoryValue' => $totalInventoryValue,
 			'totalInventoryItems' => $totalInventoryItems,
