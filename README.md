@@ -1,0 +1,358 @@
+# DC Relief Manager
+
+A comprehensive web application for managing disaster relief applications and administrative divisions in Bangladesh. Built with Laravel, Tailwind CSS, and Alpine.js for a modern, responsive, and accessible user experience.
+
+## 🌟 Features
+
+### Core Functionality
+- **Relief Application Management** - Submit, review, and approve relief applications
+- **Administrative Division Management** - Manage Zillas, Upazilas, Unions, and Wards
+- **Project Management** - Create and manage relief projects with budget tracking
+- **Organization Management** - Manage organization types and relief types
+- **Dashboard Analytics** - Comprehensive dashboard with charts and statistics
+- **Export Functionality** - Export data to Excel and PDF formats
+
+### User Management & Security
+- **Role-Based Access Control (RBAC)** - Super Admin, District Admin, Data Entry, Viewer roles
+- **Permission System** - Granular permissions for different actions
+- **User Authentication** - Secure login/logout with Laravel Breeze
+- **Audit Logging** - Track all changes made to applications and allocations
+
+### User Experience
+- **Responsive Design** - Mobile-first approach with Tailwind CSS
+- **Dark/Light Theme** - Toggle between themes with persistent preferences
+- **Loading States** - Visual feedback during form submissions and data loading
+- **Form Validation** - Comprehensive client and server-side validation
+- **Error Handling** - User-friendly error messages and success notifications
+- **Accessibility** - WCAG compliant with screen reader support and keyboard navigation
+
+## 🚀 Quick Start
+
+### Prerequisites
+- PHP 8.1 or higher
+- Composer
+- Node.js and npm
+- MySQL/PostgreSQL/SQLite
+- Git
+
+### Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd dc-relief-manager
+   ```
+
+2. **Install PHP dependencies**
+   ```bash
+   composer install
+   ```
+
+3. **Install Node.js dependencies**
+   ```bash
+   npm install
+   ```
+
+4. **Environment setup**
+   ```bash
+   cp .env.example .env
+   php artisan key:generate
+   ```
+
+5. **Configure database**
+   Edit `.env` file with your database credentials:
+   ```env
+   DB_CONNECTION=mysql
+   DB_HOST=127.0.0.1
+   DB_PORT=3306
+   DB_DATABASE=dc_relief_manager
+   DB_USERNAME=your_username
+   DB_PASSWORD=your_password
+   ```
+
+6. **Run database migrations and seeders**
+   ```bash
+   php artisan migrate
+   php artisan db:seed
+   ```
+
+7. **Build assets**
+   ```bash
+   npm run build
+   ```
+
+8. **Start the development server**
+   ```bash
+   php artisan serve
+   ```
+
+   The application will be available at `http://localhost:8000`
+
+## 👥 User Roles & Permissions
+
+### Super Admin
+- Full system access
+- Manage all administrative divisions
+- Manage users and roles
+- Access to all reports and exports
+- System configuration
+
+### District Admin
+- Manage administrative divisions within their district
+- Review and approve relief applications
+- Access to district-level reports
+- Manage projects and budgets
+
+### Data Entry
+- Create and edit relief applications
+- View their own applications
+- Access to basic reports
+
+### Viewer
+- View relief applications
+- Access to read-only reports
+- Dashboard access
+
+## 🔧 Technical Stack
+
+### Backend
+- **Laravel 10** - PHP framework
+- **Laravel Breeze** - Authentication scaffolding
+- **Spatie Laravel Permission** - Role and permission management
+- **Laravel Excel** - Excel export functionality
+- **Laravel DomPDF** - PDF generation
+- **MySQL/PostgreSQL/SQLite** - Database support
+
+### Frontend
+- **Tailwind CSS** - Utility-first CSS framework
+- **Alpine.js** - Lightweight JavaScript framework
+- **Chart.js** - Data visualization
+- **Vite** - Build tool and development server
+
+### Development Tools
+- **PHPUnit** - Testing framework
+- **Laravel Telescope** - Debug and monitoring
+- **Laravel Tinker** - Interactive shell
+
+## 📊 Database Structure
+
+### Core Models
+- **User** - System users with roles and permissions
+- **Zilla** - Districts/Divisions
+- **Upazila** - Sub-districts
+- **Union** - Union councils
+- **Ward** - Wards within unions
+- **EconomicYear** - Financial years for projects
+- **ReliefType** - Types of relief (food, medical, etc.)
+- **OrganizationType** - Types of organizations
+- **Project** - Relief projects with budgets
+- **ReliefApplication** - Relief applications from organizations
+- **AuditLog** - System audit trail
+
+### Relationships
+```
+Zilla → hasMany → Upazila
+Upazila → hasMany → Union
+Union → hasMany → Ward
+Project → belongsTo → EconomicYear, ReliefType
+ReliefApplication → belongsTo → Zilla, Upazila, Union, Ward, ReliefType, OrganizationType, Project
+```
+
+## 🎨 UI Components
+
+### Reusable Components
+- **Form Components** - Enhanced input, select, textarea with validation
+- **Loading States** - Spinner and loading button components
+- **Alerts** - Success and error alert components
+- **Responsive Cards** - Adaptive card containers
+- **Responsive Tables** - Mobile-friendly table layouts
+- **Toast Notifications** - Real-time user feedback
+- **Accessibility Helpers** - Screen reader support and high contrast mode
+
+### Design System
+- **Color Palette** - Consistent blue-based theme with dark mode support
+- **Typography** - Inter font family for modern readability
+- **Spacing** - Consistent spacing using Tailwind CSS utilities
+- **Responsive Breakpoints** - Mobile-first design with sm, md, lg, xl breakpoints
+
+## 📱 Responsive Design
+
+The application is built with a mobile-first approach:
+
+- **Mobile (< 768px)** - Single column layout, collapsible navigation
+- **Tablet (768px - 1024px)** - Two-column layouts, expanded navigation
+- **Desktop (> 1024px)** - Multi-column layouts, full sidebar navigation
+
+### Key Responsive Features
+- Collapsible mobile navigation
+- Responsive data tables with horizontal scrolling
+- Adaptive grid layouts
+- Touch-friendly interface elements
+- Optimized form layouts for different screen sizes
+
+## ♿ Accessibility Features
+
+### WCAG Compliance
+- **Keyboard Navigation** - Full keyboard accessibility
+- **Screen Reader Support** - ARIA labels and semantic HTML
+- **High Contrast Mode** - Toggle for visually impaired users
+- **Focus Management** - Clear focus indicators
+- **Skip Links** - Skip to main content functionality
+- **Reduced Motion** - Respects user motion preferences
+
+### Accessibility Tools
+- Screen reader announcements for dynamic content
+- High contrast color schemes
+- Focus trap for modals
+- ARIA live regions for status updates
+
+## 📈 Dashboard & Analytics
+
+### Key Metrics
+- Total relief distributed
+- Remaining project budgets
+- Application status overview
+- Area-wise relief distribution
+- Organization type distribution
+- Monthly relief trends
+
+### Charts & Visualizations
+- Pie charts for application status
+- Bar charts for area-wise distribution
+- Doughnut charts for organization types
+- Line charts for monthly trends
+- Responsive chart containers
+
+## 📤 Export Functionality
+
+### Supported Formats
+- **Excel (.xlsx)** - For data analysis and reporting
+- **PDF** - For official documents and reports
+
+### Export Types
+- Relief applications list
+- Project summary reports
+- Area-wise relief distribution
+- Organization-wise summaries
+
+## 🔒 Security Features
+
+### Authentication & Authorization
+- Secure password hashing
+- CSRF protection
+- Role-based access control
+- Permission-based route protection
+- Session management
+
+### Data Protection
+- Input validation and sanitization
+- SQL injection prevention
+- XSS protection
+- File upload security
+- Audit logging for sensitive operations
+
+## 🧪 Testing
+
+### Test Coverage
+- Unit tests for models and services
+- Feature tests for API endpoints
+- Browser tests for user interactions
+- Accessibility testing
+
+### Running Tests
+```bash
+# Run all tests
+php artisan test
+
+# Run specific test suite
+php artisan test --testsuite=Feature
+
+# Run with coverage
+php artisan test --coverage
+```
+
+## 🚀 Deployment
+
+### Production Setup
+1. Set `APP_ENV=production` in `.env`
+2. Run `php artisan config:cache`
+3. Run `php artisan route:cache`
+4. Run `php artisan view:cache`
+5. Build production assets: `npm run build`
+6. Set up web server (Apache/Nginx)
+7. Configure SSL certificate
+8. Set up database backups
+
+### Environment Variables
+```env
+APP_NAME="DC Relief Manager"
+APP_ENV=production
+APP_KEY=base64:your-generated-key
+APP_DEBUG=false
+APP_URL=https://your-domain.com
+
+DB_CONNECTION=mysql
+DB_HOST=your-db-host
+DB_PORT=3306
+DB_DATABASE=your-database
+DB_USERNAME=your-username
+DB_PASSWORD=your-password
+
+MAIL_MAILER=smtp
+MAIL_HOST=your-smtp-host
+MAIL_PORT=587
+MAIL_USERNAME=your-email
+MAIL_PASSWORD=your-password
+MAIL_ENCRYPTION=tls
+```
+
+## 🤝 Contributing
+
+### Development Workflow
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Write tests for new functionality
+5. Ensure all tests pass
+6. Submit a pull request
+
+### Code Standards
+- Follow PSR-12 coding standards
+- Write comprehensive tests
+- Document new features
+- Use meaningful commit messages
+- Ensure accessibility compliance
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🆘 Support
+
+### Documentation
+- [Laravel Documentation](https://laravel.com/docs)
+- [Tailwind CSS Documentation](https://tailwindcss.com/docs)
+- [Alpine.js Documentation](https://alpinejs.dev/)
+
+### Issues
+- Report bugs via GitHub Issues
+- Request features via GitHub Discussions
+- Check existing issues before creating new ones
+
+## 🙏 Acknowledgments
+
+- Laravel framework and community
+- Tailwind CSS team
+- Alpine.js developers
+- Spatie for Laravel Permission package
+- All contributors and testers
+
+---
+
+**DC Relief Manager** - Streamlining disaster relief management for a better tomorrow.
+
+Login with different users:
+superadmin@dcrelief.com / password123 - Full access
+districtadmin@dcrelief.com / password123 - Admin access
+dataentry@dcrelief.com / password123 - Limited access
+viewer@dcrelief.com / password123 - Read-only access
