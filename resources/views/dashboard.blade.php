@@ -30,6 +30,54 @@
     </x-slot>
 
 	<div class="space-y-8">
+		@if(isset($years) && isset($selectedYearId))
+		<!-- Smart Filter Row (separate row) -->
+		<div>
+			<form id="smartFilter" method="GET" action="{{ route('dashboard') }}" class="w-full relative overflow-hidden rounded-2xl shadow-xl">
+				<div class="absolute inset-0 bg-gradient-to-r from-indigo-500/10 via-purple-500/10 to-cyan-500/10 pointer-events-none"></div>
+				<div class="relative w-full bg-white/70 dark:bg-gray-900/60 backdrop-blur-xl border border-white/40 dark:border-gray-700/60 px-5 py-3 flex items-center gap-6">
+				<div class="flex items-center gap-3">
+					<span class="text-[11px] font-semibold uppercase tracking-wider text-gray-600 dark:text-gray-300">Economic Year</span>
+					<div class="relative">
+						<svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8V7m0 10v1"/></svg>
+						<select id="economic_year_id" name="economic_year_id" class="smart-input appearance-none pl-9 pr-8 py-2 rounded-full border border-gray-200 dark:border-gray-700 bg-white/90 dark:bg-gray-800/90 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm">
+							@foreach($years as $y)
+								<option value="{{ $y->id }}" {{ $selectedYearId == $y->id ? 'selected' : '' }}>
+									{{ $y->name ?? ($y->start_date?->format('Y') .' - '. $y->end_date?->format('Y')) }}
+								</option>
+							@endforeach
+						</select>
+						
+					</div>
+				</div>
+				@if(isset($zillas))
+				<div class="flex items-center gap-3">
+					<span class="text-[11px] font-semibold uppercase tracking-wider text-gray-600 dark:text-gray-300">Zilla (for detail tables)</span>
+					<div class="relative">
+						<svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7l9-4 9 4-9 4-9-4zm0 6l9 4 9-4"/></svg>
+						<select id="zilla_id" name="zilla_id" class="smart-input appearance-none pl-9 pr-8 py-2 rounded-full border border-gray-200 dark:border-gray-700 bg-white/90 dark:bg-gray-800/90 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm">
+							<option value="">All Zillas</option>
+							@foreach($zillas as $z)
+								<option value="{{ $z->id }}" {{ ($selectedZillaId ?? null) == $z->id ? 'selected' : '' }}>
+									{{ $z->name }}
+								</option>
+							@endforeach
+						</select>
+						
+					</div>
+				</div>
+				@endif
+				<div class="ml-auto flex items-center gap-2">
+					<a href="{{ route('dashboard') }}" class="inline-flex items-center px-3 py-2 text-sm rounded-full border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700">Reset</a>
+					<button type="submit" class="inline-flex items-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-full shadow-md">
+						<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h8M8 11h8m-7 4h6"/></svg>
+						Apply
+					</button>
+				</div>
+				</div>
+			</form>
+		</div>
+		@endif
 		<!-- Hero Statistics Section -->
 		<div class="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-700 rounded-2xl p-8 text-white shadow-2xl">
 			<div class="flex flex-col lg:flex-row lg:justify-between lg:items-center space-y-6 lg:space-y-0">
@@ -37,94 +85,61 @@
 					<h2 class="text-3xl font-bold mb-2">Welcome to Relief Management System</h2>
 					<p class="text-blue-100 text-lg">Real-time insights into relief operations and distribution analytics</p>
 				</div>
-				<div class="flex flex-wrap gap-4">
-					<div class="text-center">
-						<div class="text-3xl font-bold">{{ $stats['totalApplications'] }}</div>
-						<div class="text-blue-200 text-sm">Total Applications</div>
-					</div>
-					<div class="text-center">
-						<div class="text-3xl font-bold">৳{{ number_format($stats['totalReliefDistributed'] / 1000000, 1) }}M</div>
-						<div class="text-blue-200 text-sm">Relief Distributed</div>
-					</div>
-					<div class="text-center">
-						<div class="text-3xl font-bold">{{ $stats['activeProjects'] }}</div>
-						<div class="text-blue-200 text-sm">Active Projects</div>
-					</div>
-				</div>
 			</div>
 		</div>
 
-		<!-- Key Performance Indicators -->
-		<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-			<!-- Total Relief Distributed -->
-			<div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 hover:shadow-lg transition-all duration-300 group">
-				<div class="flex items-center justify-between">
-					<div class="flex items-center space-x-4">
-						<div class="p-3 bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl group-hover:scale-110 transition-transform duration-300">
-							<svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
-							</svg>
-						</div>
-						<div>
-							<p class="text-sm font-medium text-gray-500 dark:text-gray-400">Total Relief Distributed</p>
-							<p class="text-2xl font-bold text-gray-900 dark:text-white">৳{{ number_format($stats['totalReliefDistributed'], 2) }}</p>
-							<p class="text-xs text-green-600 dark:text-green-400 mt-1">↑ 12% from last month</p>
-						</div>
+		<!-- Allocation by Relief Type (Allocated vs Available vs Used) -->
+		<div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+			<div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+				<div class="flex items-center gap-3">
+					<div class="p-2 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-lg">
+						<svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3v18h18"/></svg>
+					</div>
+					<div>
+						<h3 class="text-lg font-semibold text-gray-900 dark:text-white">Allocation by Relief Type</h3>
+						<p class="text-sm text-gray-500 dark:text-gray-400">Allocated vs Used vs Available for the selected year</p>
 					</div>
 				</div>
-			</div>
-
-			<!-- Total Applications -->
-			<div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 hover:shadow-lg transition-all duration-300 group">
-				<div class="flex items-center justify-between">
-					<div class="flex items-center space-x-4">
-						<div class="p-3 bg-gradient-to-r from-blue-500 to-cyan-600 rounded-xl group-hover:scale-110 transition-transform duration-300">
-							<svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-							</svg>
-						</div>
-						<div>
-							<p class="text-sm font-medium text-gray-500 dark:text-gray-400">Total Applications</p>
-							<p class="text-2xl font-bold text-gray-900 dark:text-white">{{ $stats['totalApplications'] }}</p>
-							<p class="text-xs text-blue-600 dark:text-blue-400 mt-1">↑ 8% from last month</p>
-						</div>
-					</div>
+				<div class="flex items-center gap-2">
+					<a href="{{ route('admin.projects.index') }}" class="inline-flex items-center px-3 py-1.5 bg-indigo-100 hover:bg-indigo-200 dark:bg-indigo-900 dark:hover:bg-indigo-800 text-indigo-700 dark:text-indigo-300 text-sm font-medium rounded-lg transition-colors duration-200">View Projects</a>
+					<!-- Sort pills -->
+					<form method="GET" action="{{ route('dashboard') }}" class="flex items-center gap-2">
+						<input type="hidden" name="economic_year_id" value="{{ $selectedYearId }}" />
+						@if(isset($selectedZillaId) && $selectedZillaId)
+							<input type="hidden" name="zilla_id" value="{{ $selectedZillaId }}" />
+						@endif
+						<button name="sort" value="allocated" class="px-2.5 py-1 text-xs rounded-full border {{ ($currentSort ?? '') === 'allocated' ? 'bg-indigo-600 text-white border-indigo-600' : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200' }}">Allocated</button>
+						<button name="sort" value="used" class="px-2.5 py-1 text-xs rounded-full border {{ ($currentSort ?? '') === 'used' ? 'bg-indigo-600 text-white border-indigo-600' : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200' }}">Used %</button>
+						<button name="sort" value="available" class="px-2.5 py-1 text-xs rounded-full border {{ ($currentSort ?? '') === 'available' ? 'bg-indigo-600 text-white border-indigo-600' : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200' }}">Available</button>
+					</form>
 				</div>
 			</div>
-
-			<!-- Pending Applications -->
-			<div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 hover:shadow-lg transition-all duration-300 group">
-				<div class="flex items-center justify-between">
-					<div class="flex items-center space-x-4">
-						<div class="p-3 bg-gradient-to-r from-yellow-500 to-orange-600 rounded-xl group-hover:scale-110 transition-transform duration-300">
-							<svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-							</svg>
+			<div class="p-6">
+				<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+					@forelse($stats['reliefTypeAllocationStats'] as $allocation)
+					<div class="rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700 p-4">
+						<div class="flex items-center justify-between">
+							<div class="flex items-center gap-2">
+								@if($allocation->reliefType?->color_code)
+									<span class="w-3 h-3 rounded-full" style="background-color: {{ $allocation->reliefType->color_code }}"></span>
+								@endif
+								<span class="font-medium text-gray-900 dark:text-white">{{ $allocation->reliefType->name ?? 'Unknown Type' }}</span>
+							</div>
+							<span class="text-xs text-gray-500 dark:text-gray-300">{{ $allocation->project_count }} {{ $allocation->project_count == 1 ? 'project' : 'projects' }}</span>
 						</div>
-						<div>
-							<p class="text-sm font-medium text-gray-500 dark:text-gray-400">Pending Review</p>
-							<p class="text-2xl font-bold text-gray-900 dark:text-white">{{ $stats['pendingApplications'] }}</p>
-							<p class="text-xs text-yellow-600 dark:text-yellow-400 mt-1">Needs attention</p>
-						</div>
-					</div>
-				</div>
-			</div>
-
-			<!-- Active Projects -->
-			<div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 hover:shadow-lg transition-all duration-300 group">
-				<div class="flex items-center justify-between">
-					<div class="flex items-center space-x-4">
-						<div class="p-3 bg-gradient-to-r from-purple-500 to-indigo-600 rounded-xl group-hover:scale-110 transition-transform duration-300">
-							<svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
-							</svg>
-						</div>
-						<div>
-							<p class="text-sm font-medium text-gray-500 dark:text-gray-400">Active Projects</p>
-							<p class="text-2xl font-bold text-gray-900 dark:text-white">{{ $stats['activeProjects'] }}</p>
-							<p class="text-xs text-purple-600 dark:text-purple-400 mt-1">Current year</p>
+						<div class="mt-3 space-y-1 text-sm">
+							<div class="flex justify-between"><span class="text-gray-600 dark:text-gray-300">Allocated</span><span class="font-semibold text-gray-900 dark:text-white">{{ $allocation->formatted_allocated }}</span></div>
+							<div class="flex justify-between"><span class="text-gray-600 dark:text-gray-300">Used</span><span class="font-semibold text-gray-900 dark:text-white">{{ $allocation->formatted_used }}</span></div>
+							<div class="flex justify-between"><span class="text-gray-600 dark:text-gray-300">Available</span><span class="font-semibold text-gray-900 dark:text-white">{{ $allocation->formatted_available }}</span></div>
+							<div class="w-full h-2 bg-gray-200 dark:bg-gray-600 rounded-full overflow-hidden">
+								<div class="h-2 bg-indigo-500" style="width: {{ (int)round(($allocation->used_ratio ?? 0) * 100) }}%"></div>
+							</div>
+							<div class="text-xs text-gray-500 dark:text-gray-400">{{ (int)round(($allocation->used_ratio ?? 0) * 100) }}% used</div>
 						</div>
 					</div>
+					@empty
+					<div class="col-span-full text-center text-sm text-gray-500 dark:text-gray-400">No allocations found for the selected year.</div>
+					@endforelse
 				</div>
 			</div>
 		</div>
@@ -171,75 +186,7 @@
 		</div>
 		@endif
 
-		<!-- Inventory Overview -->
-		<div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
-			<div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-				<div class="flex items-center justify-between">
-					<div class="flex items-center space-x-3">
-						<div class="p-2 bg-gradient-to-r from-teal-500 to-cyan-600 rounded-lg">
-							<svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
-							</svg>
-						</div>
-						<div>
-							<h3 class="text-lg font-semibold text-gray-900 dark:text-white">Inventory Management</h3>
-							<p class="text-sm text-gray-500 dark:text-gray-400">Current inventory status and distribution analytics</p>
-						</div>
-					</div>
-					<a href="{{ route('admin.relief-types.index') }}" class="inline-flex items-center px-3 py-1.5 bg-teal-100 hover:bg-teal-200 dark:bg-teal-900 dark:hover:bg-teal-800 text-teal-700 dark:text-teal-300 text-sm font-medium rounded-lg transition-colors duration-200">
-						View All
-					</a>
-				</div>
-			</div>
-			<div class="p-6">
-				<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-					<!-- Total Inventory Value -->
-					<div class="text-center">
-						<div class="p-3 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-xl w-fit mx-auto mb-3">
-							<svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
-							</svg>
-						</div>
-						<p class="text-sm font-medium text-gray-500 dark:text-gray-400">Total Value</p>
-						<p class="text-2xl font-bold text-gray-900 dark:text-white">৳{{ number_format($stats['totalInventoryValue'], 2) }}</p>
-					</div>
-
-					<!-- Total Inventory Items -->
-					<div class="text-center">
-						<div class="p-3 bg-gradient-to-r from-teal-500 to-cyan-600 rounded-xl w-fit mx-auto mb-3">
-							<svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
-							</svg>
-						</div>
-						<p class="text-sm font-medium text-gray-500 dark:text-gray-400">Total Items</p>
-						<p class="text-2xl font-bold text-gray-900 dark:text-white">{{ $stats['totalInventoryItems'] }}</p>
-					</div>
-
-					<!-- Low Stock Items -->
-					<div class="text-center">
-						<div class="p-3 bg-gradient-to-r from-red-500 to-pink-600 rounded-xl w-fit mx-auto mb-3">
-							<svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
-							</svg>
-						</div>
-						<p class="text-sm font-medium text-gray-500 dark:text-gray-400">Low Stock</p>
-						<p class="text-2xl font-bold text-red-600 dark:text-red-400">{{ $stats['lowStockItems'] }}</p>
-						<p class="text-xs text-red-500 dark:text-red-400 mt-1">Needs attention</p>
-					</div>
-
-					<!-- Total Distributed Items -->
-					<div class="text-center">
-						<div class="p-3 bg-gradient-to-r from-emerald-500 to-green-600 rounded-xl w-fit mx-auto mb-3">
-							<svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-							</svg>
-						</div>
-						<p class="text-sm font-medium text-gray-500 dark:text-gray-400">Distributed</p>
-						<p class="text-2xl font-bold text-gray-900 dark:text-white">{{ number_format($stats['totalDistributedItems'], 0) }}</p>
-					</div>
-				</div>
-			</div>
-		</div>
+			<!-- Inventory Overview removed -->
 
 		<!-- Application Status Overview -->
 		<div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
@@ -388,6 +335,276 @@
 			</div>
 		</div>
 
+		<!-- Project × Zilla Distribution -->
+		<div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden mt-8">
+			<div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+				<h3 class="text-lg font-semibold text-gray-900 dark:text-white">Project × Zilla Distribution</h3>
+			</div>
+			<div class="overflow-x-auto">
+				<table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+					<thead class="bg-gray-50 dark:bg-gray-800">
+						<tr>
+							<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Project</th>
+							<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Zilla</th>
+							<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Approved Amount</th>
+							<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Applications</th>
+						</tr>
+					</thead>
+					<tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
+						@forelse(($stats['projectAreaDistribution'] ?? []) as $row)
+							<tr>
+								<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ ($stats['projectNames'][$row->project_id] ?? '—') }}</td>
+								<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ ($stats['zillaNames'][$row->zilla_id] ?? '—') }}</td>
+								<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">৳{{ number_format($row->total_amount, 2) }}</td>
+								<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ $row->application_count }}</td>
+							</tr>
+						@empty
+							<tr>
+								<td colspan="4" class="px-6 py-4 text-center text-gray-500 dark:text-gray-400">No data available</td>
+							</tr>
+						@endforelse
+					</tbody>
+				</table>
+			</div>
+		</div>
+
+		<!-- Project × Upazila Distribution (filtered by Zilla if selected) -->
+		<div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden mt-8">
+			<div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+				<div class="flex items-center gap-4">
+					<h3 class="text-lg font-semibold text-gray-900 dark:text-white">Project × Upazila Distribution</h3>
+					@if(!empty($selectedZillaId))
+						<span class="text-xs text-gray-500 dark:text-gray-400">Zilla: {{ $stats['zillaNames'][$selectedZillaId] ?? ('#'.$selectedZillaId) }}</span>
+					@endif
+				</div>
+				<a href="{{ route('admin.exports.area-wise-relief.pdf', ['economic_year_id' => $selectedYearId, 'zilla_id' => $selectedZillaId]) }}" 
+				   class="inline-flex items-center px-3 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg transition-colors duration-200 shadow-sm hover:shadow-md">
+					<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+					</svg>
+					PDF
+				</a>
+			</div>
+			<div class="overflow-x-auto">
+				<table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+					<thead class="bg-gray-50 dark:bg-gray-800">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Project</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Upazila</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Approved</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Applications</th>
+                            </tr>
+					</thead>
+					<tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
+						@forelse(($stats['projectUpazilaDistribution'] ?? []) as $row)
+							<tr>
+								<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ ($stats['projectNames'][$row->project_id] ?? '—') }}</td>
+								<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ ($stats['upazilaNames'][$row->upazila_id] ?? '—') }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                                    @php
+                                        $pu = $stats['projectUnits'][$row->project_id] ?? null;
+                                        $isMoney = $pu['is_money'] ?? false;
+                                        $unit = $pu['unit'] ?? '';
+                                    @endphp
+                                    @if($isMoney)
+                                        ৳{{ number_format($row->total_amount, 2) }}
+                                    @else
+                                        {{ number_format($row->total_amount, 2) }} {{ $unit }}
+                                    @endif
+                                </td>
+								<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ $row->application_count }}</td>
+							</tr>
+						@empty
+							<tr>
+								<td colspan="4" class="px-6 py-4 text-center text-gray-500 dark:text-gray-400">No data available</td>
+							</tr>
+						@endforelse
+					</tbody>
+				</table>
+			</div>
+			
+			@if(isset($stats['upazilaPagination']) && $stats['upazilaPagination']['total_pages'] > 1)
+			<div class="px-6 py-3 border-t border-gray-200 dark:border-gray-700 flex items-center justify-between">
+				<div class="flex items-center text-sm text-gray-700 dark:text-gray-300">
+					<span>Showing {{ (($stats['upazilaPagination']['current_page'] - 1) * $pageSize) + 1 }} to {{ min($stats['upazilaPagination']['current_page'] * $pageSize, $stats['upazilaPagination']['total_items']) }} of {{ $stats['upazilaPagination']['total_items'] }} results</span>
+				</div>
+				<div class="flex items-center space-x-2">
+					@if($stats['upazilaPagination']['has_previous'])
+						<a href="{{ request()->fullUrlWithQuery(['upazila_page' => $stats['upazilaPagination']['previous_page']]) }}" 
+						   class="px-3 py-1 text-sm bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg transition-colors">
+							Previous
+						</a>
+					@else
+						<span class="px-3 py-1 text-sm bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-600 rounded-lg cursor-not-allowed">Previous</span>
+					@endif
+					
+					<span class="px-3 py-1 text-sm bg-blue-600 text-white rounded-lg">
+						{{ $stats['upazilaPagination']['current_page'] }} / {{ $stats['upazilaPagination']['total_pages'] }}
+					</span>
+					
+					@if($stats['upazilaPagination']['has_next'])
+						<a href="{{ request()->fullUrlWithQuery(['upazila_page' => $stats['upazilaPagination']['next_page']]) }}" 
+						   class="px-3 py-1 text-sm bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg transition-colors">
+							Next
+						</a>
+					@else
+						<span class="px-3 py-1 text-sm bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-600 rounded-lg cursor-not-allowed">Next</span>
+					@endif
+				</div>
+			</div>
+			@endif
+		</div>
+
+		<!-- Project × Upazila × Union Distribution (filtered by Zilla if selected) -->
+		<div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden mt-8">
+			<div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+				<div class="flex items-center gap-4">
+					<h3 class="text-lg font-semibold text-gray-900 dark:text-white">Project × Upazila × Union Distribution</h3>
+					@if(!empty($selectedZillaId))
+						<span class="text-xs text-gray-500 dark:text-gray-400">Zilla: {{ $stats['zillaNames'][$selectedZillaId] ?? ('#'.$selectedZillaId) }}</span>
+					@endif
+				</div>
+				<a href="{{ route('admin.exports.area-wise-relief.pdf', ['economic_year_id' => $selectedYearId, 'zilla_id' => $selectedZillaId]) }}" 
+				   class="inline-flex items-center px-3 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg transition-colors duration-200 shadow-sm hover:shadow-md">
+					<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+					</svg>
+					PDF
+				</a>
+			</div>
+			<div class="overflow-x-auto">
+				<table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+					<thead class="bg-gray-50 dark:bg-gray-800">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Project</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Upazila</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Union</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Approved</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Applications</th>
+                            </tr>
+					</thead>
+					<tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
+						@forelse(($stats['projectUpazilaUnionDistribution'] ?? []) as $row)
+							<tr>
+								<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ ($stats['projectNames'][$row->project_id] ?? '—') }}</td>
+								<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ ($stats['upazilaNames'][$row->upazila_id] ?? '—') }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ ($stats['unionNames'][$row->union_id] ?? '—') }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                                    @php
+                                        $pu = $stats['projectUnits'][$row->project_id] ?? null;
+                                        $isMoney = $pu['is_money'] ?? false;
+                                        $unit = $pu['unit'] ?? '';
+                                    @endphp
+                                    @if($isMoney)
+                                        ৳{{ number_format($row->total_amount, 2) }}
+                                    @else
+                                        {{ number_format($row->total_amount, 2) }} {{ $unit }}
+                                    @endif
+                                </td>
+								<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ $row->application_count }}</td>
+							</tr>
+						@empty
+							<tr>
+								<td colspan="5" class="px-6 py-4 text-center text-gray-500 dark:text-gray-400">No data available</td>
+							</tr>
+						@endforelse
+					</tbody>
+				</table>
+			</div>
+			
+			@if(isset($stats['upazilaUnionPagination']) && $stats['upazilaUnionPagination']['total_pages'] > 1)
+			<div class="px-6 py-3 border-t border-gray-200 dark:border-gray-700 flex items-center justify-between">
+				<div class="flex items-center text-sm text-gray-700 dark:text-gray-300">
+					<span>Showing {{ (($stats['upazilaUnionPagination']['current_page'] - 1) * $pageSize) + 1 }} to {{ min($stats['upazilaUnionPagination']['current_page'] * $pageSize, $stats['upazilaUnionPagination']['total_items']) }} of {{ $stats['upazilaUnionPagination']['total_items'] }} results</span>
+				</div>
+				<div class="flex items-center space-x-2">
+					@if($stats['upazilaUnionPagination']['has_previous'])
+						<a href="{{ request()->fullUrlWithQuery(['upazila_union_page' => $stats['upazilaUnionPagination']['previous_page']]) }}" 
+						   class="px-3 py-1 text-sm bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg transition-colors">
+							Previous
+						</a>
+					@else
+						<span class="px-3 py-1 text-sm bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-600 rounded-lg cursor-not-allowed">Previous</span>
+					@endif
+					
+					<span class="px-3 py-1 text-sm bg-blue-600 text-white rounded-lg">
+						{{ $stats['upazilaUnionPagination']['current_page'] }} / {{ $stats['upazilaUnionPagination']['total_pages'] }}
+					</span>
+					
+					@if($stats['upazilaUnionPagination']['has_next'])
+						<a href="{{ request()->fullUrlWithQuery(['upazila_union_page' => $stats['upazilaUnionPagination']['next_page']]) }}" 
+						   class="px-3 py-1 text-sm bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg transition-colors">
+							Next
+						</a>
+					@else
+						<span class="px-3 py-1 text-sm bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-600 rounded-lg cursor-not-allowed">Next</span>
+					@endif
+				</div>
+			</div>
+			@endif
+		</div>
+
+		<!-- Coverage Gaps (conditional) -->
+		@if(!empty($selectedZillaId))
+		<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-8">
+			<div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+				<div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+					<h3 class="text-lg font-semibold text-gray-900 dark:text-white">Unserved Upazilas (Selected Zilla & Year)</h3>
+				</div>
+				<ul class="p-6 space-y-2">
+					@forelse(($stats['coverage']['unserved_upazila_ids'] ?? []) as $id)
+						<li class="text-sm text-gray-900 dark:text-gray-100">{{ $stats['upazilaNames'][$id] ?? ('#'.$id) }}</li>
+					@empty
+						<li class="text-sm text-gray-500 dark:text-gray-400">All upazilas have distributions.</li>
+					@endforelse
+				</ul>
+			</div>
+			<div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+				<div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+					<h3 class="text-lg font-semibold text-gray-900 dark:text-white">Unserved Unions (Selected Zilla & Year)</h3>
+				</div>
+				<ul class="p-6 space-y-2">
+					@forelse(($stats['coverage']['unserved_union_ids'] ?? []) as $id)
+						<li class="text-sm text-gray-900 dark:text-gray-100">{{ $stats['unionNames'][$id] ?? ('#'.$id) }}</li>
+					@empty
+						<li class="text-sm text-gray-500 dark:text-gray-400">All unions have distributions.</li>
+					@endforelse
+				</ul>
+			</div>
+		</div>
+		@endif
+
+		<!-- Duplicate Allocations -->
+		<div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden mt-8">
+			<div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+				<h3 class="text-lg font-semibold text-gray-900 dark:text-white">Duplicate Allocations (Same Organization in Year)</h3>
+			</div>
+			<div class="overflow-x-auto">
+				<table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+					<thead class="bg-gray-50 dark:bg-gray-800">
+						<tr>
+							<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Organization</th>
+							<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Allocations</th>
+							<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Total Approved</th>
+						</tr>
+					</thead>
+					<tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
+						@forelse(($stats['duplicateAllocations'] ?? []) as $row)
+							<tr>
+								<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ $row->organization_name ?? '—' }}</td>
+								<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ $row->allocations }}</td>
+								<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">৳{{ number_format($row->total_approved, 2) }}</td>
+							</tr>
+						@empty
+							<tr>
+								<td colspan="3" class="px-6 py-4 text-center text-gray-500 dark:text-gray-400">No duplicates detected</td>
+							</tr>
+						@endforelse
+					</tbody>
+				</table>
+			</div>
+		</div>
+
 		<!-- Quick Actions & Recent Activity -->
 		<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
 			<!-- Quick Actions Panel -->
@@ -458,152 +675,54 @@
 				</div>
 			</div>
 
-			<!-- Recent Activity & Trends -->
-			<div class="lg:col-span-2">
-				<div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
-					<div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-						<div class="flex items-center justify-between">
-							<div class="flex items-center space-x-3">
-								<div class="p-2 bg-gradient-to-r from-orange-500 to-red-600 rounded-lg">
-									<svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
-									</svg>
-								</div>
-								<div>
-									<h3 class="text-lg font-semibold text-gray-900 dark:text-white">Monthly Trends</h3>
-									<p class="text-sm text-gray-500 dark:text-gray-400">Relief distribution over time</p>
-								</div>
-							</div>
-							<div class="flex items-center space-x-2">
-								<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
-									+15% vs last month
-								</span>
-							</div>
-						</div>
-					</div>
-					<div class="p-6">
-						<div class="h-80">
-							<canvas id="monthlyChart"></canvas>
-						</div>
-					</div>
-				</div>
-			</div>
+			<!-- Right column reserved (Monthly Trends removed) -->
+			<div class="lg:col-span-2"></div>
 		</div>
 
-		<!-- Monthly Relief Distribution -->
-		<div class="card">
-			<div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-				<h3 class="text-lg font-medium text-gray-900 dark:text-white">Monthly Relief Distribution (Last 12 Months)</h3>
-			</div>
-			<div class="p-6">
-				<canvas id="monthlyChart" width="800" height="400"></canvas>
-			</div>
-		</div>
+		<!-- Monthly Relief Distribution removed -->
 
-		<!-- Relief Items Distribution Table -->
-		<div class="card">
-			<div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-				<h3 class="text-lg font-medium text-gray-900 dark:text-white">Relief Items Distribution</h3>
-				<p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Distribution of relief items by type and quantity (Requested vs Approved)</p>
-			</div>
-			<div class="overflow-x-auto">
-				<table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-					<thead class="bg-gray-50 dark:bg-gray-800">
-						<tr>
-							<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Item Name</th>
-							<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Type</th>
-							<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Unit</th>
-							<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Requested</th>
-							<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Approved</th>
-							<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Total Amount</th>
-						</tr>
-					</thead>
-					<tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
-						@forelse($stats['reliefItemStats'] as $item)
-						<tr>
-							<td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
-								{{ $item->item_name }}
-							</td>
-							<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-								<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
-									@if($item->item_type === 'monetary') bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200
-									@elseif($item->item_type === 'food') bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200
-									@elseif($item->item_type === 'medical') bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200
-									@elseif($item->item_type === 'shelter') bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200
-									@else bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200
-									@endif">
-									{{ ucfirst($item->item_type) }}
-								</span>
-							</td>
-							<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-								{{ $item->item_unit }}
-							</td>
-							<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-								{{ number_format($item->total_quantity_requested, 3) }}
-							</td>
-							<td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
-								{{ number_format($item->total_quantity_approved, 3) }}
-							</td>
-							<td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
-								@if($item->item_type === 'monetary')
-									৳{{ number_format($item->total_amount, 2) }}
-								@else
-									<span class="text-gray-500 dark:text-gray-400">Physical Item</span>
-								@endif
-							</td>
-						</tr>
-						@empty
-						<tr>
-							<td colspan="6" class="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
-								No relief items distributed yet.
-							</td>
-						</tr>
-						@endforelse
-					</tbody>
-				</table>
-			</div>
-		</div>
+		<!-- Relief Items Distribution Table removed -->
 
 		<!-- Detailed Statistics Tables -->
 		<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
 			<!-- Area-wise Summary -->
 			<div class="card">
-				<div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-					<div class="flex justify-between items-center">
-						<h3 class="text-lg font-medium text-gray-900 dark:text-white">Area-wise Allocation Summary</h3>
-						<div class="flex space-x-2">
-							<a href="{{ route('admin.exports.area-wise-relief.excel') }}" class="btn-success text-xs">
-								<svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-								</svg>
-								Excel
-							</a>
-							<a href="{{ route('admin.exports.area-wise-relief.pdf') }}" class="btn-danger text-xs">
-								<svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
-								</svg>
-								PDF
-							</a>
-						</div>
+				<div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+					<h3 class="text-lg font-medium text-gray-900 dark:text-white">Area-wise Allocation Summary</h3>
+					<div class="flex space-x-2">
+						<a href="{{ route('admin.exports.area-wise-relief.excel', ['economic_year_id' => $selectedYearId, 'zilla_id' => $selectedZillaId]) }}" 
+						   class="inline-flex items-center px-3 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition-colors duration-200 shadow-sm hover:shadow-md">
+							<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+							</svg>
+							Excel
+						</a>
+						<a href="{{ route('admin.exports.area-wise-relief.pdf', ['economic_year_id' => $selectedYearId, 'zilla_id' => $selectedZillaId]) }}" 
+						   class="inline-flex items-center px-3 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg transition-colors duration-200 shadow-sm hover:shadow-md">
+							<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+							</svg>
+							PDF
+						</a>
 					</div>
 				</div>
 				<div class="overflow-x-auto">
 					<table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
 						<thead class="bg-gray-50 dark:bg-gray-800">
-							<tr>
-								<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Area</th>
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Area</th>
 								<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Amount</th>
 								<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Applications</th>
 							</tr>
 						</thead>
 						<tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
-							@forelse($stats['areaWiseStats'] as $area)
-								<tr>
-									<td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">{{ $area->zilla_name }}</td>
-									<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">৳{{ number_format($area->total_amount, 2) }}</td>
-									<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ $area->application_count }}</td>
-								</tr>
-							@empty
+                            @forelse(($stats['upazilaSummary'] ?? []) as $row)
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">Upazila: {{ $stats['upazilaNames'][$row->upazila_id] ?? ('#'.$row->upazila_id) }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">৳{{ number_format($row->total_amount, 2) }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ $row->application_count }}</td>
+                                </tr>
+                            @empty
 								<tr>
 									<td colspan="3" class="px-6 py-4 text-center text-gray-500 dark:text-gray-400">No data available</td>
 								</tr>
@@ -611,30 +730,73 @@
 						</tbody>
 					</table>
 				</div>
+				
+				@if(isset($stats['upazilaSummaryPagination']) && $stats['upazilaSummaryPagination']['total_pages'] > 1)
+				<div class="px-6 py-3 border-t border-gray-200 dark:border-gray-700 flex items-center justify-between">
+					<div class="flex items-center text-sm text-gray-700 dark:text-gray-300">
+						<span>Showing {{ (($stats['upazilaSummaryPagination']['current_page'] - 1) * $pageSize) + 1 }} to {{ min($stats['upazilaSummaryPagination']['current_page'] * $pageSize, $stats['upazilaSummaryPagination']['total_items']) }} of {{ $stats['upazilaSummaryPagination']['total_items'] }} results</span>
+					</div>
+					<div class="flex items-center space-x-2">
+						@if($stats['upazilaSummaryPagination']['has_previous'])
+							<a href="{{ request()->fullUrlWithQuery(['upazila_page' => $stats['upazilaSummaryPagination']['previous_page']]) }}" 
+							   class="px-3 py-1 text-sm bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg transition-colors">
+								Previous
+							</a>
+						@else
+							<span class="px-3 py-1 text-sm bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-600 rounded-lg cursor-not-allowed">Previous</span>
+						@endif
+						
+						<span class="px-3 py-1 text-sm bg-blue-600 text-white rounded-lg">
+							{{ $stats['upazilaSummaryPagination']['current_page'] }} / {{ $stats['upazilaSummaryPagination']['total_pages'] }}
+						</span>
+						
+						@if($stats['upazilaSummaryPagination']['has_next'])
+							<a href="{{ request()->fullUrlWithQuery(['upazila_page' => $stats['upazilaSummaryPagination']['next_page']]) }}" 
+							   class="px-3 py-1 text-sm bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg transition-colors">
+								Next
+							</a>
+						@else
+							<span class="px-3 py-1 text-sm bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-600 rounded-lg cursor-not-allowed">Next</span>
+						@endif
+					</div>
+				</div>
+				@endif
 			</div>
 
-			<!-- Organization Type Summary -->
-			<div class="card">
-				<div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-					<h3 class="text-lg font-medium text-gray-900 dark:text-white">Organization Type Summary</h3>
+            <!-- Union Summary -->
+            <div class="card">
+				<div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+					<h3 class="text-lg font-medium text-gray-900 dark:text-white">Union-wise Allocation Summary</h3>
+					<a href="{{ route('admin.exports.area-wise-relief.pdf', ['economic_year_id' => $selectedYearId, 'zilla_id' => $selectedZillaId]) }}" 
+					   class="inline-flex items-center px-3 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg transition-colors duration-200 shadow-sm hover:shadow-md">
+						<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+						</svg>
+						PDF
+					</a>
 				</div>
 				<div class="overflow-x-auto">
 					<table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
 						<thead class="bg-gray-50 dark:bg-gray-800">
 							<tr>
-								<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Organization Type</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Union</th>
 								<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Amount</th>
 								<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Applications</th>
 							</tr>
 						</thead>
 						<tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
-							@forelse($stats['orgTypeStats'] as $orgType)
-								<tr>
-									<td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">{{ $orgType->org_type_name ?? 'Not Specified' }}</td>
-									<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">৳{{ number_format($orgType->total_amount, 2) }}</td>
-									<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ $orgType->application_count }}</td>
-								</tr>
-							@empty
+                            @forelse(($stats['unionSummary'] ?? []) as $row)
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
+                                        {{ $stats['unionNames'][$row->union_id] ?? ('#'.$row->union_id) }}
+                                        @if($row->upazila_id)
+                                            <span class="text-gray-500 dark:text-gray-300"> ({{ $stats['upazilaNames'][$row->upazila_id] ?? ('#'.$row->upazila_id) }})</span>
+                                        @endif
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">৳{{ number_format($row->total_amount, 2) }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ $row->application_count }}</td>
+                                </tr>
+                            @empty
 								<tr>
 									<td colspan="3" class="px-6 py-4 text-center text-gray-500 dark:text-gray-400">No data available</td>
 								</tr>
@@ -642,6 +804,37 @@
 						</tbody>
 					</table>
 				</div>
+				
+				@if(isset($stats['unionSummaryPagination']) && $stats['unionSummaryPagination']['total_pages'] > 1)
+				<div class="px-6 py-3 border-t border-gray-200 dark:border-gray-700 flex items-center justify-between">
+					<div class="flex items-center text-sm text-gray-700 dark:text-gray-300">
+						<span>Showing {{ (($stats['unionSummaryPagination']['current_page'] - 1) * $pageSize) + 1 }} to {{ min($stats['unionSummaryPagination']['current_page'] * $pageSize, $stats['unionSummaryPagination']['total_items']) }} of {{ $stats['unionSummaryPagination']['total_items'] }} results</span>
+					</div>
+					<div class="flex items-center space-x-2">
+						@if($stats['unionSummaryPagination']['has_previous'])
+							<a href="{{ request()->fullUrlWithQuery(['union_summary_page' => $stats['unionSummaryPagination']['previous_page']]) }}" 
+							   class="px-3 py-1 text-sm bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg transition-colors">
+								Previous
+							</a>
+						@else
+							<span class="px-3 py-1 text-sm bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-600 rounded-lg cursor-not-allowed">Previous</span>
+						@endif
+						
+						<span class="px-3 py-1 text-sm bg-blue-600 text-white rounded-lg">
+							{{ $stats['unionSummaryPagination']['current_page'] }} / {{ $stats['unionSummaryPagination']['total_pages'] }}
+						</span>
+						
+						@if($stats['unionSummaryPagination']['has_next'])
+							<a href="{{ request()->fullUrlWithQuery(['union_summary_page' => $stats['unionSummaryPagination']['next_page']]) }}" 
+							   class="px-3 py-1 text-sm bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg transition-colors">
+								Next
+							</a>
+						@else
+							<span class="px-3 py-1 text-sm bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-600 rounded-lg cursor-not-allowed">Next</span>
+						@endif
+					</div>
+				</div>
+				@endif
 			</div>
 		</div>
 
@@ -673,7 +866,13 @@
 									</div>
 								</td>
 								<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ $project->formatted_allocated_amount }}</td>
-								<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{{ $project->economicYear->name ?? 'N/A' }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                    @if($project->economicYear)
+                                        {{ $project->economicYear->name ?? ($project->economicYear->start_date?->format('Y') . ' - ' . $project->economicYear->end_date?->format('Y')) }}
+                                    @else
+                                        N/A
+                                    @endif
+                                </td>
 							</tr>
 						@empty
 							<tr>
@@ -846,6 +1045,8 @@
 				}
 			}
 		});
+
+		// Trends removed
 
 		// Monthly Relief Distribution Line Chart
 		const monthlyCtx = document.getElementById('monthlyChart').getContext('2d');

@@ -3,13 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\ReliefApplication;
-use App\Models\ReliefApplicationItem;
 use App\Models\Project;
-use App\Models\Inventory;
-use App\Models\ReliefItem;
 use App\Models\Zilla;
 use App\Models\OrganizationType;
 use App\Models\ReliefType;
+use App\Models\EconomicYear;
+use App\Models\Upazila;
+use App\Models\Union;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\View\View;
@@ -20,41 +20,81 @@ class DashboardController extends Controller
 	/**
 	 * Display the dashboard.
 	 */
-	public function index(): View
+    public function index(Request $request): View
 	{
-		// Get basic statistics
-		$stats = $this->getDashboardStatistics();
+		$years = EconomicYear::orderByDesc('start_date')->get();
+		$selectedYear = $this->resolveSelectedYear($request, $years);
+		$selectedZillaId = $request->integer('zilla_id');
+        $sort = $request->get('sort');
 		
-		// Get chart data
-		$chartData = $this->getChartData();
+        // Pagination parameters
+        $pageSize = 15;
+        $upazilaPage = $request->integer('upazila_page', 1);
+        $upazilaUnionPage = $request->integer('upazila_union_page', 1);
+        $unionSummaryPage = $request->integer('union_summary_page', 1);
+        
+        $stats = $this->getDashboardStatistics($selectedYear, $selectedZillaId, $sort, $pageSize, $upazilaPage, $upazilaUnionPage, $unionSummaryPage);
+		$chartData = $this->getChartData($selectedYear);
 		
-		return view('dashboard', compact('stats', 'chartData'));
+		$zillas = Zilla::orderBy('name')->get(['id','name']);
+		return view('dashboard', [
+			'stats' => $stats,
+			'chartData' => $chartData,
+			'years' => $years,
+            'selectedYearId' => $selectedYear?->id,
+			'zillas' => $zillas,
+			'selectedZillaId' => $selectedZillaId,
+            'currentSort' => $sort,
+            'pageSize' => $pageSize,
+		]);
 	}
 
 	/**
 	 * Get dashboard statistics.
 	 */
-	private function getDashboardStatistics(): array
+    private function getDashboardStatistics(?EconomicYear $year = null, ?int $selectedZillaId = null, ?string $sort = null, int $pageSize = 15, int $upazilaPage = 1, int $upazilaUnionPage = 1, int $unionSummaryPage = 1): array
 	{
+		$start = $year?->start_date;
+		$end = $year?->end_date;
+		
+        $applyDateRange = function ($query, $column = 'created_at') use ($start, $end) {
+			if ($start && $end) {
+                $s = $start instanceof \Carbon\Carbon ? $start->copy()->startOfDay() : \Carbon\Carbon::parse((string) $start)->startOfDay();
+                $e = $end instanceof \Carbon\Carbon ? $end->copy()->endOfDay() : \Carbon\Carbon::parse((string) $end)->endOfDay();
+                $query->whereBetween($column, [$s, $e]);
+			}
+			return $query;
+		};
+		
 		// Total relief distributed
-		$totalReliefDistributed = ReliefApplication::where('status', 'approved')->sum('approved_amount');
+		$totalReliefDistributed = $applyDateRange(ReliefApplication::where('status', 'approved'), 'approved_at')->sum('approved_amount');
 		
 		// Total applications
-		$totalApplications = ReliefApplication::count();
-		$pendingApplications = ReliefApplication::where('status', 'pending')->count();
-		$approvedApplications = ReliefApplication::where('status', 'approved')->count();
-		$rejectedApplications = ReliefApplication::where('status', 'rejected')->count();
+		$totalApplications = $applyDateRange(ReliefApplication::query())->count();
+		$pendingApplications = $applyDateRange(ReliefApplication::where('status', 'pending'))->count();
+		$approvedApplications = $applyDateRange(ReliefApplication::where('status', 'approved'), 'approved_at')->count();
+		$rejectedApplications = $applyDateRange(ReliefApplication::where('status', 'rejected'))
+			->count();
 		
 		// Project statistics - updated to use new scopes and current economic year logic
-		$totalProjects = Project::count();
-		$activeProjects = Project::active()->count(); // Projects in current economic year
-		$completedProjects = Project::completed()->count();
-		$upcomingProjects = Project::upcoming()->count();
-		$totalAllocatedAmount = Project::sum('allocated_amount');
-		$currentYearAllocatedAmount = Project::active()->sum('allocated_amount');
+		if ($year) {
+			$totalProjects = Project::forEconomicYear($year->id)->count();
+			$activeProjects = $totalProjects;
+			$completedProjects = 0;
+			$upcomingProjects = 0;
+			$totalAllocatedAmount = Project::forEconomicYear($year->id)->sum('allocated_amount');
+			$currentYearAllocatedAmount = $totalAllocatedAmount;
+		} else {
+			$totalProjects = Project::count();
+			$activeProjects = Project::active()->count();
+			$completedProjects = Project::completed()->count();
+			$upcomingProjects = Project::upcoming()->count();
+			$totalAllocatedAmount = Project::sum('allocated_amount');
+			$currentYearAllocatedAmount = Project::active()->sum('allocated_amount');
+		}
 		
 		// Area-wise statistics
-		$areaWiseStats = ReliefApplication::where('status', 'approved')
+		$areaWiseStats = $applyDateRange(ReliefApplication::where('status', 'approved'), 'approved_at')
 			->join('zillas', 'relief_applications.zilla_id', '=', 'zillas.id')
 			->select('zillas.name as zilla_name', DB::raw('SUM(relief_applications.approved_amount) as total_amount'), DB::raw('COUNT(*) as application_count'))
 			->groupBy('zillas.id', 'zillas.name')
@@ -62,7 +102,7 @@ class DashboardController extends Controller
 			->get();
 		
 		// Organization type statistics
-		$orgTypeStats = ReliefApplication::where('status', 'approved')
+		$orgTypeStats = $applyDateRange(ReliefApplication::where('status', 'approved'), 'approved_at')
 			->leftJoin('organization_types', 'relief_applications.organization_type_id', '=', 'organization_types.id')
 			->select('organization_types.name as org_type_name', DB::raw('SUM(relief_applications.approved_amount) as total_amount'), DB::raw('COUNT(*) as application_count'))
 			->groupBy('organization_types.id', 'organization_types.name')
@@ -70,7 +110,7 @@ class DashboardController extends Controller
 			->get();
 		
 		// Relief type statistics
-		$reliefTypeStats = ReliefApplication::where('status', 'approved')
+		$reliefTypeStats = $applyDateRange(ReliefApplication::where('status', 'approved'), 'approved_at')
 			->join('relief_types', 'relief_applications.relief_type_id', '=', 'relief_types.id')
 			->select('relief_types.name as relief_type_name', 'relief_types.color_code', DB::raw('SUM(relief_applications.approved_amount) as total_amount'), DB::raw('COUNT(*) as application_count'))
 			->groupBy('relief_types.id', 'relief_types.name', 'relief_types.color_code')
@@ -78,53 +118,156 @@ class DashboardController extends Controller
 			->get();
 		
 		// Project allocated amounts for current economic year (active projects)
-		$projectAllocationStats = Project::active()
+		$projectAllocationStats = ($year ? Project::forEconomicYear($year->id) : Project::active())
 			->select('name', 'allocated_amount', 'relief_type_id')
 			->with(['reliefType', 'economicYear'])
 			->orderBy('allocated_amount', 'desc')
 			->take(10) // Limit to top 10 for better display
 			->get();
 
-		// Relief type allocation statistics for current year - with proper unit handling
-		$reliefTypeAllocationStats = Project::active()
-			->selectRaw('relief_type_id, SUM(allocated_amount) as total_allocated, COUNT(*) as project_count')
+        // Relief type allocation statistics for selected/current year, including available and used
+        $reliefTypeAllocationStats = ($year ? Project::forEconomicYear($year->id) : Project::active())
+            ->selectRaw('relief_type_id, SUM(allocated_amount) as total_allocated, SUM(available_amount) as total_available, COUNT(*) as project_count')
 			->with('reliefType')
 			->groupBy('relief_type_id')
 			->orderBy('total_allocated', 'desc')
 			->get()
-			->map(function($stat) {
-				$unit = $stat->reliefType?->unit_bn ?? $stat->reliefType?->unit ?? '';
-				$amount = number_format((float)$stat->total_allocated, 2);
-				
-				// Format based on unit type
-				if (in_array($unit, ['টাকা', 'Taka'])) {
-					$stat->formatted_total = '৳' . $amount;
-				} else {
-					$stat->formatted_total = $amount . ' ' . $unit;
-				}
-				
-				return $stat;
-			});
+            ->map(function($stat) {
+                $unit = $stat->reliefType?->unit_bn ?? $stat->reliefType?->unit ?? '';
+                $allocated = (float)($stat->total_allocated ?? 0);
+                $available = (float)($stat->total_available ?? 0);
+                $used = max(0.0, $allocated - $available);
 
-		// Inventory statistics
-		$totalInventoryValue = Inventory::sum(DB::raw('current_stock * unit_price'));
-		$totalInventoryItems = Inventory::count();
-		$lowStockItems = Inventory::whereRaw('current_stock < (total_received * 0.2)')->count(); // Less than 20% of total received
-		$totalDistributedItems = Inventory::sum('total_distributed');
-		$totalReservedItems = Inventory::sum('reserved_stock');
+                $format = function ($n) use ($unit) {
+                    $amount = number_format((float)$n, 2);
+                    return in_array($unit, ['টাকা', 'Taka']) ? ('৳' . $amount) : ($amount . ' ' . $unit);
+                };
 
-		// Relief item distribution statistics
-		$reliefItemStats = ReliefApplicationItem::whereHas('reliefApplication', function($query) {
-				$query->where('status', 'approved');
-			})
-			->join('relief_items', 'relief_application_items.relief_item_id', '=', 'relief_items.id')
-			->select('relief_items.name as item_name', 'relief_items.type as item_type', 'relief_items.unit as item_unit', 
-				DB::raw('SUM(relief_application_items.quantity_requested) as total_quantity_requested'),
-				DB::raw('SUM(relief_application_items.quantity_approved) as total_quantity_approved'),
-				DB::raw('SUM(relief_application_items.total_amount) as total_amount'))
-			->groupBy('relief_items.id', 'relief_items.name', 'relief_items.type', 'relief_items.unit')
-			->orderBy('total_quantity_approved', 'desc')
+                $stat->formatted_allocated = $format($allocated);
+                $stat->formatted_available = $format($available);
+                $stat->formatted_used = $format($used);
+                $stat->used_ratio = $allocated > 0 ? round($used / $allocated, 4) : 0;
+                return $stat;
+            });
+
+        // Apply optional sort for dashboard widget
+        if ($sort === 'used') {
+            $reliefTypeAllocationStats = $reliefTypeAllocationStats->sortByDesc('used_ratio')->values();
+        } elseif ($sort === 'available') {
+            $reliefTypeAllocationStats = $reliefTypeAllocationStats->sortByDesc('total_available')->values();
+        } elseif ($sort === 'allocated') {
+            $reliefTypeAllocationStats = $reliefTypeAllocationStats->sortByDesc('total_allocated')->values();
+        }
+
+        // Inventory-related statistics removed from dashboard
+
+		// Project × Zilla distribution (approved amounts)
+		$projectAreaDistribution = $applyDateRange(ReliefApplication::where('status', 'approved'), 'approved_at')
+			->selectRaw('project_id, zilla_id, SUM(approved_amount) as total_amount, COUNT(*) as application_count')
+			->groupBy('project_id', 'zilla_id')
 			->get();
+
+		// Project × Upazila distribution (optional filter by zilla)
+		$projectUpazilaDistributionQuery = $applyDateRange(ReliefApplication::where('status', 'approved'), 'approved_at');
+		if ($selectedZillaId) {
+			$projectUpazilaDistributionQuery->where('zilla_id', $selectedZillaId);
+		}
+		$projectUpazilaDistribution = $projectUpazilaDistributionQuery
+			->selectRaw('project_id, upazila_id, SUM(approved_amount) as total_amount, COUNT(*) as application_count')
+			->groupBy('project_id', 'upazila_id')
+			->get();
+
+		// Project × Upazila × Union distribution (optional filter by zilla)
+		$projectUpazilaUnionDistributionQuery = $applyDateRange(ReliefApplication::where('status', 'approved'), 'approved_at');
+		if ($selectedZillaId) {
+			$projectUpazilaUnionDistributionQuery->where('zilla_id', $selectedZillaId);
+		}
+		$projectUpazilaUnionDistribution = $projectUpazilaUnionDistributionQuery
+			->selectRaw('project_id, upazila_id, union_id, SUM(approved_amount) as total_amount, COUNT(*) as application_count')
+			->groupBy('project_id', 'upazila_id', 'union_id')
+			->get();
+
+        // Coverage: unserved and underserved (by zilla)
+		$zillaIds = Zilla::pluck('id');
+		$distByZilla = $applyDateRange(ReliefApplication::where('status', 'approved'), 'approved_at')
+			->selectRaw('zilla_id, SUM(approved_amount) as total_amount')
+			->groupBy('zilla_id')
+			->pluck('total_amount', 'zilla_id');
+		$unservedZillaIds = $zillaIds->filter(fn($id) => ($distByZilla[$id] ?? 0) <= 0)->values();
+		$amounts = collect($distByZilla->values())->sort()->values();
+		$quartileIndex = max(0, (int) floor(0.25 * ($amounts->count() - 1)));
+		$underservedThreshold = $amounts->count() > 0 ? $amounts[$quartileIndex] : 0;
+		$underservedZillaIds = $zillaIds->filter(function($id) use ($distByZilla, $underservedThreshold) {
+			return ($distByZilla[$id] ?? 0) <= $underservedThreshold && ($distByZilla[$id] ?? 0) > 0;
+		})->values();
+
+        // If a zilla is selected: compute unserved upazilas and unions within that zilla for selected year
+        $unservedUpazilaIds = collect();
+        $unservedUnionIds = collect();
+        if ($selectedZillaId) {
+            $upazilaIds = Upazila::where('zilla_id', $selectedZillaId)->pluck('id');
+            $distByUpazila = $applyDateRange(ReliefApplication::where('status', 'approved')->where('zilla_id', $selectedZillaId), 'approved_at')
+                ->selectRaw('upazila_id, SUM(approved_amount) as total_amount')
+                ->groupBy('upazila_id')
+                ->pluck('total_amount', 'upazila_id');
+            $unservedUpazilaIds = $upazilaIds->filter(fn($id) => ($distByUpazila[$id] ?? 0) <= 0)->values();
+
+            $unionIds = Union::whereIn('upazila_id', $upazilaIds)->pluck('id');
+            $distByUnion = $applyDateRange(ReliefApplication::where('status', 'approved')->where('zilla_id', $selectedZillaId), 'approved_at')
+                ->selectRaw('union_id, SUM(approved_amount) as total_amount')
+                ->groupBy('union_id')
+                ->pluck('total_amount', 'union_id');
+            $unservedUnionIds = $unionIds->filter(fn($id) => ($distByUnion[$id] ?? 0) <= 0)->values();
+        }
+
+		// Duplicate allocations (same org name, same selected year)
+		$duplicateAllocations = $applyDateRange(ReliefApplication::where('status', 'approved'), 'approved_at')
+			->selectRaw('organization_name, COUNT(*) as allocations, SUM(approved_amount) as total_approved')
+			->groupBy('organization_name')
+			->havingRaw('COUNT(*) > 1')
+			->orderByDesc('allocations')
+			->get();
+
+        $zillaNames = Zilla::pluck('name', 'id');
+        $projectNames = Project::pluck('name', 'id');
+        $upazilaNames = Upazila::pluck('name', 'id');
+        $unionNames = Union::pluck('name', 'id');
+
+        // Project units (for formatting amounts based on project relief type)
+        $projectUnits = Project::with('reliefType')->get()->mapWithKeys(function ($p) {
+            $unit = $p->reliefType?->unit_bn ?? $p->reliefType?->unit ?? '';
+            $isMoney = in_array($unit, ['টাকা', 'Taka']);
+            return [
+                $p->id => [
+                    'unit' => $unit,
+                    'is_money' => $isMoney,
+                ]
+            ];
+        });
+        // Union -> Upazila mapping for display
+        $unionUpazilaId = Union::pluck('upazila_id', 'id');
+
+        // Area-wise summaries for dashboard (upazila and union). If zilla selected, scope to it.
+        $areaBase = $applyDateRange(ReliefApplication::where('status', 'approved'), 'approved_at');
+        if ($selectedZillaId) {
+            $areaBase->where('zilla_id', $selectedZillaId);
+        }
+        $upazilaSummary = (clone $areaBase)
+            ->selectRaw('upazila_id, SUM(approved_amount) as total_amount, COUNT(*) as application_count')
+            ->groupBy('upazila_id')
+            ->orderByDesc('total_amount')
+            ->get();
+        $unionSummary = (clone $areaBase)
+            ->selectRaw('union_id, upazila_id, SUM(approved_amount) as total_amount, COUNT(*) as application_count')
+            ->groupBy('union_id', 'upazila_id')
+            ->orderByDesc('total_amount')
+            ->get();
+
+        // Paginate the collections
+        $upazilaPaginated = $this->paginateCollection($projectUpazilaDistribution, $pageSize, $upazilaPage);
+        $upazilaUnionPaginated = $this->paginateCollection($projectUpazilaUnionDistribution, $pageSize, $upazilaUnionPage);
+        $upazilaSummaryPaginated = $this->paginateCollection($upazilaSummary, $pageSize, $upazilaPage);
+        $unionSummaryPaginated = $this->paginateCollection($unionSummary, $pageSize, $unionSummaryPage);
 
 		return [
 			'totalReliefDistributed' => $totalReliefDistributed,
@@ -143,34 +286,63 @@ class DashboardController extends Controller
 			'reliefTypeStats' => $reliefTypeStats,
 			'projectAllocationStats' => $projectAllocationStats,
 			'reliefTypeAllocationStats' => $reliefTypeAllocationStats,
-			// Inventory statistics
-			'totalInventoryValue' => $totalInventoryValue,
-			'totalInventoryItems' => $totalInventoryItems,
-			'lowStockItems' => $lowStockItems,
-			'totalDistributedItems' => $totalDistributedItems,
-			'totalReservedItems' => $totalReservedItems,
-			'reliefItemStats' => $reliefItemStats,
+            // Inventory statistics removed
+			'projectAreaDistribution' => $projectAreaDistribution,
+			'projectUpazilaDistribution' => $upazilaPaginated['data'],
+			'projectUpazilaUnionDistribution' => $upazilaUnionPaginated['data'],
+			'coverage' => [
+				'unserved_zilla_ids' => $unservedZillaIds,
+				'underserved_zilla_ids' => $underservedZillaIds,
+                'unserved_upazila_ids' => $unservedUpazilaIds,
+                'unserved_union_ids' => $unservedUnionIds,
+			],
+			'duplicateAllocations' => $duplicateAllocations,
+			'zillaNames' => $zillaNames,
+			'projectNames' => $projectNames,
+			'upazilaNames' => $upazilaNames,
+			'unionNames' => $unionNames,
+            'projectUnits' => $projectUnits,
+            'unionUpazilaId' => $unionUpazilaId,
+            'upazilaSummary' => $upazilaSummaryPaginated['data'],
+            'unionSummary' => $unionSummaryPaginated['data'],
+            // Pagination data
+            'upazilaPagination' => $upazilaPaginated['pagination'],
+            'upazilaUnionPagination' => $upazilaUnionPaginated['pagination'],
+            'upazilaSummaryPagination' => $upazilaSummaryPaginated['pagination'],
+            'unionSummaryPagination' => $unionSummaryPaginated['pagination'],
 		];
 	}
 
 	/**
 	 * Get chart data for dashboard.
 	 */
-	private function getChartData(): array
+	private function getChartData(?EconomicYear $year = null): array
 	{
+		$start = $year?->start_date;
+		$end = $year?->end_date;
+		
+        $applyDateRange = function ($query, $column = 'created_at') use ($start, $end) {
+			if ($start && $end) {
+                $s = $start instanceof \Carbon\Carbon ? $start->copy()->startOfDay() : \Carbon\Carbon::parse((string) $start)->startOfDay();
+                $e = $end instanceof \Carbon\Carbon ? $end->copy()->endOfDay() : \Carbon\Carbon::parse((string) $end)->endOfDay();
+                $query->whereBetween($column, [$s, $e]);
+			}
+			return $query;
+		};
+
 		// Application status pie chart data
 		$statusData = [
 			'labels' => ['Pending', 'Approved', 'Rejected'],
 			'data' => [
-				ReliefApplication::where('status', 'pending')->count(),
-				ReliefApplication::where('status', 'approved')->count(),
-				ReliefApplication::where('status', 'rejected')->count(),
+				$applyDateRange(ReliefApplication::where('status', 'pending'))->count(),
+				$applyDateRange(ReliefApplication::where('status', 'approved'), 'approved_at')->count(),
+				$applyDateRange(ReliefApplication::where('status', 'rejected'))->count(),
 			],
 			'colors' => ['#f59e0b', '#10b981', '#ef4444']
 		];
 
 		// Area-wise relief distribution
-		$areaData = ReliefApplication::where('status', 'approved')
+		$areaData = $applyDateRange(ReliefApplication::where('status', 'approved'), 'approved_at')
 			->join('zillas', 'relief_applications.zilla_id', '=', 'zillas.id')
 			->select('zillas.name as zilla_name', DB::raw('SUM(relief_applications.approved_amount) as total_amount'))
 			->groupBy('zillas.id', 'zillas.name')
@@ -179,7 +351,7 @@ class DashboardController extends Controller
 			->get();
 
 		// Organization type distribution
-		$orgTypeData = ReliefApplication::where('status', 'approved')
+		$orgTypeData = $applyDateRange(ReliefApplication::where('status', 'approved'), 'approved_at')
 			->leftJoin('organization_types', 'relief_applications.organization_type_id', '=', 'organization_types.id')
 			->select('organization_types.name as org_type_name', DB::raw('SUM(relief_applications.approved_amount) as total_amount'))
 			->groupBy('organization_types.id', 'organization_types.name')
@@ -187,19 +359,35 @@ class DashboardController extends Controller
 			->get();
 
 		// Relief type distribution
-		$reliefTypeData = ReliefApplication::where('status', 'approved')
+		$reliefTypeData = $applyDateRange(ReliefApplication::where('status', 'approved'), 'approved_at')
 			->join('relief_types', 'relief_applications.relief_type_id', '=', 'relief_types.id')
 			->select('relief_types.name as relief_type_name', 'relief_types.color_code', DB::raw('SUM(relief_applications.approved_amount) as total_amount'))
 			->groupBy('relief_types.id', 'relief_types.name', 'relief_types.color_code')
 			->orderBy('total_amount', 'desc')
 			->get();
 
-		// Monthly relief distribution (last 12 months)
-		$monthlyData = ReliefApplication::where('status', 'approved')
-			->where('approved_at', '>=', now()->subMonths(12))
+		// Monthly relief distribution (within selected year if provided, else last 12 months)
+		$monthlyQuery = ReliefApplication::where('status', 'approved');
+		$applyDateRange($monthlyQuery, 'approved_at');
+		if (!($start && $end)) {
+			$monthlyQuery->where('approved_at', '>=', now()->subMonths(12));
+		}
+		$monthlyData = $monthlyQuery
 			->select(DB::raw('DATE_FORMAT(approved_at, "%Y-%m") as month'), DB::raw('SUM(approved_amount) as total_amount'))
 			->groupBy('month')
 			->orderBy('month')
+			->get();
+
+		// Applications intake and approvals by month
+		$appsByMonth = $applyDateRange(ReliefApplication::query())
+			->select(DB::raw("DATE_FORMAT(created_at, '%Y-%m') as ym"), DB::raw('COUNT(*) as c'))
+			->groupBy('ym')
+			->orderBy('ym')
+			->get();
+		$approvalsByMonth = $applyDateRange(ReliefApplication::where('status', 'approved'), 'approved_at')
+			->select(DB::raw("DATE_FORMAT(approved_at, '%Y-%m') as ym"), DB::raw('COUNT(*) as c'))
+			->groupBy('ym')
+			->orderBy('ym')
 			->get();
 
 		return [
@@ -208,20 +396,76 @@ class DashboardController extends Controller
 			'orgTypeData' => $orgTypeData,
 			'reliefTypeData' => $reliefTypeData,
 			'monthlyData' => $monthlyData,
+			'applicationsByMonth' => $appsByMonth,
+			'approvalsByMonth' => $approvalsByMonth,
 		];
 	}
 
 	/**
 	 * Get dashboard data as JSON for AJAX requests.
 	 */
-	public function getDashboardData(): JsonResponse
+	public function getDashboardData(Request $request): JsonResponse
 	{
-		$stats = $this->getDashboardStatistics();
-		$chartData = $this->getChartData();
+		$years = EconomicYear::orderByDesc('start_date')->get();
+		$selectedYear = $this->resolveSelectedYear($request, $years);
+		$selectedZillaId = $request->integer('zilla_id');
+        $sort = $request->get('sort');
+        
+        // Pagination parameters
+        $pageSize = 15;
+        $upazilaPage = $request->integer('upazila_page', 1);
+        $upazilaUnionPage = $request->integer('upazila_union_page', 1);
+        $unionSummaryPage = $request->integer('union_summary_page', 1);
+		
+		$stats = $this->getDashboardStatistics($selectedYear, $selectedZillaId, $sort, $pageSize, $upazilaPage, $upazilaUnionPage, $unionSummaryPage);
+		$chartData = $this->getChartData($selectedYear);
 		
 		return response()->json([
 			'stats' => $stats,
 			'chartData' => $chartData,
+			'filters' => [
+				'economic_year_id' => $selectedYear?->id,
+				'zilla_id' => $selectedZillaId,
+			],
 		]);
+	}
+
+	/**
+	 * Resolve selected economic year from request or default to current/most recent.
+	 */
+	private function resolveSelectedYear(Request $request, $years): ?EconomicYear
+	{
+		$yearId = $request->integer('economic_year_id');
+		if ($yearId) {
+			return $years->firstWhere('id', $yearId) ?? EconomicYear::find($yearId);
+		}
+		return $years->firstWhere('is_current', true) ?? $years->first();
+	}
+
+	/**
+	 * Paginate a collection manually.
+	 */
+	private function paginateCollection($collection, int $pageSize, int $currentPage): array
+	{
+		$totalItems = $collection->count();
+		$totalPages = ceil($totalItems / $pageSize);
+		$currentPage = max(1, min($currentPage, $totalPages));
+		$offset = ($currentPage - 1) * $pageSize;
+		
+		$paginatedData = $collection->slice($offset, $pageSize)->values();
+		
+		return [
+			'data' => $paginatedData,
+			'pagination' => [
+				'current_page' => $currentPage,
+				'total_pages' => $totalPages,
+				'total_items' => $totalItems,
+				'page_size' => $pageSize,
+				'has_previous' => $currentPage > 1,
+				'has_next' => $currentPage < $totalPages,
+				'previous_page' => $currentPage > 1 ? $currentPage - 1 : null,
+				'next_page' => $currentPage < $totalPages ? $currentPage + 1 : null,
+			]
+		];
 	}
 }
