@@ -202,9 +202,9 @@
                 <td>{{ $application->id }}</td>
                 <td>{{ $application->organization_name }}</td>
                 <td>{{ $application->date->format('Y-m-d') }}</td>
-                <td>{{ $application->zilla->name }}, {{ $application->upazila->name }}</td>
+                <td>{{ $application->zilla?->name ?? 'Not specified' }}, {{ $application->upazila?->name ?? 'Not specified' }}</td>
                 <td>{{ Str::limit($application->subject, 30) }}</td>
-                <td>{{ $application->reliefType->name }}</td>
+                <td>{{ $application->reliefType?->name ?? 'Not specified' }}</td>
                 <td class="amount">৳{{ number_format($application->amount_requested, 2) }}</td>
                 <td class="amount">{{ $application->approved_amount ? '৳' . number_format($application->approved_amount, 2) : '-' }}</td>
                 <td>

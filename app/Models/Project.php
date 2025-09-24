@@ -18,6 +18,7 @@ class Project extends Model
 		'economic_year_id',
 		'relief_type_id',
 		'allocated_amount',
+		'available_amount',
 		'remarks',
 		'created_by',
 		'updated_by',
@@ -26,6 +27,7 @@ class Project extends Model
 
 	protected $casts = [
 		'allocated_amount' => 'decimal:2',
+		'available_amount' => 'decimal:2',
 	];
 
 	/**
@@ -129,6 +131,41 @@ class Project extends Model
 	{
 		$unit = $this->reliefType?->unit_bn ?? $this->reliefType?->unit ?? '';
 		$amount = number_format((float)$this->allocated_amount, 2);
+		
+		// For Taka/Cash, show with currency symbol
+		if (in_array($unit, ['টাকা', 'Taka'])) {
+			return '৳' . $amount;
+		}
+		
+		// For other units, show with unit name
+		return $amount . ' ' . $unit;
+	}
+
+	/**
+	 * Get formatted available amount with appropriate unit.
+	 */
+	public function getFormattedAvailableAmountAttribute(): string
+	{
+		$unit = $this->reliefType?->unit_bn ?? $this->reliefType?->unit ?? '';
+		$amount = number_format((float)$this->available_amount, 2);
+		
+		// For Taka/Cash, show with currency symbol
+		if (in_array($unit, ['টাকা', 'Taka'])) {
+			return '৳' . $amount;
+		}
+		
+		// For other units, show with unit name
+		return $amount . ' ' . $unit;
+	}
+
+	/**
+	 * Get formatted used amount with appropriate unit.
+	 */
+	public function getFormattedUsedAmountAttribute(): string
+	{
+		$usedAmount = $this->allocated_amount - $this->available_amount;
+		$unit = $this->reliefType?->unit_bn ?? $this->reliefType?->unit ?? '';
+		$amount = number_format((float)$usedAmount, 2);
 		
 		// For Taka/Cash, show with currency symbol
 		if (in_array($unit, ['টাকা', 'Taka'])) {

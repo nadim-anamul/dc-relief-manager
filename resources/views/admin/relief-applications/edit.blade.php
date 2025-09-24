@@ -38,24 +38,42 @@
 							<div>
 								<label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Relief Type</label>
 								<div class="p-3 bg-gray-50 dark:bg-gray-700 rounded-md">
-									<div class="flex items-center">
-										@if($reliefApplication->reliefType->color_code)
-											<div class="w-3 h-3 rounded-full mr-2" style="background-color: {{ $reliefApplication->reliefType->color_code }}"></div>
-										@endif
-										<p class="text-sm text-gray-900 dark:text-white">{{ $reliefApplication->reliefType->name }}</p>
-									</div>
+									@if($reliefApplication->reliefType)
+										<div class="flex items-center">
+											@if($reliefApplication->reliefType->color_code)
+												<div class="w-3 h-3 rounded-full mr-2" style="background-color: {{ $reliefApplication->reliefType->color_code }}"></div>
+											@endif
+											<p class="text-sm text-gray-900 dark:text-white">{{ $reliefApplication->reliefType->name }}</p>
+										</div>
+									@else
+										<p class="text-sm text-gray-500 dark:text-gray-400">Not specified</p>
+									@endif
 								</div>
 							</div>
 							<div>
 								<label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Amount Requested</label>
-								<div class="p-3 bg-gray-50 dark:bg-gray-700 rounded-md">
-									<p class="text-sm font-medium text-gray-900 dark:text-white">{{ $reliefApplication->formatted_amount }}</p>
+								<div class="p-3 bg-blue-50 dark:bg-blue-900 rounded-lg border border-blue-200 dark:border-blue-700">
+									<p class="text-lg font-semibold text-blue-900 dark:text-blue-100">{{ $reliefApplication->formatted_amount }}</p>
+									<p class="text-xs text-blue-700 dark:text-blue-300 mt-1">Total amount requested by applicant</p>
 								</div>
 							</div>
 							<div>
 								<label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Location</label>
 								<div class="p-3 bg-gray-50 dark:bg-gray-700 rounded-md">
-									<p class="text-sm text-gray-900 dark:text-white">{{ $reliefApplication->zilla->name }}, {{ $reliefApplication->upazila->name }}</p>
+									<p class="text-sm text-gray-900 dark:text-white">{{ $reliefApplication->zilla?->name ?? 'Not specified' }}, {{ $reliefApplication->upazila?->name ?? 'Not specified' }}</p>
+								</div>
+							</div>
+							<div>
+								<label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Project</label>
+								<div class="p-3 bg-gray-50 dark:bg-gray-700 rounded-md">
+									@if($reliefApplication->project)
+										<p class="text-sm font-medium text-gray-900 dark:text-white">{{ $reliefApplication->project->name }}</p>
+										<p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+											Available: {{ $reliefApplication->project->formatted_available_amount }}
+										</p>
+									@else
+										<p class="text-sm text-gray-500 dark:text-gray-400">No project assigned</p>
+									@endif
 								</div>
 							</div>
 						</div>
@@ -63,163 +81,196 @@
 
 					<!-- Decision Section -->
 					<div class="border-b border-gray-200 dark:border-gray-700 pb-8">
-						<h4 class="text-lg font-medium text-gray-900 dark:text-white mb-6">Decision</h4>
+						<div class="flex items-center justify-between mb-6">
+							<h4 class="text-lg font-medium text-gray-900 dark:text-white">Review Decision</h4>
+							<div class="flex items-center space-x-2">
+								<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $reliefApplication->status === 'pending' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200' : ($reliefApplication->status === 'approved' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200') }}">
+									{{ ucfirst($reliefApplication->status) }}
+								</span>
+							</div>
+						</div>
 						
 						<div class="space-y-6">
 							<!-- Status Selection -->
-							<div>
-								<label for="status" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-									Decision <span class="text-red-500">*</span>
+							<div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
+								<label for="status" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+									Select Decision <span class="text-red-500">*</span>
 								</label>
-								<select name="status" 
-									id="status" 
-									x-model="status"
-									@change="updateFormVisibility()"
-									class="input-field @error('status') border-red-500 dark:border-red-400 @enderror"
-									required>
-									<option value="pending" {{ old('status', $reliefApplication->status) == 'pending' ? 'selected' : '' }}>Pending Review</option>
-									<option value="approved" {{ old('status', $reliefApplication->status) == 'approved' ? 'selected' : '' }}>Approve</option>
-									<option value="rejected" {{ old('status', $reliefApplication->status) == 'rejected' ? 'selected' : '' }}>Reject</option>
-								</select>
+								<div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+									<label class="relative cursor-pointer">
+										<input type="radio" 
+											name="status" 
+											value="pending" 
+											x-model="status"
+											@change="updateFormVisibility()"
+											class="sr-only">
+										<div class="p-3 border-2 rounded-lg transition-all duration-200" 
+											:class="status === 'pending' ? 'border-blue-500 bg-blue-50 dark:bg-blue-900' : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'">
+											<div class="flex items-center">
+												<div class="w-4 h-4 rounded-full border-2 mr-3" 
+													:class="status === 'pending' ? 'border-blue-500 bg-blue-500' : 'border-gray-300 dark:border-gray-500'">
+													<div x-show="status === 'pending'" class="w-2 h-2 bg-white rounded-full m-0.5"></div>
+												</div>
+												<div>
+													<p class="text-sm font-medium text-gray-900 dark:text-white">Pending Review</p>
+													<p class="text-xs text-gray-500 dark:text-gray-400">Keep under review</p>
+												</div>
+											</div>
+										</div>
+									</label>
+									
+									<label class="relative cursor-pointer">
+										<input type="radio" 
+											name="status" 
+											value="approved" 
+											x-model="status"
+											@change="updateFormVisibility()"
+											class="sr-only">
+										<div class="p-3 border-2 rounded-lg transition-all duration-200" 
+											:class="status === 'approved' ? 'border-green-500 bg-green-50 dark:bg-green-900' : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'">
+											<div class="flex items-center">
+												<div class="w-4 h-4 rounded-full border-2 mr-3" 
+													:class="status === 'approved' ? 'border-green-500 bg-green-500' : 'border-gray-300 dark:border-gray-500'">
+													<div x-show="status === 'approved'" class="w-2 h-2 bg-white rounded-full m-0.5"></div>
+												</div>
+												<div>
+													<p class="text-sm font-medium text-gray-900 dark:text-white">Approve</p>
+													<p class="text-xs text-gray-500 dark:text-gray-400">Grant relief</p>
+												</div>
+											</div>
+										</div>
+									</label>
+									
+									<label class="relative cursor-pointer">
+										<input type="radio" 
+											name="status" 
+											value="rejected" 
+											x-model="status"
+											@change="updateFormVisibility()"
+											class="sr-only">
+										<div class="p-3 border-2 rounded-lg transition-all duration-200" 
+											:class="status === 'rejected' ? 'border-red-500 bg-red-50 dark:bg-red-900' : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'">
+											<div class="flex items-center">
+												<div class="w-4 h-4 rounded-full border-2 mr-3" 
+													:class="status === 'rejected' ? 'border-red-500 bg-red-500' : 'border-gray-300 dark:border-gray-500'">
+													<div x-show="status === 'rejected'" class="w-2 h-2 bg-white rounded-full m-0.5"></div>
+												</div>
+												<div>
+													<p class="text-sm font-medium text-gray-900 dark:text-white">Reject</p>
+													<p class="text-xs text-gray-500 dark:text-gray-400">Deny application</p>
+												</div>
+											</div>
+										</div>
+									</label>
+								</div>
 								@error('status')
-									<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+									<p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
 								@enderror
 							</div>
 
-					<!-- Relief Items Section -->
-					<div class="border-b border-gray-200 dark:border-gray-700 pb-8">
-						<h4 class="text-lg font-medium text-gray-900 dark:text-white mb-6">Relief Items Requested</h4>
-						
-						<div class="space-y-4">
-							@foreach($reliefApplication->reliefApplicationItems as $index => $item)
-								<div class="border border-gray-200 dark:border-gray-600 rounded-lg p-4">
-									<div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-										<!-- Item Info -->
-										<div>
-											<label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Item</label>
-											<div class="p-3 bg-gray-50 dark:bg-gray-700 rounded-md">
-												<p class="text-sm font-medium text-gray-900 dark:text-white">{{ $item->reliefItem->name }}</p>
-												<p class="text-xs text-gray-500 dark:text-gray-400">{{ $item->reliefItem->name_bn }}</p>
-												<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium mt-1
-													@if($item->reliefItem->type === 'monetary') bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200
-													@elseif($item->reliefItem->type === 'food') bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200
-													@elseif($item->reliefItem->type === 'shelter') bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200
-													@elseif($item->reliefItem->type === 'medical') bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200
-													@else bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200
-													@endif">
-													{{ ucfirst($item->reliefItem->type) }}
-												</span>
-											</div>
-										</div>
-
-										<!-- Quantity Requested -->
-										<div>
-											<label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Requested</label>
-											<div class="p-3 bg-gray-50 dark:bg-gray-700 rounded-md">
-												<p class="text-sm text-gray-900 dark:text-white">{{ number_format($item->quantity_requested, 3) }} {{ $item->reliefItem->unit }}</p>
-											</div>
-										</div>
-
-										<!-- Quantity Approved -->
-										<div>
-											<label for="items_{{ $index }}_quantity_approved" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-												Approved Quantity <span class="text-red-500">*</span>
-											</label>
-											<input type="number" 
-												name="items[{{ $index }}][quantity_approved]" 
-												id="items_{{ $index }}_quantity_approved"
-												value="{{ old('items.'.$index.'.quantity_approved', $item->quantity_approved) }}"
-												class="input-field @error('items.'.$index.'.quantity_approved') border-red-500 dark:border-red-400 @enderror"
-												placeholder="0.000"
-												min="0"
-												max="{{ $item->quantity_requested }}"
-												step="0.001"
-												required>
-											<p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Max: {{ number_format($item->quantity_requested, 3) }} {{ $item->reliefItem->unit }}</p>
-											@error('items.'.$index.'.quantity_approved')
-												<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-											@enderror
-										</div>
-
-										<!-- Unit Price (for monetary items) -->
-										<div>
-											<label for="items_{{ $index }}_unit_price" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-												Unit Price (৳)
-											</label>
-											@if($item->reliefItem->type === 'monetary')
-												<input type="number" 
-													name="items[{{ $index }}][unit_price]" 
-													id="items_{{ $index }}_unit_price"
-													value="{{ old('items.'.$index.'.unit_price', $item->unit_price) }}"
-													class="input-field @error('items.'.$index.'.unit_price') border-red-500 dark:border-red-400 @enderror"
-													placeholder="0.00"
-													min="0"
-													step="0.01"
-													required>
-											@else
-												<div class="p-3 bg-gray-50 dark:bg-gray-700 rounded-md">
-													<p class="text-sm text-gray-500 dark:text-gray-400">Physical Item</p>
-												</div>
-											@endif
-											@error('items.'.$index.'.unit_price')
-												<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-											@enderror
-										</div>
-									</div>
-
-									<!-- Hidden fields -->
-									<input type="hidden" name="items[{{ $index }}][relief_item_id]" value="{{ $item->relief_item_id }}">
-									<input type="hidden" name="items[{{ $index }}][quantity_requested]" value="{{ $item->quantity_requested }}">
-								</div>
-							@endforeach
-						</div>
-					</div>
 
 					<!-- Approval Fields (shown when status is 'approved') -->
-					<div x-show="status === 'approved'" class="space-y-4">
-						<div class="p-4 bg-green-50 dark:bg-green-900 rounded-lg">
-							<h5 class="text-sm font-medium text-green-800 dark:text-green-200 mb-3">Approval Details</h5>
+					<div x-show="status === 'approved'" class="space-y-6">
+						<div class="bg-green-50 dark:bg-green-900 border border-green-200 dark:border-green-700 rounded-lg p-6">
+							<div class="flex items-center mb-4">
+								<div class="flex-shrink-0">
+									<svg class="h-6 w-6 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+									</svg>
+								</div>
+								<h5 class="ml-3 text-lg font-medium text-green-800 dark:text-green-200">Approval Details</h5>
+							</div>
 							
-							<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-								<!-- Approved Amount (calculated automatically) -->
+							<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+								<!-- Approval Amount Input -->
 								<div>
-									<label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Total Approved Amount (৳)</label>
-									<div class="p-3 bg-gray-50 dark:bg-gray-700 rounded-md">
-										<p class="text-sm font-medium text-gray-900 dark:text-white" id="total-approved-amount">৳0.00</p>
-										<p class="text-xs text-gray-500 dark:text-gray-400">Calculated from approved quantities</p>
+									<label for="approved_amount" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+										Final Approval Amount <span class="text-red-500">*</span>
+									</label>
+									<div class="relative">
+										<input type="number" 
+											name="approved_amount" 
+											id="approved_amount"
+											value="{{ old('approved_amount', $reliefApplication->approved_amount) }}"
+											class="input-field @error('approved_amount') border-red-500 dark:border-red-400 @enderror"
+											placeholder="0.00"
+											min="0"
+											max="{{ $reliefApplication->project ? $reliefApplication->project->available_amount : 0 }}"
+											step="0.01"
+											@input="validateApprovalAmount()"
+											required>
+										<div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+											<span class="text-gray-500 dark:text-gray-400 text-sm">
+												@if($reliefApplication->project && $reliefApplication->project->reliefType)
+													@php
+														$unit = $reliefApplication->project->reliefType->unit_bn ?? $reliefApplication->project->reliefType->unit ?? '';
+													@endphp
+													@if(in_array($unit, ['টাকা', 'Taka']))
+														৳
+													@else
+														{{ $unit }}
+													@endif
+												@else
+													৳
+												@endif
+											</span>
+										</div>
+									</div>
+									<p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+										Enter the final amount to be approved for this application
+									</p>
+									@error('approved_amount')
+										<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+									@enderror
+									<div x-show="insufficientFunds" class="mt-2 p-2 bg-red-50 dark:bg-red-900 border border-red-200 dark:border-red-700 rounded text-sm">
+										<p class="text-red-800 dark:text-red-200">
+											<span class="font-medium">Insufficient funds!</span> Approval amount exceeds available project budget.
+										</p>
 									</div>
 								</div>
 
-										<!-- Project Selection -->
-										<div>
-											<label for="project_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-												Project <span class="text-red-500">*</span>
-											</label>
-											<select name="project_id" 
-												id="project_id" 
-												x-model="selectedProject"
-												@change="loadProjectBudget()"
-												class="input-field @error('project_id') border-red-500 dark:border-red-400 @enderror"
-												required>
-												<option value="">Select Project</option>
-												@foreach($reliefApplication->available_projects as $project)
-													<option value="{{ $project->id }}" {{ old('project_id', $reliefApplication->project_id) == $project->id ? 'selected' : '' }}>
-														{{ $project->name }} ({{ $project->formatted_budget }})
-													</option>
-												@endforeach
-											</select>
-											<div x-show="selectedProject" class="mt-2 p-2 bg-blue-50 dark:bg-blue-900 rounded text-sm">
-												<p class="text-blue-800 dark:text-blue-200">
-													Available Budget: <span x-text="projectBudget"></span>
-												</p>
+								<!-- Available Project Budget -->
+								<div>
+									<label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Available Project Budget</label>
+									@if($reliefApplication->project)
+										<div class="p-3 bg-blue-50 dark:bg-blue-900 border border-blue-200 dark:border-blue-700 rounded-lg">
+											<div class="flex items-center mb-2">
+												<svg class="h-5 w-5 text-blue-600 dark:text-blue-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+													<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+												</svg>
+												<div>
+													<p class="text-sm font-medium text-blue-800 dark:text-blue-200">Project: {{ $reliefApplication->project->name }}</p>
+													<p class="text-lg font-semibold text-blue-900 dark:text-blue-100">
+														{{ $reliefApplication->project->formatted_available_amount }}
+													</p>
+												</div>
 											</div>
-											@error('project_id')
-												<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-											@enderror
+											<p class="text-xs text-blue-700 dark:text-blue-300">
+												Maximum amount that can be approved
+											</p>
 										</div>
-									</div>
+									@else
+										<div class="p-3 bg-red-50 dark:bg-red-900 border border-red-200 dark:border-red-700 rounded-lg">
+											<div class="flex items-center">
+												<svg class="h-5 w-5 text-red-600 dark:text-red-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+													<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+												</svg>
+												<div>
+													<p class="text-sm font-medium text-red-800 dark:text-red-200">No Project Assigned</p>
+													<p class="text-xs text-red-700 dark:text-red-300">Cannot approve without a project</p>
+												</div>
+											</div>
+										</div>
+									@endif
 								</div>
 							</div>
+							
+							<!-- Hidden project_id field -->
+							@if($reliefApplication->project_id)
+								<input type="hidden" name="project_id" value="{{ $reliefApplication->project_id }}">
+							@endif
+						</div>
+					</div>
 
 							<!-- Rejection Fields (shown when status is 'rejected') -->
 							<div x-show="status === 'rejected'" class="p-4 bg-red-50 dark:bg-red-900 rounded-lg">
@@ -268,66 +319,37 @@
 		function approvalForm() {
 			return {
 				status: '{{ old('status', $reliefApplication->status) }}',
-				selectedProject: '{{ old('project_id', $reliefApplication->project_id) }}',
-				projectBudget: '৳0.00',
+				insufficientFunds: false,
+				availableBudget: {{ $reliefApplication->project ? $reliefApplication->project->available_amount : 0 }},
 				
 				updateFormVisibility() {
-					// Reset project selection when changing status
+					// Reset validation when changing status
 					if (this.status !== 'approved') {
-						this.selectedProject = '';
-						this.projectBudget = '৳0.00';
-					} else if (this.selectedProject) {
-						this.loadProjectBudget();
-					}
-					this.calculateTotalApprovedAmount();
-				},
-				
-				loadProjectBudget() {
-					if (this.selectedProject) {
-						fetch(`/admin/project-budget?project_id=${this.selectedProject}`)
-							.then(response => response.json())
-							.then(data => {
-								this.projectBudget = data.formatted_budget;
-							})
-							.catch(error => {
-								console.error('Error loading project budget:', error);
-								this.projectBudget = '৳0.00';
-							});
+						this.insufficientFunds = false;
 					} else {
-						this.projectBudget = '৳0.00';
+						this.validateApprovalAmount();
 					}
 				},
 				
-				calculateTotalApprovedAmount() {
-					let total = 0;
-					
-					// Calculate from all quantity approved inputs
-					document.querySelectorAll('input[name*="[quantity_approved]"]').forEach(input => {
-						const quantity = parseFloat(input.value) || 0;
-						const unitPriceInput = input.closest('.grid').querySelector('input[name*="[unit_price]"]');
-						const unitPrice = unitPriceInput ? parseFloat(unitPriceInput.value) || 0 : 0;
-						
-						total += quantity * unitPrice;
-					});
-					
-					// Update the display
-					const totalElement = document.getElementById('total-approved-amount');
-					if (totalElement) {
-						totalElement.textContent = '৳' + total.toFixed(2);
+				validateApprovalAmount() {
+					const approvalAmountInput = document.getElementById('approved_amount');
+					if (approvalAmountInput && this.availableBudget > 0) {
+						const approvalAmount = parseFloat(approvalAmountInput.value) || 0;
+						this.insufficientFunds = approvalAmount > this.availableBudget;
+					} else {
+						this.insufficientFunds = false;
 					}
 				},
 				
 				init() {
-					if (this.selectedProject) {
-						this.loadProjectBudget();
+					// Add event listener to approval amount input
+					const approvalAmountInput = document.getElementById('approved_amount');
+					if (approvalAmountInput) {
+						approvalAmountInput.addEventListener('input', () => this.validateApprovalAmount());
 					}
 					
-					// Add event listeners to quantity and price inputs
-					document.querySelectorAll('input[name*="[quantity_approved]"], input[name*="[unit_price]"]').forEach(input => {
-						input.addEventListener('input', () => this.calculateTotalApprovedAmount());
-					});
-					
-					this.calculateTotalApprovedAmount();
+					// Initial validation
+					this.validateApprovalAmount();
 				}
 			}
 		}

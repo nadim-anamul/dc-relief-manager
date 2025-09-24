@@ -40,12 +40,15 @@ class DatabaseSeeder extends Seeder
 
         // Seed system data
         $this->call([
+            RolePermissionSeeder::class, // Add roles and permissions first
+            UserSeeder::class, // Add users with proper roles
             EconomicYearSeeder::class,
             ReliefTypeSeeder::class,
             ReliefItemSeeder::class,
             OrganizationTypeSeeder::class,
             ProjectInventorySeeder::class,
             ReliefApplicationSeeder::class,
+            ComprehensiveDataSeeder::class, // Add comprehensive test data
         ]);
     }
 }

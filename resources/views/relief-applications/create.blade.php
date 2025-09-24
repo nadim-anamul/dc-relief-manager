@@ -11,35 +11,6 @@
 	</x-slot>
 
 	<div class="max-w-5xl mx-auto">
-		<!-- Progress Indicator -->
-		<div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 p-6 mb-8">
-			<div class="flex items-center justify-between text-sm font-medium text-gray-600 dark:text-gray-400 mb-4">
-				<span class="flex items-center">
-					<span class="w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center text-xs mr-3">1</span>
-					Organization
-				</span>
-				<span class="flex items-center">
-					<span class="w-8 h-8 bg-gray-300 dark:bg-gray-600 text-gray-600 dark:text-gray-400 rounded-full flex items-center justify-center text-xs mr-3">2</span>
-					Location
-				</span>
-				<span class="flex items-center">
-					<span class="w-8 h-8 bg-gray-300 dark:bg-gray-600 text-gray-600 dark:text-gray-400 rounded-full flex items-center justify-center text-xs mr-3">3</span>
-					Relief Info
-				</span>
-				<span class="flex items-center">
-					<span class="w-8 h-8 bg-gray-300 dark:bg-gray-600 text-gray-600 dark:text-gray-400 rounded-full flex items-center justify-center text-xs mr-3">4</span>
-					Applicant
-				</span>
-				<span class="flex items-center">
-					<span class="w-8 h-8 bg-gray-300 dark:bg-gray-600 text-gray-600 dark:text-gray-400 rounded-full flex items-center justify-center text-xs mr-3">5</span>
-					Documents
-				</span>
-			</div>
-			<div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-				<div class="bg-gradient-to-r from-blue-500 to-indigo-600 h-2 rounded-full transition-all duration-300 ease-in-out" style="width: 20%"></div>
-			</div>
-		</div>
-
 		<!-- Main Form Card -->
 		<div class="bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
 			<div class="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-gray-700 dark:to-gray-800 px-8 py-6 border-b border-gray-200 dark:border-gray-700">

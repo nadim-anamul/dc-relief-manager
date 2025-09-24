@@ -13,6 +13,15 @@ use Illuminate\Http\JsonResponse;
 class ReliefApplicationController extends Controller
 {
 	/**
+	 * Show the form for creating a new resource.
+	 */
+	public function create(): RedirectResponse
+	{
+		// Redirect to the regular relief application create form
+		return redirect()->route('relief-applications.create');
+	}
+
+	/**
 	 * Display a listing of the resource.
 	 */
 	public function index(Request $request): View
@@ -93,56 +102,35 @@ class ReliefApplicationController extends Controller
 	{
 		$validated = $request->validate([
 			'status' => 'required|in:pending,approved,rejected',
-			'project_id' => 'nullable|exists:projects,id',
+			'approved_amount' => 'nullable|numeric|min:0',
 			'admin_remarks' => 'nullable|string',
-			'items' => 'nullable|array',
-			'items.*.quantity_approved' => 'nullable|numeric|min:0',
-			'items.*.unit_price' => 'nullable|numeric|min:0',
-			'items.*.relief_item_id' => 'required|exists:relief_items,id',
 		]);
 
 		try {
 			if ($validated['status'] === 'approved') {
-				if (!$validated['project_id']) {
+				if (!$reliefApplication->project_id) {
 					return redirect()->back()
-						->withErrors(['error' => 'Project selection is required for approval.'])
+						->withErrors(['error' => 'Application must be assigned to a project before approval.'])
 						->withInput();
 				}
 
-				// Calculate total approved amount from items
-				$totalApprovedAmount = 0;
-				if ($request->has('items')) {
-					foreach ($request->items as $item) {
-						$quantityApproved = floatval($item['quantity_approved'] ?? 0);
-						$unitPrice = floatval($item['unit_price'] ?? 0);
-						$totalApprovedAmount += $quantityApproved * $unitPrice;
-					}
+				if (!$validated['approved_amount'] || $validated['approved_amount'] <= 0) {
+					return redirect()->back()
+						->withErrors(['error' => 'Approval amount is required and must be greater than 0.'])
+						->withInput();
 				}
 
-				// Update relief application items with approved quantities
-				if ($request->has('items')) {
-					foreach ($request->items as $item) {
-						$reliefApplicationItem = $reliefApplication->reliefApplicationItems()
-							->where('relief_item_id', $item['relief_item_id'])
-							->first();
-
-						if ($reliefApplicationItem) {
-							$quantityApproved = floatval($item['quantity_approved'] ?? 0);
-							$unitPrice = floatval($item['unit_price'] ?? 0);
-							$totalAmount = $quantityApproved * $unitPrice;
-
-							$reliefApplicationItem->update([
-								'quantity_approved' => $quantityApproved,
-								'unit_price' => $unitPrice,
-								'total_amount' => $totalAmount,
-							]);
-						}
-					}
+				// Check if project has sufficient budget
+				$project = $reliefApplication->project;
+				if ($project->available_amount < $validated['approved_amount']) {
+					return redirect()->back()
+						->withErrors(['error' => 'Insufficient project budget. Available: ' . $project->formatted_available_amount])
+						->withInput();
 				}
 
 				$reliefApplication->approve(
-					$totalApprovedAmount,
-					$validated['project_id'],
+					$validated['approved_amount'],
+					$reliefApplication->project_id,
 					$validated['admin_remarks'],
 					auth()->id()
 				);
@@ -215,11 +203,14 @@ class ReliefApplicationController extends Controller
 		}
 
 		$projects = Project::where('relief_type_id', $reliefTypeId)
-			->where('start_date', '<=', now())
-			->where('end_date', '>=', now())
-			->where('budget', '>', 0)
+			->whereHas('economicYear', function($query) {
+				$query->where('start_date', '<=', now())
+					->where('end_date', '>=', now())
+					->where('is_current', true);
+			})
+			->where('allocated_amount', '>', 0)
 			->orderBy('name')
-			->get(['id', 'name', 'budget', 'formatted_budget']);
+			->get(['id', 'name', 'allocated_amount', 'formatted_allocated_amount']);
 
 		return response()->json($projects);
 	}
@@ -242,8 +233,8 @@ class ReliefApplicationController extends Controller
 		}
 
 		return response()->json([
-			'budget' => $project->budget,
-			'formatted_budget' => $project->formatted_budget
+			'budget' => $project->allocated_amount,
+			'formatted_budget' => $project->formatted_allocated_amount
 		]);
 	}
 }

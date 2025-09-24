@@ -72,7 +72,7 @@ class RolePermissionSeeder extends Seeder
                 'name' => 'Super Admin',
                 'slug' => 'super-admin',
                 'description' => 'Full system access with all permissions',
-                'permissions' => Permission::all()->pluck('slug')->toArray()
+                'permissions' => Permission::all()->pluck('name')->toArray()
             ],
             [
                 'name' => 'District Admin',

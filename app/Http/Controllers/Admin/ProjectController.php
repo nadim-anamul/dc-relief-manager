@@ -119,6 +119,9 @@ class ProjectController extends Controller
 	public function store(ProjectRequest $request): RedirectResponse
 	{
 		$validated = $request->validated();
+		
+		// Set available_amount to allocated_amount when creating a new project
+		$validated['available_amount'] = $validated['allocated_amount'];
 
 		Project::create($validated);
 

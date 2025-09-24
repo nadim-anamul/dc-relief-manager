@@ -194,7 +194,16 @@ class ReliefApplication extends Model
 	 */
 	public function getFormattedAmountAttribute(): string
 	{
-		return '৳' . number_format((float)$this->amount_requested, 2);
+		$unit = $this->reliefType?->unit_bn ?? $this->reliefType?->unit ?? '';
+		$amount = number_format((float)$this->amount_requested, 2);
+		
+		// For Taka/Cash, show with currency symbol
+		if (in_array($unit, ['টাকা', 'Taka'])) {
+			return '৳' . $amount;
+		}
+		
+		// For other units, show with unit name
+		return $amount . ' ' . $unit;
 	}
 
 	/**
@@ -244,7 +253,20 @@ class ReliefApplication extends Model
 	 */
 	public function getFormattedApprovedAmountAttribute(): string
 	{
-		return $this->approved_amount ? '৳' . number_format((float)$this->approved_amount, 2) : '-';
+		if (!$this->approved_amount) {
+			return '-';
+		}
+
+		$unit = $this->project?->reliefType?->unit_bn ?? $this->project?->reliefType?->unit ?? '';
+		$amount = number_format((float)$this->approved_amount, 2);
+		
+		// For Taka/Cash, show with currency symbol
+		if (in_array($unit, ['টাকা', 'Taka'])) {
+			return '৳' . $amount;
+		}
+		
+		// For other units, show with unit name
+		return $amount . ' ' . $unit;
 	}
 
 	/**
@@ -259,7 +281,7 @@ class ReliefApplication extends Model
 				throw new \Exception('Project not found');
 			}
 
-			if ($project->budget < $approvedAmount) {
+			if ($project->available_amount < $approvedAmount) {
 				throw new \Exception('Insufficient project budget');
 			}
 
@@ -276,7 +298,7 @@ class ReliefApplication extends Model
 			]);
 
 			// Deduct budget from project
-			$project->decrement('budget', $approvedAmount);
+			$project->decrement('available_amount', $approvedAmount);
 
 			return true;
 		});
@@ -321,9 +343,12 @@ class ReliefApplication extends Model
 	public function getAvailableProjectsAttribute()
 	{
 		return Project::where('relief_type_id', $this->relief_type_id)
-			->where('start_date', '<=', now())
-			->where('end_date', '>=', now())
-			->where('budget', '>', 0)
+			->whereHas('economicYear', function($query) {
+				$query->where('start_date', '<=', now())
+					->where('end_date', '>=', now())
+					->where('is_current', true);
+			})
+			->where('available_amount', '>', 0)
 			->orderBy('name')
 			->get();
 	}

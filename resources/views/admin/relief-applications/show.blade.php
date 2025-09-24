@@ -99,19 +99,19 @@
 				<dl class="grid grid-cols-1 gap-x-4 gap-y-6 sm:grid-cols-2">
 					<div>
 						<dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Zilla (District)</dt>
-						<dd class="mt-1 text-sm text-gray-900 dark:text-white">{{ $reliefApplication->zilla->name }}</dd>
+						<dd class="mt-1 text-sm text-gray-900 dark:text-white">{{ $reliefApplication->zilla?->name ?? 'Not specified' }}</dd>
 					</div>
 					<div>
 						<dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Upazila (Sub-district)</dt>
-						<dd class="mt-1 text-sm text-gray-900 dark:text-white">{{ $reliefApplication->upazila->name }}</dd>
+						<dd class="mt-1 text-sm text-gray-900 dark:text-white">{{ $reliefApplication->upazila?->name ?? 'Not specified' }}</dd>
 					</div>
 					<div>
 						<dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Union</dt>
-						<dd class="mt-1 text-sm text-gray-900 dark:text-white">{{ $reliefApplication->union->name }}</dd>
+						<dd class="mt-1 text-sm text-gray-900 dark:text-white">{{ $reliefApplication->union?->name ?? 'Not specified' }}</dd>
 					</div>
 					<div>
 						<dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Ward</dt>
-						<dd class="mt-1 text-sm text-gray-900 dark:text-white">{{ $reliefApplication->ward->name }}</dd>
+						<dd class="mt-1 text-sm text-gray-900 dark:text-white">{{ $reliefApplication->ward?->name ?? 'Not specified' }}</dd>
 					</div>
 				</dl>
 			</div>
@@ -131,12 +131,16 @@
 					<div>
 						<dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Relief Type</dt>
 						<dd class="mt-1 text-sm text-gray-900 dark:text-white">
-							<div class="flex items-center">
-								@if($reliefApplication->reliefType->color_code)
-									<div class="w-4 h-4 rounded-full mr-2" style="background-color: {{ $reliefApplication->reliefType->color_code }}"></div>
-								@endif
-								{{ $reliefApplication->reliefType->name }}
-							</div>
+							@if($reliefApplication->reliefType)
+								<div class="flex items-center">
+									@if($reliefApplication->reliefType->color_code)
+										<div class="w-4 h-4 rounded-full mr-2" style="background-color: {{ $reliefApplication->reliefType->color_code }}"></div>
+									@endif
+									{{ $reliefApplication->reliefType->name }}
+								</div>
+							@else
+								<span class="text-gray-500 dark:text-gray-400">Not specified</span>
+							@endif
 						</dd>
 					</div>
 					<div>

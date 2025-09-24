@@ -135,7 +135,7 @@ class ExportController extends Controller
 
 		// Calculate summary statistics
 		$totalProjects = $projects->count();
-		$totalBudget = $projects->sum('budget');
+		$totalBudget = $projects->sum('allocated_amount');
 		$activeProjects = $projects->where('is_active', true)->count();
 		$completedProjects = $projects->where('is_completed', true)->count();
 

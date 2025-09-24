@@ -68,16 +68,42 @@
                     Dashboard
                 </a>
 
-                <!-- Relief Applications -->
-                @if(auth()->user()->hasAnyPermission(['relief-applications.create-own', 'relief-applications.view-own']))
-                <a href="{{ route('relief-applications.index') }}" 
-                   class="group flex items-center px-2 py-2 text-base font-medium rounded-md {{ request()->routeIs('relief-applications.*') ? 'bg-blue-100 dark:bg-blue-900 text-blue-900 dark:text-blue-100' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white' }}">
-                    <svg class="mr-3 h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                    </svg>
-                    Relief Applications
-                </a>
-                @endif
+                <!-- Applications Group -->
+                <div class="space-y-1">
+                    <div class="px-2 py-1 text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
+                        Applications
+                    </div>
+                    
+                    @if(auth()->user()->hasAnyPermission(['relief-applications.create', 'relief-applications.create-own']))
+                    <a href="{{ route('relief-applications.create') }}" 
+                       class="group flex items-center px-2 py-2 text-base font-medium rounded-md {{ request()->routeIs('relief-applications.create') ? 'bg-blue-100 dark:bg-blue-900 text-blue-900 dark:text-blue-100' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white' }}">
+                        <svg class="mr-3 h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                        </svg>
+                        Create Application
+                    </a>
+                    @endif
+                    
+                    @if(auth()->user()->hasAnyPermission(['relief-applications.create-own', 'relief-applications.view-own']))
+                    <a href="{{ route('relief-applications.index') }}" 
+                       class="group flex items-center px-2 py-2 text-base font-medium rounded-md {{ request()->routeIs('relief-applications.index') || request()->routeIs('relief-applications.show') ? 'bg-blue-100 dark:bg-blue-900 text-blue-900 dark:text-blue-100' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white' }}">
+                        <svg class="mr-3 h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                        My Applications
+                    </a>
+                    @endif
+                    
+                    @if(auth()->user()->hasAnyRole(['super-admin', 'district-admin']))
+                    <a href="{{ route('admin.relief-applications.index') }}" 
+                       class="group flex items-center px-2 py-2 text-base font-medium rounded-md {{ request()->routeIs('admin.relief-applications.*') ? 'bg-blue-100 dark:bg-blue-900 text-blue-900 dark:text-blue-100' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white' }}">
+                        <svg class="mr-3 h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        Application Reviews
+                    </a>
+                    @endif
+                </div>
 
                 @if(auth()->user()->hasAnyRole(['super-admin', 'district-admin']))
                 <!-- Administrative Divisions -->
@@ -157,13 +183,23 @@
                         Organization Types
                     </a>
                     
+                </div>
+                @endif
+
+                <!-- User Management Group -->
+                @if(auth()->user()->hasAnyPermission(['users.manage', 'roles.manage', 'permissions.manage']))
+                <div class="space-y-1">
+                    <div class="px-2 py-1 text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
+                        User Management
+                    </div>
+                    
                     @if(auth()->user()->hasPermissionTo('users.manage'))
                     <a href="{{ route('admin.users.index') }}" 
                        class="group flex items-center px-2 py-2 text-base font-medium rounded-md {{ request()->routeIs('admin.users.*') ? 'bg-blue-100 dark:bg-blue-900 text-blue-900 dark:text-blue-100' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white' }}">
                         <svg class="mr-3 h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
                         </svg>
-                        User Management
+                        Users
                     </a>
                     @endif
                     
@@ -171,9 +207,9 @@
                     <a href="{{ route('admin.roles.index') }}" 
                        class="group flex items-center px-2 py-2 text-base font-medium rounded-md {{ request()->routeIs('admin.roles.*') ? 'bg-blue-100 dark:bg-blue-900 text-blue-900 dark:text-blue-100' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white' }}">
                         <svg class="mr-3 h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
                         </svg>
-                        Role Management
+                        Roles
                     </a>
                     @endif
                     
@@ -181,30 +217,29 @@
                     <a href="{{ route('admin.permissions.index') }}" 
                        class="group flex items-center px-2 py-2 text-base font-medium rounded-md {{ request()->routeIs('admin.permissions.*') ? 'bg-blue-100 dark:bg-blue-900 text-blue-900 dark:text-blue-100' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white' }}">
                         <svg class="mr-3 h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
                         </svg>
-                        Permission Management
+                        Permissions
                     </a>
                     @endif
                 </div>
+                @endif
 
-                <!-- Application Reviews -->
-                <a href="{{ route('admin.relief-applications.index') }}" 
-                   class="group flex items-center px-2 py-2 text-base font-medium rounded-md {{ request()->routeIs('admin.relief-applications.*') ? 'bg-blue-100 dark:bg-blue-900 text-blue-900 dark:text-blue-100' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white' }}">
-                    <svg class="mr-3 h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                    Application Reviews
-                </a>
-                
-                <!-- Audit Logs -->
-                <a href="{{ route('admin.audit-logs.index') }}" 
-                   class="group flex items-center px-2 py-2 text-base font-medium rounded-md {{ request()->routeIs('admin.audit-logs.*') ? 'bg-blue-100 dark:bg-blue-900 text-blue-900 dark:text-blue-100' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white' }}">
-                    <svg class="mr-3 h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
-                    </svg>
-                    Audit Logs
-                </a>
+                <!-- System Administration Group -->
+                @if(auth()->user()->hasPermissionTo('audit-logs.view'))
+                <div class="space-y-1">
+                    <div class="px-2 py-1 text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
+                        System Administration
+                    </div>
+                    
+                    <a href="{{ route('admin.audit-logs.index') }}" 
+                       class="group flex items-center px-2 py-2 text-base font-medium rounded-md {{ request()->routeIs('admin.audit-logs.*') ? 'bg-blue-100 dark:bg-blue-900 text-blue-900 dark:text-blue-100' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white' }}">
+                        <svg class="mr-3 h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
+                        </svg>
+                        Audit Logs
+                    </a>
+                </div>
                 @endif
             </nav>
 

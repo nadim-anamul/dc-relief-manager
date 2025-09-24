@@ -192,7 +192,7 @@
 									required>
 									<option value="">Select a Upazila</option>
 									<template x-for="upazila in upazilas" :key="upazila.id">
-										<option :value="upazila.id" x-text="upazila.name + ' (' + upazila.name_bn + ')'"></option>
+										<option :value="upazila.id" :selected="upazila.id == selectedUpazila" x-text="upazila.name + ' (' + upazila.name_bn + ')'"></option>
 									</template>
 								</select>
 								@error('upazila_id')
@@ -214,7 +214,7 @@
 									required>
 									<option value="">Select a Union</option>
 									<template x-for="union in unions" :key="union.id">
-										<option :value="union.id" x-text="union.name + ' (' + union.name_bn + ')'"></option>
+										<option :value="union.id" :selected="union.id == selectedUnion" x-text="union.name + ' (' + union.name_bn + ')'"></option>
 									</template>
 								</select>
 								@error('union_id')
@@ -234,7 +234,7 @@
 									:disabled="!selectedUnion">
 									<option value="">Select a Ward</option>
 									<template x-for="ward in wards" :key="ward.id">
-										<option :value="ward.id" x-text="ward.name + ' (' + ward.name_bn + ')'"></option>
+										<option :value="ward.id" :selected="ward.id == selectedWard" x-text="ward.name + ' (' + ward.name_bn + ')'"></option>
 									</template>
 								</select>
 								@error('ward_id')
@@ -506,6 +506,10 @@
 				selectedUpazila: '{{ old('upazila_id', $reliefApplication->upazila_id) }}',
 				selectedUnion: '{{ old('union_id', $reliefApplication->union_id) }}',
 				selectedWard: '{{ old('ward_id', $reliefApplication->ward_id) }}',
+				originalZilla: '{{ old('zilla_id', $reliefApplication->zilla_id) }}',
+				originalUpazila: '{{ old('upazila_id', $reliefApplication->upazila_id) }}',
+				originalUnion: '{{ old('union_id', $reliefApplication->union_id) }}',
+				originalWard: '{{ old('ward_id', $reliefApplication->ward_id) }}',
 				upazilas: @json($upazilas),
 				unions: @json($unions),
 				wards: @json($wards),
@@ -521,11 +525,18 @@
 							.then(response => response.json())
 							.then(data => {
 								this.upazilas = data;
-								this.selectedUpazila = '';
-								this.selectedUnion = '';
-								this.selectedWard = '';
-								this.unions = [];
-								this.wards = [];
+								// Only reset dependent fields if we're changing zilla (not initializing)
+								if (this.originalZilla && this.originalZilla != this.selectedZilla) {
+									this.selectedUpazila = '';
+									this.selectedUnion = '';
+									this.selectedWard = '';
+									this.unions = [];
+									this.wards = [];
+								}
+								// If we have a selected upazila, load its dependent data
+								if (this.selectedUpazila) {
+									this.loadUnions();
+								}
 							})
 							.catch(error => {
 								console.error('Error loading upazilas:', error);
@@ -546,9 +557,16 @@
 							.then(response => response.json())
 							.then(data => {
 								this.unions = data;
-								this.selectedUnion = '';
-								this.selectedWard = '';
-								this.wards = [];
+								// Only reset dependent fields if we're changing upazila (not initializing)
+								if (this.originalUpazila && this.originalUpazila != this.selectedUpazila) {
+									this.selectedUnion = '';
+									this.selectedWard = '';
+									this.wards = [];
+								}
+								// If we have a selected union, load its dependent data
+								if (this.selectedUnion) {
+									this.loadWards();
+								}
 							})
 							.catch(error => {
 								console.error('Error loading unions:', error);
@@ -567,7 +585,10 @@
 							.then(response => response.json())
 							.then(data => {
 								this.wards = data;
-								this.selectedWard = '';
+								// Only reset ward if we're changing union (not initializing)
+								if (this.originalUnion && this.originalUnion != this.selectedUnion) {
+									this.selectedWard = '';
+								}
 							})
 							.catch(error => {
 								console.error('Error loading wards:', error);
@@ -601,17 +622,6 @@
 				},
 				
 				init() {
-					// Initialize with existing data
-					if (this.selectedZilla && this.upazilas.length === 0) {
-						this.loadUpazilas();
-					}
-					if (this.selectedUpazila && this.unions.length === 0) {
-						this.loadUnions();
-					}
-					if (this.selectedUnion && this.wards.length === 0) {
-						this.loadWards();
-					}
-					
 					// Initialize project details if already selected
 					if (this.selectedProject) {
 						this.updateProjectDetails();

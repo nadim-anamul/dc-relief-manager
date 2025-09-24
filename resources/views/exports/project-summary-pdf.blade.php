@@ -206,7 +206,7 @@
                 <td>{{ $project->id }}</td>
                 <td>{{ $project->name }}</td>
                 <td>{{ $project->economicYear->name }}</td>
-                <td>{{ $project->reliefType->name }}</td>
+                <td>{{ $project->reliefType?->name ?? 'Not specified' }}</td>
                 <td class="amount">৳{{ number_format($project->budget, 2) }}</td>
                 <td>{{ $project->start_date->format('Y-m-d') }}</td>
                 <td>{{ $project->end_date->format('Y-m-d') }}</td>

@@ -32,9 +32,8 @@ class ProjectInventorySeeder extends Seeder
             [
                 'name' => 'Flood Relief Program 2024',
                 'relief_type_id' => $reliefTypes->where('name', 'Flood Relief')->first()?->id ?? $reliefTypes->first()->id,
-                'budget' => 5000000.00,
-                'start_date' => '2024-01-01',
-                'end_date' => '2024-12-31',
+                'allocated_amount' => 5000000.00,
+                'available_amount' => 5000000.00,
                 'remarks' => 'Comprehensive flood relief program for affected areas',
                 'inventory_items' => [
                     ['item' => 'Rice', 'current_stock' => 100.5, 'unit_price' => 45000.00],
@@ -48,9 +47,8 @@ class ProjectInventorySeeder extends Seeder
             [
                 'name' => 'Cyclone Preparedness Initiative',
                 'relief_type_id' => $reliefTypes->where('name', 'Cyclone Relief')->first()?->id ?? $reliefTypes->first()->id,
-                'budget' => 3000000.00,
-                'start_date' => '2024-03-01',
-                'end_date' => '2024-11-30',
+                'allocated_amount' => 3000000.00,
+                'available_amount' => 3000000.00,
                 'remarks' => 'Pre-cyclone preparedness and post-cyclone relief',
                 'inventory_items' => [
                     ['item' => 'Rice', 'current_stock' => 75.8, 'unit_price' => 46000.00],
@@ -64,9 +62,8 @@ class ProjectInventorySeeder extends Seeder
             [
                 'name' => 'Drought Relief Support',
                 'relief_type_id' => $reliefTypes->where('name', 'Drought Relief')->first()?->id ?? $reliefTypes->first()->id,
-                'budget' => 2500000.00,
-                'start_date' => '2024-06-01',
-                'end_date' => '2024-12-31',
+                'allocated_amount' => 2500000.00,
+                'available_amount' => 2500000.00,
                 'remarks' => 'Support for drought-affected agricultural communities',
                 'inventory_items' => [
                     ['item' => 'Rice', 'current_stock' => 60.3, 'unit_price' => 47000.00],
@@ -80,9 +77,8 @@ class ProjectInventorySeeder extends Seeder
             [
                 'name' => 'Winter Relief Program',
                 'relief_type_id' => $reliefTypes->where('name', 'Winter Relief')->first()?->id ?? $reliefTypes->first()->id,
-                'budget' => 1800000.00,
-                'start_date' => '2024-11-01',
-                'end_date' => '2025-02-28',
+                'allocated_amount' => 1800000.00,
+                'available_amount' => 1800000.00,
                 'remarks' => 'Winter clothing and heating support',
                 'inventory_items' => [
                     ['item' => 'Blanket', 'current_stock' => 3000, 'unit_price' => 850.00],
@@ -94,9 +90,8 @@ class ProjectInventorySeeder extends Seeder
             [
                 'name' => 'Emergency Response Fund',
                 'relief_type_id' => $reliefTypes->where('name', 'Emergency Relief')->first()?->id ?? $reliefTypes->first()->id,
-                'budget' => 4000000.00,
-                'start_date' => '2024-01-01',
-                'end_date' => '2024-12-31',
+                'allocated_amount' => 4000000.00,
+                'available_amount' => 4000000.00,
                 'remarks' => 'General emergency response and quick relief',
                 'inventory_items' => [
                     ['item' => 'Rice', 'current_stock' => 80.0, 'unit_price' => 45000.00],
@@ -114,9 +109,8 @@ class ProjectInventorySeeder extends Seeder
                 'name' => $projectData['name'],
                 'economic_year_id' => $economicYear->id,
                 'relief_type_id' => $projectData['relief_type_id'],
-                'budget' => $projectData['budget'],
-                'start_date' => $projectData['start_date'],
-                'end_date' => $projectData['end_date'],
+                'allocated_amount' => $projectData['allocated_amount'],
+                'available_amount' => $projectData['available_amount'],
                 'remarks' => $projectData['remarks'],
             ]);
 
