@@ -339,6 +339,9 @@
 		<div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden mt-8">
 			<div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
 				<h3 class="text-lg font-semibold text-gray-900 dark:text-white">Project × Zilla Distribution</h3>
+				<a href="{{ route('admin.distributions.project-upazila', ['economic_year_id' => $selectedYearId, 'zilla_id' => $selectedZillaId]) }}" class="inline-flex items-center px-3 py-1.5 bg-blue-100 hover:bg-blue-200 dark:bg-blue-900 dark:hover:bg-blue-800 text-blue-700 dark:text-blue-300 text-sm font-medium rounded-lg transition-colors duration-200">
+					See All
+				</a>
 			</div>
 			<div class="overflow-x-auto">
 				<table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
@@ -377,13 +380,18 @@
 						<span class="text-xs text-gray-500 dark:text-gray-400">Zilla: {{ $stats['zillaNames'][$selectedZillaId] ?? ('#'.$selectedZillaId) }}</span>
 					@endif
 				</div>
-				<a href="{{ route('admin.exports.area-wise-relief.pdf', ['economic_year_id' => $selectedYearId, 'zilla_id' => $selectedZillaId]) }}" 
-				   class="inline-flex items-center px-3 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg transition-colors duration-200 shadow-sm hover:shadow-md">
-					<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-					</svg>
-					PDF
-				</a>
+				<div class="flex items-center gap-2">
+					<a href="{{ route('admin.distributions.project-upazila-union', ['economic_year_id' => $selectedYearId, 'zilla_id' => $selectedZillaId]) }}" class="inline-flex items-center px-3 py-1.5 bg-green-100 hover:bg-green-200 dark:bg-green-900 dark:hover:bg-green-800 text-green-700 dark:text-green-300 text-sm font-medium rounded-lg transition-colors duration-200">
+						See All
+					</a>
+					<a href="{{ route('admin.exports.area-wise-relief.pdf', ['economic_year_id' => $selectedYearId, 'zilla_id' => $selectedZillaId]) }}" 
+					   class="inline-flex items-center px-3 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg transition-colors duration-200 shadow-sm hover:shadow-md">
+						<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+						</svg>
+						PDF
+					</a>
+				</div>
 			</div>
 			<div class="overflow-x-auto">
 				<table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
@@ -464,13 +472,18 @@
 						<span class="text-xs text-gray-500 dark:text-gray-400">Zilla: {{ $stats['zillaNames'][$selectedZillaId] ?? ('#'.$selectedZillaId) }}</span>
 					@endif
 				</div>
-				<a href="{{ route('admin.exports.area-wise-relief.pdf', ['economic_year_id' => $selectedYearId, 'zilla_id' => $selectedZillaId]) }}" 
-				   class="inline-flex items-center px-3 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg transition-colors duration-200 shadow-sm hover:shadow-md">
-					<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-					</svg>
-					PDF
-				</a>
+				<div class="flex items-center gap-2">
+					<a href="{{ route('admin.distributions.project-upazila-union', ['economic_year_id' => $selectedYearId, 'zilla_id' => $selectedZillaId]) }}" class="inline-flex items-center px-3 py-1.5 bg-purple-100 hover:bg-purple-200 dark:bg-purple-900 dark:hover:bg-purple-800 text-purple-700 dark:text-purple-300 text-sm font-medium rounded-lg transition-colors duration-200">
+						See All
+					</a>
+					<a href="{{ route('admin.exports.area-wise-relief.pdf', ['economic_year_id' => $selectedYearId, 'zilla_id' => $selectedZillaId]) }}" 
+					   class="inline-flex items-center px-3 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg transition-colors duration-200 shadow-sm hover:shadow-md">
+						<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+						</svg>
+						PDF
+					</a>
+				</div>
 			</div>
 			<div class="overflow-x-auto">
 				<table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
@@ -685,11 +698,14 @@
 
 		<!-- Detailed Statistics Tables -->
 		<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-			<!-- Area-wise Summary -->
-			<div class="card">
+            <!-- Area-wise Summary -->
+            <div class="card">
 				<div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
 					<h3 class="text-lg font-medium text-gray-900 dark:text-white">Area-wise Allocation Summary</h3>
 					<div class="flex space-x-2">
+						<a href="{{ route('admin.distributions.area-summary', ['economic_year_id' => $selectedYearId, 'zilla_id' => $selectedZillaId]) }}" class="inline-flex items-center px-3 py-1.5 bg-orange-100 hover:bg-orange-200 dark:bg-orange-900 dark:hover:bg-orange-800 text-orange-700 dark:text-orange-300 text-sm font-medium rounded-lg transition-colors duration-200">
+							See All
+						</a>
 						<a href="{{ route('admin.exports.area-wise-relief.excel', ['economic_year_id' => $selectedYearId, 'zilla_id' => $selectedZillaId]) }}" 
 						   class="inline-flex items-center px-3 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition-colors duration-200 shadow-sm hover:shadow-md">
 							<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -767,13 +783,18 @@
             <div class="card">
 				<div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
 					<h3 class="text-lg font-medium text-gray-900 dark:text-white">Union-wise Allocation Summary</h3>
-					<a href="{{ route('admin.exports.area-wise-relief.pdf', ['economic_year_id' => $selectedYearId, 'zilla_id' => $selectedZillaId]) }}" 
-					   class="inline-flex items-center px-3 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg transition-colors duration-200 shadow-sm hover:shadow-md">
-						<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-						</svg>
-						PDF
-					</a>
+					<div class="flex space-x-2">
+						<a href="{{ route('admin.distributions.union-summary', ['economic_year_id' => $selectedYearId, 'zilla_id' => $selectedZillaId]) }}" class="inline-flex items-center px-3 py-1.5 bg-purple-100 hover:bg-purple-200 dark:bg-purple-900 dark:hover:bg-purple-800 text-purple-700 dark:text-purple-300 text-sm font-medium rounded-lg transition-colors duration-200">
+							See All
+						</a>
+						<a href="{{ route('admin.exports.area-wise-relief.pdf', ['economic_year_id' => $selectedYearId, 'zilla_id' => $selectedZillaId]) }}" 
+						   class="inline-flex items-center px-3 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg transition-colors duration-200 shadow-sm hover:shadow-md">
+							<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+							</svg>
+							PDF
+						</a>
+					</div>
 				</div>
 				<div class="overflow-x-auto">
 					<table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">

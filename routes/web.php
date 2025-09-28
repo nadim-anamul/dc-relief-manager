@@ -88,6 +88,14 @@ Route::get('/', function () {
         Route::resource('audit-logs', App\Http\Controllers\Admin\AuditLogController::class)->only(['index', 'show', 'destroy']);
         Route::post('audit-logs/clear', [App\Http\Controllers\Admin\AuditLogController::class, 'clear'])->name('audit-logs.clear');
         
+        // Distribution Analysis Pages
+        Route::prefix('distributions')->name('distributions.')->group(function () {
+            Route::get('project-upazila-union', [App\Http\Controllers\Admin\DistributionController::class, 'projectUpazilaUnion'])->name('project-upazila-union');
+            Route::get('project-upazila', [App\Http\Controllers\Admin\DistributionController::class, 'projectUpazila'])->name('project-upazila');
+            Route::get('union-summary', [App\Http\Controllers\Admin\DistributionController::class, 'unionSummary'])->name('union-summary');
+            Route::get('area-summary', [App\Http\Controllers\Admin\DistributionController::class, 'areaSummary'])->name('area-summary');
+        });
+
         // Export functionality
         Route::prefix('exports')->name('exports.')->middleware(['permission:exports.access'])->group(function () {
             // Relief Applications Export
