@@ -8,8 +8,8 @@
                     </svg>
                 </div>
                 <div>
-                    <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Project × Upazila × Union Distribution</h1>
-                    <p class="text-sm text-gray-500 dark:text-gray-400">Detailed distribution analysis across projects, upazilas, and unions</p>
+                    <h1 class="text-2xl font-bold text-gray-900 dark:text-white">{{ __('Project × Upazila × Union Distribution') }}</h1>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">{{ __('Detailed distribution analysis across projects, upazilas, and unions') }}</p>
                 </div>
             </div>
             <div class="flex flex-wrap gap-3">
@@ -17,14 +17,14 @@
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                     </svg>
-                    Back to Dashboard
+                    {{ __('Back to Dashboard') }}
                 </a>
                 <a href="{{ route('admin.exports.area-wise-relief.pdf', ['economic_year_id' => $selectedYearId, 'zilla_id' => $selectedZillaId]) }}" 
                    class="inline-flex items-center px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg transition-colors duration-200 shadow-sm hover:shadow-md">
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                     </svg>
-                    Export PDF
+                    {{ __('Export PDF') }}
                 </a>
             </div>
         </div>
@@ -39,13 +39,13 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-4 items-end">
                         <!-- Economic Year -->
                         <div>
-                            <label class="block text-[11px] font-semibold uppercase tracking-wider text-gray-600 dark:text-gray-300 mb-2">Economic Year</label>
+                            <label class="block text-[11px] font-semibold uppercase tracking-wider text-gray-600 dark:text-gray-300 mb-2">{{ __('Economic Year') }}</label>
                             <div class="relative">
                                 <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8V7m0 10v1"/></svg>
                                 <select name="economic_year_id" class="w-full appearance-none pl-9 pr-8 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white/90 dark:bg-gray-800/90 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm">
                                     @foreach($years as $y)
                                         <option value="{{ $y->id }}" {{ $selectedYearId == $y->id ? 'selected' : '' }}>
-                                            {{ $y->name ?? ($y->start_date?->format('Y') .' - '. $y->end_date?->format('Y')) }}
+                                            {{ $y->name_display ?? ($y->name ?? ($y->start_date?->format('Y') .' - '. $y->end_date?->format('Y'))) }}
                                         </option>
                                     @endforeach
                                 </select>
@@ -54,14 +54,14 @@
                         
                         <!-- Zilla -->
                         <div>
-                            <label class="block text-[11px] font-semibold uppercase tracking-wider text-gray-600 dark:text-gray-300 mb-2">Zilla</label>
+                            <label class="block text-[11px] font-semibold uppercase tracking-wider text-gray-600 dark:text-gray-300 mb-2">{{ __('Zilla') }}</label>
                             <div class="relative">
                                 <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7l9-4 9 4-9 4-9-4zm0 6l9 4 9-4"/></svg>
                                 <select name="zilla_id" class="w-full appearance-none pl-9 pr-8 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white/90 dark:bg-gray-800/90 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm">
-                                    <option value="">All Zillas</option>
+                                    <option value="">{{ __('All Zillas') }}</option>
                                     @foreach($zillas as $z)
                                         <option value="{{ $z->id }}" {{ $selectedZillaId == $z->id ? 'selected' : '' }}>
-                                            {{ $z->name }}
+                                            {{ $z->name_display ?? $z->name }}
                                         </option>
                                     @endforeach
                                 </select>
@@ -70,14 +70,14 @@
 
                         <!-- Upazila -->
                         <div>
-                            <label class="block text-[11px] font-semibold uppercase tracking-wider text-gray-600 dark:text-gray-300 mb-2">Upazila</label>
+                            <label class="block text-[11px] font-semibold uppercase tracking-wider text-gray-600 dark:text-gray-300 mb-2">{{ __('Upazila') }}</label>
                             <div class="relative">
                                 <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-cyan-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/></svg>
                                 <select name="upazila_id" class="w-full appearance-none pl-9 pr-8 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white/90 dark:bg-gray-800/90 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm">
-                                    <option value="">All Upazilas</option>
+                                    <option value="">{{ __('All Upazilas') }}</option>
                                     @foreach($upazilas as $u)
                                         <option value="{{ $u->id }}" {{ ($selectedUpazilaId ?? null) == $u->id ? 'selected' : '' }}>
-                                            {{ $u->name }}
+                                            {{ $u->name_display ?? $u->name }}
                                         </option>
                                     @endforeach
                                 </select>
@@ -86,11 +86,11 @@
 
                         <!-- Project -->
                         <div>
-                            <label class="block text-[11px] font-semibold uppercase tracking-wider text-gray-600 dark:text-gray-300 mb-2">Project</label>
+                            <label class="block text-[11px] font-semibold uppercase tracking-wider text-gray-600 dark:text-gray-300 mb-2">{{ __('Project') }}</label>
                             <div class="relative">
                                 <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
                                 <select name="project_id" class="w-full appearance-none pl-9 pr-8 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white/90 dark:bg-gray-800/90 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm">
-                                    <option value="">All Projects</option>
+                                    <option value="">{{ __('All Projects') }}</option>
                                     @foreach($projects as $p)
                                         <option value="{{ $p->id }}" {{ ($selectedProjectId ?? null) == $p->id ? 'selected' : '' }}>
                                             {{ $p->name }}
@@ -104,10 +104,10 @@
                         <div class="flex flex-col gap-2">
                             <button type="submit" class="inline-flex items-center justify-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-lg shadow-md transition-colors">
                                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h8M8 11h8m-7 4h6"/></svg>
-                                Apply
+                                {{ __('Apply') }}
                             </button>
                             <a href="{{ route('admin.distributions.project-upazila-union') }}" class="inline-flex items-center justify-center px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
-                                Reset
+                                {{ __('Reset') }}
                             </a>
                         </div>
                     </div>
@@ -120,9 +120,9 @@
             <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl p-6 border border-blue-200 dark:border-blue-800">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-sm font-medium text-blue-700 dark:text-blue-300">Total Applications</p>
-                        <p class="text-3xl font-bold text-blue-800 dark:text-blue-200">{{ $data['pagination']['total_items'] }}</p>
-                        <p class="text-xs text-blue-600 dark:text-blue-400 mt-1">Approved applications</p>
+                        <p class="text-sm font-medium text-blue-700 dark:text-blue-300">{{ __('Total Applications') }}</p>
+                        <p class="text-3xl font-bold text-blue-800 dark:text-blue-200">@bn($data['pagination']['total_items'])</p>
+                        <p class="text-xs text-blue-600 dark:text-blue-400 mt-1">{{ __('Approved applications') }}</p>
                     </div>
                     <div class="p-3 bg-blue-500 rounded-xl">
                         <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -135,15 +135,15 @@
             <div class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-xl p-6 border border-green-200 dark:border-green-800">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-sm font-medium text-green-700 dark:text-green-300">Total Amount</p>
+                        <p class="text-sm font-medium text-green-700 dark:text-green-300">{{ __('Total Amount') }}</p>
                         <p class="text-3xl font-bold text-green-800 dark:text-green-200">
                             @php
                                 $totalAmount = $data['distribution']->sum('approved_amount');
                                 // For summary cards, we'll show money format since it's aggregated data
                             @endphp
-                            ৳{{ number_format($totalAmount, 2) }}
+                            @moneybn($totalAmount)
                         </p>
-                        <p class="text-xs text-green-600 dark:text-green-400 mt-1">Approved relief amount</p>
+                        <p class="text-xs text-green-600 dark:text-green-400 mt-1">{{ __('Approved relief amount') }}</p>
                     </div>
                     <div class="p-3 bg-green-500 rounded-xl">
                         <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -156,9 +156,9 @@
             <div class="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 rounded-xl p-6 border border-purple-200 dark:border-purple-800">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-sm font-medium text-purple-700 dark:text-purple-300">Unique Projects</p>
-                        <p class="text-3xl font-bold text-purple-800 dark:text-purple-200">{{ $data['distribution']->pluck('project.name')->unique()->count() }}</p>
-                        <p class="text-xs text-purple-600 dark:text-purple-400 mt-1">Active projects</p>
+                        <p class="text-sm font-medium text-purple-700 dark:text-purple-300">{{ __('Unique Projects') }}</p>
+                        <p class="text-3xl font-bold text-purple-800 dark:text-purple-200">@bn($data['distribution']->pluck('project.name')->unique()->count())</p>
+                        <p class="text-xs text-purple-600 dark:text-purple-400 mt-1">{{ __('Active projects') }}</p>
                     </div>
                     <div class="p-3 bg-purple-500 rounded-xl">
                         <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -177,8 +177,8 @@
                         <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3v18h18"/></svg>
                     </div>
                     <div>
-                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Project Budget Breakdown</h3>
-                        <p class="text-sm text-gray-500 dark:text-gray-400">Initial budget vs distributed vs available for each project</p>
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ __('Project Budget Breakdown') }}</h3>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">{{ __('Initial budget vs distributed vs available for each project') }}</p>
                     </div>
                 </div>
             </div>
@@ -195,17 +195,17 @@
                             </div>
                         </div>
                         <div class="mt-3 space-y-1 text-sm">
-                            <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-300">Initial Budget</span><span class="font-semibold text-gray-900 dark:text-white">{{ $project['formatted_allocated'] }}</span></div>
-                            <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-300">Distributed</span><span class="font-semibold text-gray-900 dark:text-white">{{ $project['formatted_distributed'] }}</span></div>
-                            <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-300">Available</span><span class="font-semibold text-gray-900 dark:text-white">{{ $project['formatted_available'] }}</span></div>
+                            <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-300">{{ __('Initial Budget') }}</span><span class="font-semibold text-gray-900 dark:text-white">{{ bn_number($project['formatted_allocated']) }}</span></div>
+                            <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-300">{{ __('Distributed') }}</span><span class="font-semibold text-gray-900 dark:text-white">{{ bn_number($project['formatted_distributed']) }}</span></div>
+                            <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-300">{{ __('Available') }}</span><span class="font-semibold text-gray-900 dark:text-white">{{ bn_number($project['formatted_available']) }}</span></div>
                             <div class="w-full h-2 bg-gray-200 dark:bg-gray-600 rounded-full overflow-hidden">
                                 <div class="h-2 bg-indigo-500" style="width: {{ (int)round(($project['used_ratio'] ?? 0) * 100) }}%"></div>
                             </div>
-                            <div class="text-xs text-gray-500 dark:text-gray-400">{{ (int)round(($project['used_ratio'] ?? 0) * 100) }}% used</div>
+                            <div class="text-xs text-gray-500 dark:text-gray-400">@bn((int)round(($project['used_ratio'] ?? 0) * 100))% {{ __('used') }}</div>
                         </div>
                     </div>
                     @empty
-                    <div class="col-span-full text-center text-sm text-gray-500 dark:text-gray-400">No project budget data available for the selected filters.</div>
+                    <div class="col-span-full text-center text-sm text-gray-500 dark:text-gray-400">{{ __('No project budget data available for the selected filters.') }}</div>
                     @endforelse
                 </div>
             </div>
@@ -224,8 +224,8 @@
                                 </svg>
                             </div>
                             <div>
-                                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Top Unions by Relief Amount</h3>
-                                <p class="text-sm text-gray-500 dark:text-gray-400">Relief distribution by union</p>
+                                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ __('Top Unions by Relief Amount') }}</h3>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">{{ __('Relief distribution by union') }}</p>
                             </div>
                         </div>
                     </div>
@@ -248,8 +248,8 @@
                                 </svg>
                             </div>
                             <div>
-                                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Project Distribution</h3>
-                                <p class="text-sm text-gray-500 dark:text-gray-400">Amount by project</p>
+                                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ __('Project Distribution') }}</h3>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">{{ __('Amount by project') }}</p>
                             </div>
                         </div>
                     </div>
@@ -261,7 +261,7 @@
                 </div>
             </div>
 
-            <!-- Zilla Distribution Chart -->
+            <!-- Upazila Distribution Chart (replaces Zilla chart) -->
             <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
                 <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
                     <div class="flex items-center justify-between">
@@ -272,15 +272,15 @@
                                 </svg>
                             </div>
                             <div>
-                                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Zilla Distribution</h3>
-                                <p class="text-sm text-gray-500 dark:text-gray-400">Amount by zilla</p>
+                                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ __('Upazila Distribution') }}</h3>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">{{ __('Amount by upazila') }}</p>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="p-6">
                     <div class="h-80">
-                        <canvas id="zillaChart"></canvas>
+                        <canvas id="upazilaChart2"></canvas>
                     </div>
                 </div>
             </div>
@@ -289,10 +289,10 @@
         <!-- Distribution Table -->
         <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
             <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
-                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Detailed Distribution</h3>
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ __('Detailed Distribution') }}</h3>
                 <div class="flex items-center space-x-2">
                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200">
-                        {{ $data['pagination']['total_items'] }} applications
+                        @bn($data['pagination']['total_items']) {{ __('applications') }}
                     </span>
                 </div>
             </div>
@@ -300,13 +300,13 @@
                 <table id="detailedTable" class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                     <thead class="bg-gray-50 dark:bg-gray-800">
                         <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Organization</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Project</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Zilla</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Upazila</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Union</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Approved Amount</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Approved Date</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{ __('Organization') }}</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{ __('Project') }}</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{ __('Zilla') }}</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{ __('Upazila') }}</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{ __('Union') }}</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{ __('Approved Amount') }}</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{ __('Approved Date') }}</th>
                         </tr>
                     </thead>
                     <tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
@@ -319,13 +319,13 @@
                                     {{ $application->project->name ?? '—' }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                                    {{ $application->zilla->name ?? '—' }}
+                                    {{ $application->zilla->name_display ?? $application->zilla->name ?? '—' }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                                    {{ $application->upazila->name ?? '—' }}
+                                    {{ $application->upazila->name_display ?? $application->upazila->name ?? '—' }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                                    {{ $application->union->name ?? '—' }}
+                                    {{ $application->union->name_display ?? $application->union->name ?? '—' }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900 dark:text-white">
                                     @php
@@ -334,54 +334,25 @@
                                         $unit = $pu['unit'] ?? '';
                                     @endphp
                                     @if($isMoney)
-                                        ৳{{ number_format($application->approved_amount, 2) }}
+                                        @moneybn($application->approved_amount)
                                     @else
-                                        {{ number_format($application->approved_amount, 2) }} {{ $unit }}
+                                        @bn(number_format($application->approved_amount, 2)) {{ $unit }}
                                     @endif
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                                    {{ $application->approved_at?->format('M d, Y') ?? '—' }}
+                                    {{ locale_is_bn() ? $application->approved_at?->translatedFormat('j F, Y') : ($application->approved_at?->format('M d, Y')) ?? '—' }}
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="7" class="px-6 py-4 text-center text-gray-500 dark:text-gray-400">No data available</td>
+                                <td colspan="7" class="px-6 py-4 text-center text-gray-500 dark:text-gray-400">{{ __('No data available') }}</td>
                             </tr>
                         @endforelse
                     </tbody>
                 </table>
             </div>
             
-            @if($data['pagination']['total_pages'] > 1)
-            <div class="px-6 py-3 border-t border-gray-200 dark:border-gray-700 flex items-center justify-between">
-                <div class="flex items-center text-sm text-gray-700 dark:text-gray-300">
-                    <span>Showing {{ (($data['pagination']['current_page'] - 1) * $pageSize) + 1 }} to {{ min($data['pagination']['current_page'] * $pageSize, $data['pagination']['total_items']) }} of {{ $data['pagination']['total_items'] }} results</span>
-                </div>
-                <div class="flex items-center space-x-2">
-                    @if($data['pagination']['has_previous'])
-                        <a href="{{ request()->fullUrlWithQuery(['page' => $data['pagination']['previous_page']]) }}" 
-                           class="px-3 py-1 text-sm bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg transition-colors">
-                            Previous
-                        </a>
-                    @else
-                        <span class="px-3 py-1 text-sm bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-600 rounded-lg cursor-not-allowed">Previous</span>
-                    @endif
-                    
-                    <span class="px-3 py-1 text-sm bg-blue-600 text-white rounded-lg">
-                        {{ $data['pagination']['current_page'] }} / {{ $data['pagination']['total_pages'] }}
-                    </span>
-                    
-                    @if($data['pagination']['has_next'])
-                        <a href="{{ request()->fullUrlWithQuery(['page' => $data['pagination']['next_page']]) }}" 
-                           class="px-3 py-1 text-sm bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg transition-colors">
-                            Next
-                        </a>
-                    @else
-                        <span class="px-3 py-1 text-sm bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-600 rounded-lg cursor-not-allowed">Next</span>
-                    @endif
-                </div>
-            </div>
-            @endif
+            <!-- Removed server-side pagination footer to let DataTables handle paging and search-driven counts -->
         </div>
     </div>
 
@@ -658,11 +629,11 @@
                     fetch(`/admin/upazilas-by-zilla/${zillaId}`)
                         .then(response => response.json())
                         .then(data => {
-                            upazilaSelect.innerHTML = '<option value="">All Upazilas</option>';
+                            upazilaSelect.innerHTML = '<option value="">{{ __('All Upazilas') }}</option>';
                             data.forEach(upazila => {
                                 const option = document.createElement('option');
                                 option.value = upazila.id;
-                                option.textContent = upazila.name;
+                                option.textContent = upazila.name_display || upazila.name;
                                 upazilaSelect.appendChild(option);
                             });
                         })
@@ -767,15 +738,15 @@
             }
         });
 
-        // Zilla Distribution Chart
-        const zillaCtx = document.getElementById('zillaChart').getContext('2d');
-        new Chart(zillaCtx, {
+        // Upazila Distribution Chart (replaces Zilla)
+        const upazilaCtx2 = document.getElementById('upazilaChart2').getContext('2d');
+        new Chart(upazilaCtx2, {
             type: 'bar',
             data: {
-                labels: chartData.zillaData.labels,
+                labels: @json($upazilaChartData['labels']),
                 datasets: [{
-                    label: 'Amount (৳)',
-                    data: chartData.zillaData.data,
+                    label: '{{ __('Amount (৳)') }}',
+                    data: @json($upazilaChartData['data']),
                     backgroundColor: 'rgba(59, 130, 246, 0.8)',
                     borderColor: 'rgba(59, 130, 246, 1)',
                     borderWidth: 1
@@ -829,61 +800,64 @@
         $(document).ready(function() {
             $('#detailedTable').DataTable({
                 dom: 'Bfrtip',
+                paging: true,
+                lengthChange: true,
+                info: true,
                 buttons: [
                     {
                         extend: 'print',
-                        text: '<i class="fas fa-print"></i> Print',
+                        text: '<i class="fas fa-print"></i> {{ __('Print') }}',
                         className: 'bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200',
-                        title: 'Project × Upazila × Union Distribution Report',
+                        title: '{{ __('Project × Upazila × Union Distribution Report') }}',
                         messageTop: function() {
-                            const economicYear = document.querySelector('select[name="economic_year_id"] option:checked')?.textContent || 'All Years';
-                            const zilla = document.querySelector('select[name="zilla_id"] option:checked')?.textContent || 'All Zillas';
-                            const upazila = document.querySelector('select[name="upazila_id"] option:checked')?.textContent || 'All Upazilas';
-                            const project = document.querySelector('select[name="project_id"] option:checked')?.textContent || 'All Projects';
+                            const economicYear = document.querySelector('select[name="economic_year_id"] option:checked')?.textContent || '{{ __('All Years') }}';
+                            const zilla = document.querySelector('select[name="zilla_id"] option:checked')?.textContent || '{{ __('All Zillas') }}';
+                            const upazila = document.querySelector('select[name="upazila_id"] option:checked')?.textContent || '{{ __('All Upazilas') }}';
+                            const project = document.querySelector('select[name="project_id"] option:checked')?.textContent || '{{ __('All Projects') }}';
                             const dateTime = new Date().toLocaleDateString() + ' ' + new Date().toLocaleTimeString();
                             
                             return '<div style="text-align: center; margin-bottom: 20px;">' +
-                                '<h1 style="color: #333; margin: 0;">Relief Management System</h1>' +
-                                '<h2 style="color: #666; margin: 5px 0;">Project × Upazila × Union Distribution Report</h2>' +
+                                '<h1 style="color: #333; margin: 0;">{{ __('Relief Management System') }}</h1>' +
+                                '<h2 style="color: #666; margin: 5px 0;">{{ __('Project × Upazila × Union Distribution Report') }}</h2>' +
                                 '<div style="margin: 20px 0; padding: 15px; background-color: #f5f5f5; border-radius: 5px;">' +
-                                    '<h3 style="margin: 0 0 10px 0; color: #333;">Report Filters</h3>' +
+                                    '<h3 style="margin: 0 0 10px 0; color: #333;">{{ __('Report Filters') }}</h3>' +
                                     '<div style="display: flex; flex-wrap: wrap; gap: 20px;">' +
-                                        '<div><strong>Economic Year:</strong> ' + economicYear + '</div>' +
-                                        '<div><strong>Zilla:</strong> ' + zilla + '</div>' +
-                                        '<div><strong>Upazila:</strong> ' + upazila + '</div>' +
-                                        '<div><strong>Project:</strong> ' + project + '</div>' +
+                                        '<div><strong>{{ __('Economic Year') }}:</strong> ' + economicYear + '</div>' +
+                                        '<div><strong>{{ __('Zilla') }}:</strong> ' + zilla + '</div>' +
+                                        '<div><strong>{{ __('Upazila') }}:</strong> ' + upazila + '</div>' +
+                                        '<div><strong>{{ __('Project') }}:</strong> ' + project + '</div>' +
                                     '</div>' +
                                 '</div>' +
-                                '<p style="color: #666; font-size: 12px;">Generated on: ' + dateTime + '</p>' +
+                                '<p style="color: #666; font-size: 12px;">{{ __('Generated on:') }} ' + dateTime + '</p>' +
                             '</div>';
                         },
                         messageBottom: '<p style="text-align: center; color: #666; font-size: 12px; margin-top: 20px;">This report shows detailed distribution of relief applications across projects, upazilas, and unions.</p>'
                     },
                     {
                         extend: 'excel',
-                        text: '<i class="fas fa-file-excel"></i> Excel',
+                        text: '<i class="fas fa-file-excel"></i> {{ __('Excel') }}',
                         className: 'bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200',
-                        title: 'Project × Upazila × Union Distribution Report'
+                        title: '{{ __('Project × Upazila × Union Distribution Report') }}'
                     },
                     {
                         extend: 'pdf',
-                        text: '<i class="fas fa-file-pdf"></i> PDF',
+                        text: '<i class="fas fa-file-pdf"></i> {{ __('PDF') }}',
                         className: 'bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200',
-                        title: 'Project × Upazila × Union Distribution Report'
+                        title: '{{ __('Project × Upazila × Union Distribution Report') }}'
                     }
                 ],
                 pageLength: 25,
                 lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
                 responsive: true,
                 language: {
-                    search: "Search:",
-                    lengthMenu: "Show _MENU_ entries",
-                    info: "Showing _START_ to _END_ of _TOTAL_ entries",
+                    search: "{{ __('Search:') }}",
+                    lengthMenu: "{{ __('Show _MENU_ entries') }}",
+                    info: "{{ __('Showing _START_ to _END_ of _TOTAL_ entries') }}",
                     paginate: {
-                        first: "First",
-                        last: "Last",
-                        next: "Next",
-                        previous: "Previous"
+                        first: "{{ __('First') }}",
+                        last: "{{ __('Last') }}",
+                        next: "{{ __('Next') }}",
+                        previous: "{{ __('Previous') }}"
                     }
                 },
                 columnDefs: [

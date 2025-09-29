@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Carbon\Carbon;
 
 class EconomicYear extends Model
 {
@@ -25,6 +26,20 @@ class EconomicYear extends Model
 		'is_active' => 'boolean',
 		'is_current' => 'boolean',
 	];
+
+    public function getNameDisplayAttribute(): string
+    {
+        $localizedName = app()->isLocale('bn') ? ($this->name_bn ?: $this->name) : ($this->name ?: $this->name_bn);
+        if ($localizedName) {
+            return (string) $localizedName;
+        }
+        $start = $this->start_date ? Carbon::parse($this->start_date)->format('Y') : null;
+        $end = $this->end_date ? Carbon::parse($this->end_date)->format('Y') : null;
+        if (function_exists('locale_is_bn') && locale_is_bn()) {
+            return trim((function_exists('bn_number') ? bn_number($start) : $start) . ' - ' . (function_exists('bn_number') ? bn_number($end) : $end));
+        }
+        return trim(($start ?: '') . ' - ' . ($end ?: ''));
+    }
 
 	/**
 	 * Get the relief requests for this economic year.
@@ -54,17 +69,27 @@ class EconomicYear extends Model
 	/**
 	 * Get the duration of the economic year in days.
 	 */
-	public function getDurationInDaysAttribute(): int
+    public function getDurationInDaysAttribute(): int
 	{
-		return $this->start_date->diffInDays($this->end_date);
+        if (!$this->start_date || !$this->end_date) {
+            return 0;
+        }
+        $start = Carbon::parse($this->start_date);
+        $end = Carbon::parse($this->end_date);
+        return $start->diffInDays($end);
 	}
 
 	/**
 	 * Get the duration of the economic year in months.
 	 */
-	public function getDurationInMonthsAttribute(): int
+    public function getDurationInMonthsAttribute(): int
 	{
-		return $this->start_date->diffInMonths($this->end_date);
+        if (!$this->start_date || !$this->end_date) {
+            return 0;
+        }
+        $start = Carbon::parse($this->start_date);
+        $end = Carbon::parse($this->end_date);
+        return $start->diffInMonths($end);
 	}
 
 	/**

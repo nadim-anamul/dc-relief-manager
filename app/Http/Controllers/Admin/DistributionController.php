@@ -23,7 +23,7 @@ class DistributionController extends Controller
         $years = EconomicYear::orderByDesc('start_date')->get();
         $selectedYear = $this->resolveSelectedYear($request, $years);
         
-        $zillas = Zilla::orderBy('name')->get(['id', 'name']);
+        $zillas = Zilla::orderBy('name')->get(['id', 'name', 'name_bn']);
         $selectedZillaId = $this->resolveSelectedZilla($request, $zillas);
         
         $selectedUpazilaId = $request->integer('upazila_id');
@@ -34,9 +34,10 @@ class DistributionController extends Controller
         $data = $this->getProjectUpazilaUnionData($selectedYear, $selectedZillaId, $selectedUpazilaId, $selectedProjectId, $pageSize, $currentPage);
         $chartData = $this->getProjectUpazilaUnionChartData($data['distribution']);
         $unionChartData = $this->getUnionReliefChartData($selectedYear, $selectedZillaId, $selectedUpazilaId, $selectedProjectId);
+        $upazilaChartData = $this->getUpazilaReliefChartData($selectedYear, $selectedZillaId, $selectedProjectId);
         $projectBudgetBreakdown = $this->getProjectBudgetBreakdown($selectedYear, $selectedZillaId, $selectedUpazilaId, $selectedProjectId);
 
-        $upazilas = $selectedZillaId ? Upazila::where('zilla_id', $selectedZillaId)->orderBy('name')->get(['id', 'name']) : collect();
+        $upazilas = $selectedZillaId ? Upazila::where('zilla_id', $selectedZillaId)->orderBy('name')->get(['id', 'name', 'name_bn']) : collect();
         $projects = Project::forEconomicYear($selectedYear?->id)->orderBy('name')->get(['id', 'name']);
 
         // Project units (for formatting amounts based on project relief type)
@@ -63,6 +64,7 @@ class DistributionController extends Controller
             'data' => $data,
             'chartData' => $chartData,
             'unionChartData' => $unionChartData,
+            'upazilaChartData' => $upazilaChartData,
             'projectBudgetBreakdown' => $projectBudgetBreakdown,
             'projectUnits' => $projectUnits,
             'pageSize' => $pageSize,
@@ -228,22 +230,20 @@ class DistributionController extends Controller
             ->when($upazilaId, fn($q) => $q->where('upazila_id', $upazilaId))
             ->when($projectId, fn($q) => $q->where('project_id', $projectId));
 
-        $totalItems = $query->count();
-        $distribution = $query->orderByDesc('approved_amount')
-            ->skip(($currentPage - 1) * $pageSize)
-            ->take($pageSize)
-            ->get();
+        // Load all matching records for client-side DataTables pagination/search
+        $distribution = $query->orderByDesc('approved_amount')->get();
+        $totalItems = $distribution->count();
 
         return [
             'distribution' => $distribution,
             'pagination' => [
                 'current_page' => $currentPage,
-                'total_pages' => ceil($totalItems / $pageSize),
+                'total_pages' => 1,
                 'total_items' => $totalItems,
-                'has_previous' => $currentPage > 1,
-                'has_next' => $currentPage < ceil($totalItems / $pageSize),
-                'previous_page' => $currentPage > 1 ? $currentPage - 1 : null,
-                'next_page' => $currentPage < ceil($totalItems / $pageSize) ? $currentPage + 1 : null,
+                'has_previous' => false,
+                'has_next' => false,
+                'previous_page' => null,
+                'next_page' => null,
             ],
         ];
     }

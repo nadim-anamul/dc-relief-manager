@@ -8,8 +8,8 @@
                     </svg>
                 </div>
                 <div>
-                    <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Union-wise Allocation Summary</h1>
-                    <p class="text-sm text-gray-500 dark:text-gray-400">Summary of relief allocations by union</p>
+                    <h1 class="text-2xl font-bold text-gray-900 dark:text-white">{{ __('Union-wise Allocation Summary') }}</h1>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">{{ __('Summary of relief allocations by union') }}</p>
                 </div>
             </div>
             <div class="flex flex-wrap gap-3">
@@ -17,14 +17,14 @@
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                     </svg>
-                    Back to Dashboard
+                    {{ __('Back to Dashboard') }}
                 </a>
                 <a href="{{ route('admin.exports.area-wise-relief.pdf', ['economic_year_id' => $selectedYearId, 'zilla_id' => $selectedZillaId]) }}" 
                    class="inline-flex items-center px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg transition-colors duration-200 shadow-sm hover:shadow-md">
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                     </svg>
-                    Export PDF
+                    {{ __('Export PDF') }}
                 </a>
             </div>
         </div>
@@ -39,13 +39,13 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-4 items-end">
                         <!-- Economic Year -->
                         <div>
-                            <label class="block text-[11px] font-semibold uppercase tracking-wider text-gray-600 dark:text-gray-300 mb-2">Economic Year</label>
+                            <label class="block text-[11px] font-semibold uppercase tracking-wider text-gray-600 dark:text-gray-300 mb-2">{{ __('Economic Year') }}</label>
                             <div class="relative">
                                 <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8V7m0 10v1"/></svg>
                                 <select name="economic_year_id" class="w-full appearance-none pl-9 pr-8 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white/90 dark:bg-gray-800/90 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 shadow-sm">
                                     @foreach($years as $y)
                                         <option value="{{ $y->id }}" {{ $selectedYearId == $y->id ? 'selected' : '' }}>
-                                            {{ $y->name ?? ($y->start_date?->format('Y') .' - '. $y->end_date?->format('Y')) }}
+                                            {{ $y->name_display ?? ($y->name ?? ($y->start_date?->format('Y') .' - '. $y->end_date?->format('Y'))) }}
                                         </option>
                                     @endforeach
                                 </select>
@@ -54,15 +54,15 @@
                         
                         <!-- Zilla -->
                         <div>
-                            <label class="block text-[11px] font-semibold uppercase tracking-wider text-gray-600 dark:text-gray-300 mb-2">Zilla</label>
+                            <label class="block text-[11px] font-semibold uppercase tracking-wider text-gray-600 dark:text-gray-300 mb-2">{{ __('Zilla') }}</label>
                             <div class="relative">
                                 <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-pink-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7l9-4 9 4-9 4-9-4zm0 6l9 4 9-4"/></svg>
                                 <select name="zilla_id" class="w-full appearance-none pl-9 pr-8 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white/90 dark:bg-gray-800/90 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 shadow-sm">
-                                    <option value="">All Zillas</option>
+                                    <option value="">{{ __('All Zillas') }}</option>
                                     @foreach($zillas as $z)
-                                        <option value="{{ $z->id }}" {{ $selectedZillaId == $z->id ? 'selected' : '' }}>
-                                            {{ $z->name }}
-                                        </option>
+                                    <option value="{{ $z->id }}" {{ $selectedZillaId == $z->id ? 'selected' : '' }}>
+                                        {{ $z->name_display ?? $z->name }}
+                                    </option>
                                     @endforeach
                                 </select>
                             </div>
@@ -70,14 +70,14 @@
 
                         <!-- Upazila -->
                         <div>
-                            <label class="block text-[11px] font-semibold uppercase tracking-wider text-gray-600 dark:text-gray-300 mb-2">Upazila</label>
+                            <label class="block text-[11px] font-semibold uppercase tracking-wider text-gray-600 dark:text-gray-300 mb-2">{{ __('Upazila') }}</label>
                             <div class="relative">
                                 <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/></svg>
                                 <select name="upazila_id" class="w-full appearance-none pl-9 pr-8 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white/90 dark:bg-gray-800/90 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 shadow-sm">
-                                    <option value="">All Upazilas</option>
+                                    <option value="">{{ __('All Upazilas') }}</option>
                                     @foreach($upazilas as $u)
                                         <option value="{{ $u->id }}" {{ ($selectedUpazilaId ?? null) == $u->id ? 'selected' : '' }}>
-                                            {{ $u->name }}
+                                            {{ $u->name_display ?? $u->name }}
                                         </option>
                                     @endforeach
                                 </select>
@@ -86,11 +86,11 @@
 
                         <!-- Project -->
                         <div>
-                            <label class="block text-[11px] font-semibold uppercase tracking-wider text-gray-600 dark:text-gray-300 mb-2">Project</label>
+                            <label class="block text-[11px] font-semibold uppercase tracking-wider text-gray-600 dark:text-gray-300 mb-2">{{ __('Project') }}</label>
                             <div class="relative">
                                 <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
                                 <select name="project_id" class="w-full appearance-none pl-9 pr-8 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white/90 dark:bg-gray-800/90 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 shadow-sm">
-                                    <option value="">All Projects</option>
+                                    <option value="">{{ __('All Projects') }}</option>
                                     @foreach($projects as $p)
                                         <option value="{{ $p->id }}" {{ $selectedProjectId == $p->id ? 'selected' : '' }}>
                                             {{ $p->name }}
@@ -104,10 +104,10 @@
                         <div class="flex flex-col gap-2">
                             <button type="submit" class="inline-flex items-center justify-center px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium rounded-lg shadow-md transition-colors">
                                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h8M8 11h8m-7 4h6"/></svg>
-                                Apply
+                                {{ __('Apply') }}
                             </button>
                             <a href="{{ route('admin.distributions.union-summary') }}" class="inline-flex items-center justify-center px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
-                                Reset
+                                {{ __('Reset') }}
                             </a>
                         </div>
                     </div>
@@ -120,9 +120,9 @@
             <div class="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 rounded-xl p-6 border border-purple-200 dark:border-purple-800">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-sm font-medium text-purple-700 dark:text-purple-300">Total Unions</p>
-                        <p class="text-3xl font-bold text-purple-800 dark:text-purple-200">{{ $data['pagination']['total_items'] }}</p>
-                        <p class="text-xs text-purple-600 dark:text-purple-400 mt-1">Unions with allocations</p>
+                        <p class="text-sm font-medium text-purple-700 dark:text-purple-300">{{ __('Total Unions') }}</p>
+                        <p class="text-3xl font-bold text-purple-800 dark:text-purple-200">@bn($data['pagination']['total_items'])</p>
+                        <p class="text-xs text-purple-600 dark:text-purple-400 mt-1">{{ __('Unions with allocations') }}</p>
                     </div>
                     <div class="p-3 bg-purple-500 rounded-xl">
                         <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -135,9 +135,9 @@
             <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl p-6 border border-blue-200 dark:border-blue-800">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-sm font-medium text-blue-700 dark:text-blue-300">Total Amount</p>
-                        <p class="text-3xl font-bold text-blue-800 dark:text-blue-200">৳{{ number_format($data['summary']->sum('total_amount'), 2) }}</p>
-                        <p class="text-xs text-blue-600 dark:text-blue-400 mt-1">Total relief amount</p>
+                        <p class="text-sm font-medium text-blue-700 dark:text-blue-300">{{ __('Total Amount') }}</p>
+                        <p class="text-3xl font-bold text-blue-800 dark:text-blue-200">@moneybn($data['summary']->sum('total_amount'))</p>
+                        <p class="text-xs text-blue-600 dark:text-blue-400 mt-1">{{ __('Total relief amount') }}</p>
                     </div>
                     <div class="p-3 bg-blue-500 rounded-xl">
                         <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -150,9 +150,9 @@
             <div class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-xl p-6 border border-green-200 dark:border-green-800">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-sm font-medium text-green-700 dark:text-green-300">Total Applications</p>
-                        <p class="text-3xl font-bold text-green-800 dark:text-green-200">{{ $data['summary']->sum('application_count') }}</p>
-                        <p class="text-xs text-green-600 dark:text-green-400 mt-1">Approved applications</p>
+                        <p class="text-sm font-medium text-green-700 dark:text-green-300">{{ __('Total Applications') }}</p>
+                        <p class="text-3xl font-bold text-green-800 dark:text-green-200">@bn($data['summary']->sum('application_count'))</p>
+                        <p class="text-xs text-green-600 dark:text-green-400 mt-1">{{ __('Approved applications') }}</p>
                     </div>
                     <div class="p-3 bg-green-500 rounded-xl">
                         <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -171,8 +171,8 @@
                         <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3v18h18"/></svg>
                     </div>
                     <div>
-                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Project Budget Breakdown</h3>
-                        <p class="text-sm text-gray-500 dark:text-gray-400">Initial budget vs distributed vs available for each project</p>
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ __('Project Budget Breakdown') }}</h3>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">{{ __('Initial budget vs distributed vs available for each project') }}</p>
                     </div>
                 </div>
             </div>
@@ -189,17 +189,17 @@
                             </div>
                         </div>
                         <div class="mt-3 space-y-1 text-sm">
-                            <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-300">Initial Budget</span><span class="font-semibold text-gray-900 dark:text-white">{{ $project['formatted_allocated'] }}</span></div>
-                            <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-300">Distributed</span><span class="font-semibold text-gray-900 dark:text-white">{{ $project['formatted_distributed'] }}</span></div>
-                            <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-300">Available</span><span class="font-semibold text-gray-900 dark:text-white">{{ $project['formatted_available'] }}</span></div>
+                            <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-300">{{ __('Initial Budget') }}</span><span class="font-semibold text-gray-900 dark:text-white">{{ bn_number($project['formatted_allocated']) }}</span></div>
+                            <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-300">{{ __('Distributed') }}</span><span class="font-semibold text-gray-900 dark:text-white">{{ bn_number($project['formatted_distributed']) }}</span></div>
+                            <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-300">{{ __('Available') }}</span><span class="font-semibold text-gray-900 dark:text-white">{{ bn_number($project['formatted_available']) }}</span></div>
                             <div class="w-full h-2 bg-gray-200 dark:bg-gray-600 rounded-full overflow-hidden">
                                 <div class="h-2 bg-purple-500" style="width: {{ (int)round(($project['used_ratio'] ?? 0) * 100) }}%"></div>
                             </div>
-                            <div class="text-xs text-gray-500 dark:text-gray-400">{{ (int)round(($project['used_ratio'] ?? 0) * 100) }}% used</div>
+                            <div class="text-xs text-gray-500 dark:text-gray-400">@bn((int)round(($project['used_ratio'] ?? 0) * 100))% {{ __('used') }}</div>
                         </div>
                     </div>
                     @empty
-                    <div class="col-span-full text-center text-sm text-gray-500 dark:text-gray-400">No project budget data available for the selected filters.</div>
+                    <div class="col-span-full text-center text-sm text-gray-500 dark:text-gray-400">{{ __('No project budget data available for the selected filters.') }}</div>
                     @endforelse
                 </div>
             </div>
@@ -218,8 +218,8 @@
                                 </svg>
                             </div>
                             <div>
-                                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Zilla Distribution</h3>
-                                <p class="text-sm text-gray-500 dark:text-gray-400">Amount by zilla</p>
+                                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ __('Zilla Distribution') }}</h3>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">{{ __('Amount by zilla') }}</p>
                             </div>
                         </div>
                     </div>
@@ -242,8 +242,8 @@
                                 </svg>
                             </div>
                             <div>
-                                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Upazila Distribution</h3>
-                                <p class="text-sm text-gray-500 dark:text-gray-400">Amount by upazila</p>
+                                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ __('Upazila Distribution') }}</h3>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">{{ __('Amount by upazila') }}</p>
                             </div>
                         </div>
                     </div>
@@ -259,10 +259,10 @@
         <!-- Union Summary Table -->
         <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
             <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
-                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Union-wise Summary</h3>
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ __('Union-wise Summary') }}</h3>
                 <div class="flex items-center space-x-2">
                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200">
-                        {{ $data['pagination']['total_items'] }} unions
+                        @bn($data['pagination']['total_items']) {{ __('unions') }}
                     </span>
                 </div>
             </div>
@@ -270,12 +270,12 @@
                 <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                     <thead class="bg-gray-50 dark:bg-gray-800">
                         <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Union</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Upazila</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Zilla</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Total Amount</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Applications</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Avg. Amount</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{ __('Union') }}</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{ __('Upazila') }}</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{ __('Zilla') }}</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{ __('Total Amount') }}</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{ __('Applications') }}</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{ __('Avg. Amount') }}</th>
                         </tr>
                     </thead>
                     <tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
@@ -285,24 +285,24 @@
                                     {{ $union->union->name ?? '—' }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                                    {{ $union->upazila->name ?? '—' }}
+                                    {{ $union->upazila->name_display ?? $union->upazila->name ?? '—' }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                                    {{ $union->zilla->name ?? '—' }}
+                                    {{ $union->zilla->name_display ?? $union->zilla->name ?? '—' }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900 dark:text-white">
-                                    ৳{{ number_format($union->total_amount, 2) }}
+                                    @moneybn($union->total_amount)
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                                    {{ $union->application_count }}
+                                    @bn($union->application_count)
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                                    ৳{{ number_format($union->total_amount / max($union->application_count, 1), 2) }}
+                                    @moneybn($union->total_amount / max($union->application_count, 1))
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="6" class="px-6 py-4 text-center text-gray-500 dark:text-gray-400">No data available</td>
+                                <td colspan="6" class="px-6 py-4 text-center text-gray-500 dark:text-gray-400">{{ __('No data available') }}</td>
                             </tr>
                         @endforelse
                     </tbody>
@@ -312,29 +312,29 @@
             @if($data['pagination']['total_pages'] > 1)
             <div class="px-6 py-3 border-t border-gray-200 dark:border-gray-700 flex items-center justify-between">
                 <div class="flex items-center text-sm text-gray-700 dark:text-gray-300">
-                    <span>Showing {{ (($data['pagination']['current_page'] - 1) * $pageSize) + 1 }} to {{ min($data['pagination']['current_page'] * $pageSize, $data['pagination']['total_items']) }} of {{ $data['pagination']['total_items'] }} results</span>
+                    <span>{{ __('Showing') }} @bn((($data['pagination']['current_page'] - 1) * $pageSize) + 1) {{ __('to') }} @bn(min($data['pagination']['current_page'] * $pageSize, $data['pagination']['total_items'])) {{ __('of') }} @bn($data['pagination']['total_items']) {{ __('results') }}</span>
                 </div>
                 <div class="flex items-center space-x-2">
                     @if($data['pagination']['has_previous'])
                         <a href="{{ request()->fullUrlWithQuery(['page' => $data['pagination']['previous_page']]) }}" 
                            class="px-3 py-1 text-sm bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg transition-colors">
-                            Previous
+                            {{ __('Previous') }}
                         </a>
                     @else
-                        <span class="px-3 py-1 text-sm bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-600 rounded-lg cursor-not-allowed">Previous</span>
+                        <span class="px-3 py-1 text-sm bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-600 rounded-lg cursor-not-allowed">{{ __('Previous') }}</span>
                     @endif
                     
                     <span class="px-3 py-1 text-sm bg-purple-600 text-white rounded-lg">
-                        {{ $data['pagination']['current_page'] }} / {{ $data['pagination']['total_pages'] }}
+                        @bn($data['pagination']['current_page']) / @bn($data['pagination']['total_pages'])
                     </span>
                     
                     @if($data['pagination']['has_next'])
                         <a href="{{ request()->fullUrlWithQuery(['page' => $data['pagination']['next_page']]) }}" 
                            class="px-3 py-1 text-sm bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg transition-colors">
-                            Next
+                            {{ __('Next') }}
                         </a>
                     @else
-                        <span class="px-3 py-1 text-sm bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-600 rounded-lg cursor-not-allowed">Next</span>
+                        <span class="px-3 py-1 text-sm bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-600 rounded-lg cursor-not-allowed">{{ __('Next') }}</span>
                     @endif
                 </div>
             </div>
@@ -731,9 +731,9 @@
                 buttons: [
                     {
                         extend: 'print',
-                        text: '<i class="fas fa-print"></i> Print',
+                        text: '<i class="fas fa-print"></i> {{ __('Print') }}',
                         className: 'bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200',
-                        title: 'Union-wise Allocation Summary Report',
+                        title: '{{ __('Union-wise Allocation Summary Report') }}',
                         messageTop: function() {
                             let filters = [];
                             @if($selectedYearId)
@@ -748,28 +748,28 @@
                             @if($selectedProjectId)
                                 filters.push('Project: {{ $projects->firstWhere("id", $selectedProjectId)?->name ?? "Unknown" }}');
                             @endif
-                            return '<h2 style="text-align: center; margin-bottom: 20px;">Union-wise Allocation Summary Report</h2>' +
-                                   (filters.length > 0 ? '<p style="text-align: center; margin-bottom: 20px;"><strong>Filters:</strong> ' + filters.join(' | ') + '</p>' : '');
+                            return '<h2 style="text-align: center; margin-bottom: 20px;">{{ __('Union-wise Allocation Summary Report') }}</h2>' +
+                                   (filters.length > 0 ? '<p style="text-align: center; margin-bottom: 20px;"><strong>{{ __('Report Filters') }}:</strong> ' + filters.join(' | ') + '</p>' : '');
                         },
                         messageBottom: '<p style="text-align: center; color: #666; font-size: 12px; margin-top: 20px;">This report shows detailed distribution of relief applications across unions.</p>'
                     },
-                    { extend: 'excel', text: '<i class="fas fa-file-excel"></i> Excel', className: 'bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200' },
-                    { extend: 'pdf', text: '<i class="fas fa-file-pdf"></i> PDF', className: 'bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200' }
+                    { extend: 'excel', text: '<i class="fas fa-file-excel"></i> {{ __('Excel') }}', className: 'bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200' },
+                    { extend: 'pdf', text: '<i class="fas fa-file-pdf"></i> {{ __('PDF') }}', className: 'bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200' }
                 ],
                 pageLength: 25,
                 lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
                 responsive: true,
                 language: {
-                    search: "Search:",
-                    lengthMenu: "Show _MENU_ entries",
-                    info: "Showing _START_ to _END_ of _TOTAL_ entries",
-                    infoEmpty: "Showing 0 to 0 of 0 entries",
-                    infoFiltered: "(filtered from _MAX_ total entries)",
+                    search: "{{ __('Search:') }}",
+                    lengthMenu: "{{ __('Show _MENU_ entries') }}",
+                    info: "{{ __('Showing _START_ to _END_ of _TOTAL_ entries') }}",
+                    infoEmpty: "{{ __('Showing 0 to 0 of 0 entries') }}",
+                    infoFiltered: "{{ __('(filtered from _MAX_ total entries)') }}",
                     paginate: {
-                        first: "First",
-                        last: "Last",
-                        next: "Next",
-                        previous: "Previous"
+                        first: "{{ __('First') }}",
+                        last: "{{ __('Last') }}",
+                        next: "{{ __('Next') }}",
+                        previous: "{{ __('Previous') }}"
                     }
                 },
                 columnDefs: [

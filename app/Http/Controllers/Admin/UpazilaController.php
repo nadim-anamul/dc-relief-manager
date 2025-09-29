@@ -118,10 +118,14 @@ class UpazilaController extends Controller
 	 */
 	public function getByZilla(Zilla $zilla): JsonResponse
 	{
-		$upazilas = $zilla->upazilas()
+        $upazilas = $zilla->upazilas()
 			->where('is_active', true)
 			->orderBy('name')
-			->get(['id', 'name', 'name_bn']);
+            ->get(['id', 'name', 'name_bn'])
+            ->map(function ($u) {
+                $u->name_display = app()->isLocale('bn') ? ($u->name_bn ?: $u->name) : ($u->name ?: $u->name_bn);
+                return $u;
+            });
 
 		return response()->json($upazilas);
 	}
