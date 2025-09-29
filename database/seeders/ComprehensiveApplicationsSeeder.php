@@ -1,0 +1,400 @@
+<?php
+
+namespace Database\Seeders;
+
+use App\Models\ReliefApplication;
+use App\Models\ReliefApplicationItem;
+use App\Models\ReliefItem;
+use App\Models\Project;
+use App\Models\OrganizationType;
+use App\Models\Zilla;
+use App\Models\Upazila;
+use App\Models\Union;
+use App\Models\Ward;
+use App\Models\User;
+use App\Models\ReliefType;
+use App\Models\EconomicYear;
+use Illuminate\Database\Seeder;
+use Carbon\Carbon;
+
+class ComprehensiveApplicationsSeeder extends Seeder
+{
+    /**
+     * Run the database seeds.
+     */
+    public function run(): void
+    {
+        $this->command->info('Creating comprehensive relief applications for all economic years...');
+
+        // Get all economic years
+        $economicYears = EconomicYear::all();
+        $projects = Project::all();
+        $reliefItems = ReliefItem::all();
+        $organizationTypes = OrganizationType::all();
+        $zillas = Zilla::all();
+        $upazilas = Upazila::all();
+        $unions = Union::all();
+        $wards = Ward::all();
+        $users = User::whereHas('roles', function($q) {
+            $q->whereIn('name', ['data-entry', 'user']);
+        })->get();
+        $reliefTypes = ReliefType::all();
+
+        if ($economicYears->isEmpty() || $projects->isEmpty() || $reliefItems->isEmpty() || 
+            $organizationTypes->isEmpty() || $zillas->isEmpty() || $upazilas->isEmpty() || 
+            $unions->isEmpty() || $wards->isEmpty() || $users->isEmpty()) {
+            $this->command->warn('Required data not found. Please run other seeders first.');
+            return;
+        }
+
+        $createdCount = 0;
+
+        // Create applications for each economic year
+        foreach ($economicYears as $year) {
+            $yearProjects = $projects->where('economic_year_id', $year->id);
+            $this->command->info("Creating applications for economic year: {$year->name}");
+            
+            foreach ($yearProjects as $project) {
+                $applicationsForProject = $this->generateApplicationsForProject(
+                    $project, $year, $reliefItems, $organizationTypes, 
+                    $zillas, $upazilas, $unions, $wards, $users, $reliefTypes
+                );
+                
+                foreach ($applicationsForProject as $applicationData) {
+                    $application = ReliefApplication::create($applicationData);
+                    
+                    // Add relief items for non-cash applications
+                    if ($applicationData['relief_type_id'] !== $reliefTypes->where('name', 'Cash Relief')->first()?->id) {
+                        $this->addReliefItems($application, $reliefItems);
+                    }
+                    
+                    $createdCount++;
+                }
+            }
+        }
+
+        $this->command->info("Created {$createdCount} comprehensive relief applications across all economic years.");
+    }
+
+    private function generateApplicationsForProject($project, $year, $reliefItems, $organizationTypes, 
+                                                   $zillas, $upazilas, $unions, $wards, $users, $reliefTypes)
+    {
+        $applications = [];
+        $reliefType = $project->reliefType;
+        
+        // Generate different number of applications based on project type and year
+        $numApplications = $this->getApplicationCountForProject($project, $year);
+        
+        for ($i = 0; $i < $numApplications; $i++) {
+            $upazila = $upazilas->random();
+            $union = $unions->where('upazila_id', $upazila->id)->first() ?? $unions->random();
+            $ward = $wards->where('union_id', $union->id)->first() ?? $wards->random();
+            $organizationType = $organizationTypes->random();
+            $user = $users->random();
+            
+            // Generate application date within the economic year
+            $applicationDate = $this->generateDateInYear($year);
+            
+            // Determine status based on year and application date
+            $status = $this->determineApplicationStatus($year, $applicationDate);
+            
+            // Generate realistic amounts based on relief type
+            $amountRequested = $this->generateAmountRequested($reliefType);
+            $approvedAmount = $this->generateApprovedAmount($status, $amountRequested, $reliefType);
+            
+            $applicationData = [
+                'organization_name' => $this->generateOrganizationName($organizationType, $upazila),
+                'organization_type_id' => $organizationType->id,
+                'date' => $applicationDate,
+                'zilla_id' => $zillas->first()->id,
+                'upazila_id' => $upazila->id,
+                'union_id' => $union->id,
+                'ward_id' => $ward->id,
+                'subject' => $this->generateSubject($reliefType, $upazila),
+                'relief_type_id' => $reliefType->id,
+                'project_id' => $project->id,
+                'applicant_name' => $this->generateApplicantName(),
+                'applicant_designation' => $this->generateDesignation(),
+                'applicant_phone' => $this->generatePhoneNumber(),
+                'applicant_address' => $this->generateAddress($upazila, $union),
+                'organization_address' => $this->generateOrganizationAddress($upazila),
+                'amount_requested' => $amountRequested,
+                'details' => $this->generateDetails($reliefType, $upazila),
+                'status' => $status,
+                'created_by' => $user->id,
+                'created_at' => $applicationDate,
+            ];
+            
+            // Add approval/rejection data if applicable
+            if ($status === 'approved') {
+                $applicationData['approved_amount'] = $approvedAmount;
+                $applicationData['admin_remarks'] = $this->generateApprovalRemarks();
+                $applicationData['approved_by'] = User::whereHas('roles', function($q) { 
+                    $q->where('name', 'district-admin'); 
+                })->first()->id;
+                $applicationData['approved_at'] = $applicationDate->copy()->addDays(rand(1, 30));
+            } elseif ($status === 'rejected') {
+                $applicationData['admin_remarks'] = $this->generateRejectionRemarks();
+                $applicationData['rejected_by'] = User::whereHas('roles', function($q) { 
+                    $q->where('name', 'district-admin'); 
+                })->first()->id;
+                $applicationData['rejected_at'] = $applicationDate->copy()->addDays(rand(1, 15));
+            }
+            
+            $applications[] = $applicationData;
+        }
+        
+        return $applications;
+    }
+
+    private function getApplicationCountForProject($project, $year)
+    {
+        // More applications for current year, fewer for past years
+        if ($year->is_current) {
+            return rand(15, 25);
+        } elseif ($year->end_date < now()) {
+            return rand(8, 15); // Past years
+        } else {
+            return rand(3, 8); // Future years
+        }
+    }
+
+    private function generateDateInYear($year)
+    {
+        $startDate = Carbon::parse($year->start_date);
+        $endDate = Carbon::parse($year->end_date);
+        
+        // Don't generate dates in the future
+        if ($endDate->isFuture()) {
+            $endDate = now();
+        }
+        
+        return Carbon::createFromTimestamp(rand($startDate->timestamp, $endDate->timestamp));
+    }
+
+    private function determineApplicationStatus($year, $applicationDate)
+    {
+        // Current year: mix of all statuses
+        if ($year->is_current) {
+            $statuses = ['pending' => 30, 'approved' => 50, 'rejected' => 20];
+        }
+        // Past years: mostly approved/rejected, few pending
+        elseif ($year->end_date < now()) {
+            $statuses = ['pending' => 5, 'approved' => 70, 'rejected' => 25];
+        }
+        // Future years: mostly pending
+        else {
+            $statuses = ['pending' => 80, 'approved' => 15, 'rejected' => 5];
+        }
+        
+        $rand = rand(1, 100);
+        $cumulative = 0;
+        
+        foreach ($statuses as $status => $percentage) {
+            $cumulative += $percentage;
+            if ($rand <= $cumulative) {
+                return $status;
+            }
+        }
+        
+        return 'pending';
+    }
+
+    private function generateAmountRequested($reliefType)
+    {
+        return match($reliefType->name) {
+            'Cash Relief' => rand(20000, 200000),
+            'Food Relief' => rand(50000, 500000),
+            'Medical Relief' => rand(30000, 300000),
+            'Shelter Relief' => rand(40000, 400000),
+            'Educational Relief' => rand(25000, 250000),
+            'Winter Relief' => rand(30000, 300000),
+            'Flood Relief' => rand(50000, 500000),
+            'Cyclone Relief' => rand(40000, 400000),
+            'Drought Relief' => rand(30000, 300000),
+            'Emergency Relief' => rand(35000, 350000),
+            default => rand(25000, 250000)
+        };
+    }
+
+    private function generateApprovedAmount($status, $requested, $reliefType)
+    {
+        if ($status !== 'approved') {
+            return null;
+        }
+        
+        // Approved amount is usually 70-100% of requested
+        $percentage = rand(70, 100) / 100;
+        return round($requested * $percentage, 2);
+    }
+
+    private function generateOrganizationName($organizationType, $upazila)
+    {
+        $orgNames = [
+            'NGO' => ['ব্র্যাক', 'গ্রামীণ ব্যাংক', 'প্রশিকা', 'আশা', 'কারিতাস'],
+            'Community Organization' => ['সমাজ কল্যাণ সমিতি', 'নারী উন্নয়ন সংস্থা', 'যুব সংগঠন', 'কৃষক সমিতি'],
+            'Religious Organization' => ['ইসলামিক রিলিফ কমিটি', 'হিন্দু কল্যাণ ট্রাস্ট', 'খ্রিস্টান সেবা সমিতি'],
+            'Social Welfare Organization' => ['সামাজিক কল্যাণ সংস্থা', 'মানবিক সহায়তা ফাউন্ডেশন'],
+            'Farmers Association' => ['কৃষক সমিতি', 'নারী কৃষক সংগঠন', 'কৃষি উন্নয়ন সমিতি'],
+            'Emergency Response Organization' => ['জরুরি সাড়া সংস্থা', 'দুর্যোগ ব্যবস্থাপনা কমিটি'],
+            'Foundation' => ['মানবিক ফাউন্ডেশন', 'সামাজিক উন্নয়ন ফাউন্ডেশন'],
+            'Youth Organization' => ['তরুণ সমাজ উন্নয়ন সংগঠন', 'যুব কল্যাণ সমিতি'],
+            'Women Organization' => ['মহিলা উন্নয়ন সংস্থা', 'নারী ক্ষমতায়ন সমিতি'],
+            'Educational Organization' => ['শিক্ষা উন্নয়ন সংস্থা', 'স্কুল উন্নয়ন কমিটি'],
+        ];
+        
+        $typeName = $organizationType->name;
+        $names = $orgNames[$typeName] ?? ['সামাজিক সংগঠন'];
+        $baseName = $names[array_rand($names)];
+        
+        return $baseName . ' - ' . $upazila->name_bn;
+    }
+
+    private function generateSubject($reliefType, $upazila)
+    {
+        $subjects = [
+            'Cash Relief' => 'জরুরি নগদ সহায়তা',
+            'Food Relief' => 'খাদ্য সহায়তা',
+            'Medical Relief' => 'চিকিৎসা সহায়তা',
+            'Shelter Relief' => 'আশ্রয় সহায়তা',
+            'Educational Relief' => 'শিক্ষা সহায়তা',
+            'Winter Relief' => 'শীতকালীন সহায়তা',
+            'Flood Relief' => 'বন্যা ত্রাণ',
+            'Cyclone Relief' => 'ঘূর্ণিঝড় ত্রাণ',
+            'Drought Relief' => 'খরা ত্রাণ',
+            'Emergency Relief' => 'জরুরি ত্রাণ',
+        ];
+        
+        $baseSubject = $subjects[$reliefType->name] ?? 'ত্রাণ সহায়তা';
+        return $upazila->name_bn . ' এলাকার ' . $baseSubject;
+    }
+
+    private function generateApplicantName()
+    {
+        $names = [
+            'মোঃ আব্দুল হক', 'মোঃ করিম উদ্দিন', 'মোঃ শহিদুল ইসলাম', 'মোঃ নজরুল ইসলাম',
+            'মোঃ হাসান আলী', 'মোঃ রফিকুল ইসলাম', 'মোঃ জাহিদুল ইসলাম', 'মোঃ আনোয়ার হোসেন',
+            'ফাতেমা খাতুন', 'রোকসানা বেগম', 'সালেহা খাতুন', 'শাহানা পারভীন',
+            'রেহানা বেগম', 'নাসিরা খাতুন', 'ডাঃ রোকেয়া খাতুন', 'মুফতি আব্দুল হাই'
+        ];
+        
+        return $names[array_rand($names)];
+    }
+
+    private function generateDesignation()
+    {
+        $designations = [
+            'সভাপতি', 'সচিব', 'নির্বাহী পরিচালক', 'সহ-সভাপতি', 'কোষাধ্যক্ষ',
+            'সদস্য সচিব', 'প্রকল্প সমন্বয়কারী', 'ক্ষেত্র সমন্বয়কারী'
+        ];
+        
+        return $designations[array_rand($designations)];
+    }
+
+    private function generatePhoneNumber()
+    {
+        return '017' . rand(10000000, 99999999);
+    }
+
+    private function generateAddress($upazila, $union)
+    {
+        return 'গ্রাম: ' . fake()->streetName() . ', পোস্ট: ' . $union->name_bn . ', উপজেলা: ' . $upazila->name_bn . ', জেলা: বগুড়া';
+    }
+
+    private function generateOrganizationAddress($upazila)
+    {
+        return 'অফিস: ' . $upazila->name_bn . ' উপজেলা, বগুড়া';
+    }
+
+    private function generateDetails($reliefType, $upazila)
+    {
+        $details = [
+            'Cash Relief' => 'আমাদের এলাকার দরিদ্র পরিবারগুলোকে জরুরি নগদ সহায়তা প্রয়োজন। বিশেষ করে বেকার যুবক ও অসহায় মহিলাদের জন্য।',
+            'Food Relief' => 'খাদ্য সংকটে পড়া পরিবারগুলোকে চাল, ডাল ও অন্যান্য খাদ্য সামগ্রী প্রদানের জন্য সহায়তা প্রয়োজন।',
+            'Medical Relief' => 'দরিদ্র পরিবারগুলোর চিকিৎসা ব্যয়ের জন্য ঔষধ ও চিকিৎসা সামগ্রী প্রয়োজন।',
+            'Shelter Relief' => 'আবাসন সংকটে পড়া পরিবারগুলোকে আশ্রয় সামগ্রী প্রদানের জন্য সহায়তা প্রয়োজন।',
+            'Educational Relief' => 'দরিদ্র শিক্ষার্থীদের শিক্ষা ব্যয়ের জন্য সহায়তা প্রয়োজন।',
+            'Winter Relief' => 'শীতকালে দরিদ্র পরিবারগুলোকে শীতবস্ত্র ও কম্বল প্রদানের জন্য সহায়তা প্রয়োজন।',
+            'Flood Relief' => 'বন্যা কবলিত এলাকার পরিবারগুলোকে জরুরি ত্রাণ সহায়তা প্রয়োজন।',
+            'Cyclone Relief' => 'ঘূর্ণিঝড় কবলিত এলাকার পরিবারগুলোকে পুনর্বাসন সহায়তা প্রয়োজন।',
+            'Drought Relief' => 'খরা কবলিত কৃষক পরিবারগুলোকে সহায়তা প্রয়োজন।',
+            'Emergency Relief' => 'জরুরি পরিস্থিতিতে ক্ষতিগ্রস্ত পরিবারগুলোকে দ্রুত সহায়তা প্রয়োজন।',
+        ];
+        
+        $baseDetail = $details[$reliefType->name] ?? 'ত্রাণ সহায়তা প্রয়োজন।';
+        return $upazila->name_bn . ' উপজেলায় ' . $baseDetail;
+    }
+
+    private function generateApprovalRemarks()
+    {
+        $remarks = [
+            'অনুমোদিত - প্রকল্পের সাথে সামঞ্জস্যপূর্ণ',
+            'অনুমোদিত - বাজেট সীমার মধ্যে',
+            'অনুমোদিত - জরুরি প্রয়োজনের জন্য',
+            'অনুমোদিত - দরিদ্র পরিবারের জন্য',
+            'অনুমোদিত - সামাজিক কল্যাণের জন্য'
+        ];
+        
+        return $remarks[array_rand($remarks)];
+    }
+
+    private function generateRejectionRemarks()
+    {
+        $remarks = [
+            'প্রত্যাখ্যাত - বাজেট সীমাবদ্ধতা',
+            'প্রত্যাখ্যাত - প্রকল্পের সাথে সামঞ্জস্যপূর্ণ নয়',
+            'প্রত্যাখ্যাত - প্রয়োজনীয় কাগজপত্র অসম্পূর্ণ',
+            'প্রত্যাখ্যাত - এলাকায় অন্য প্রকল্প চলমান',
+            'প্রত্যাখ্যাত - অগ্রাধিকার ভিত্তিতে বিবেচনা করা হবে'
+        ];
+        
+        return $remarks[array_rand($remarks)];
+    }
+
+    private function addReliefItems($application, $reliefItems)
+    {
+        $reliefType = $application->reliefType;
+        
+        if ($reliefType && $reliefType->name !== 'Cash Relief') {
+            $relevantItems = $reliefItems->where('type', $this->getItemTypeFromReliefType($reliefType->name));
+            
+            if ($relevantItems->count() > 0) {
+                $item = $relevantItems->random();
+                $quantityRequested = rand(10, 100);
+                $quantityApproved = ($application->status === 'approved') ? rand(5, $quantityRequested) : 0;
+                $unitPrice = $this->getUnitPriceForItem($item->type);
+
+                ReliefApplicationItem::create([
+                    'relief_application_id' => $application->id,
+                    'relief_item_id' => $item->id,
+                    'quantity_requested' => $quantityRequested,
+                    'quantity_approved' => $quantityApproved,
+                    'unit_price' => $unitPrice,
+                    'total_amount' => $quantityApproved * $unitPrice,
+                ]);
+            }
+        }
+    }
+
+    private function getItemTypeFromReliefType($reliefTypeName)
+    {
+        return match($reliefTypeName) {
+            'Food Relief' => 'food',
+            'Medical Relief' => 'medical',
+            'Shelter Relief', 'Winter Relief' => 'shelter',
+            'Educational Relief' => 'other',
+            default => 'food'
+        };
+    }
+
+    private function getUnitPriceForItem($itemType)
+    {
+        return match($itemType) {
+            'food' => rand(20, 150),
+            'medical' => rand(500, 2000),
+            'shelter' => rand(300, 5000),
+            'other' => rand(100, 1000),
+            default => rand(50, 500)
+        };
+    }
+}

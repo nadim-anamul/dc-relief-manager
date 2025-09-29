@@ -25,7 +25,13 @@ class DashboardController extends Controller
 		$years = EconomicYear::orderByDesc('start_date')->get();
 		$selectedYear = $this->resolveSelectedYear($request, $years);
 		$selectedZillaId = $request->integer('zilla_id');
-        $sort = $request->get('sort');
+		$sort = $request->get('sort');
+
+		// Load zillas and apply default when exactly one exists
+		$zillas = Zilla::orderBy('name')->get(['id','name']);
+		if (!$selectedZillaId && $zillas->count() === 1) {
+			$selectedZillaId = $zillas->first()->id;
+		}
 		
         // Pagination parameters
         $pageSize = 15;
@@ -33,10 +39,9 @@ class DashboardController extends Controller
         $upazilaUnionPage = $request->integer('upazila_union_page', 1);
         $unionSummaryPage = $request->integer('union_summary_page', 1);
         
-        $stats = $this->getDashboardStatistics($selectedYear, $selectedZillaId, $sort, $pageSize, $upazilaPage, $upazilaUnionPage, $unionSummaryPage);
+		$stats = $this->getDashboardStatistics($selectedYear, $selectedZillaId, $sort, $pageSize, $upazilaPage, $upazilaUnionPage, $unionSummaryPage);
 		$chartData = $this->getChartData($selectedYear);
 		
-		$zillas = Zilla::orderBy('name')->get(['id','name']);
 		return view('dashboard', [
 			'stats' => $stats,
 			'chartData' => $chartData,
@@ -409,7 +414,15 @@ class DashboardController extends Controller
 		$years = EconomicYear::orderByDesc('start_date')->get();
 		$selectedYear = $this->resolveSelectedYear($request, $years);
 		$selectedZillaId = $request->integer('zilla_id');
-        $sort = $request->get('sort');
+		$sort = $request->get('sort');
+
+		// Default zilla when only one exists
+		if (!$selectedZillaId) {
+			$onlyZilla = Zilla::query()->select('id')->limit(2)->get();
+			if ($onlyZilla->count() === 1) {
+				$selectedZillaId = $onlyZilla->first()->id;
+			}
+		}
         
         // Pagination parameters
         $pageSize = 15;

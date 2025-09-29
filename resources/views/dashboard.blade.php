@@ -564,25 +564,31 @@
 				<div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
 					<h3 class="text-lg font-semibold text-gray-900 dark:text-white">Unserved Upazilas (Selected Zilla & Year)</h3>
 				</div>
-				<ul class="p-6 space-y-2">
-					@forelse(($stats['coverage']['unserved_upazila_ids'] ?? []) as $id)
-						<li class="text-sm text-gray-900 dark:text-gray-100">{{ $stats['upazilaNames'][$id] ?? ('#'.$id) }}</li>
-					@empty
-						<li class="text-sm text-gray-500 dark:text-gray-400">All upazilas have distributions.</li>
-					@endforelse
-				</ul>
+				<div class="p-6">
+					@php
+						$unservedUpazilaNames = collect($stats['coverage']['unserved_upazila_ids'] ?? [])
+							->map(function($id) use ($stats) { return $stats['upazilaNames'][$id] ?? ('#'.$id); })
+							->implode(', ');
+					@endphp
+					<p class="text-sm text-gray-900 dark:text-gray-100">
+						{{ $unservedUpazilaNames !== '' ? $unservedUpazilaNames : 'All upazilas have distributions.' }}
+					</p>
+				</div>
 			</div>
 			<div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
 				<div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
 					<h3 class="text-lg font-semibold text-gray-900 dark:text-white">Unserved Unions (Selected Zilla & Year)</h3>
 				</div>
-				<ul class="p-6 space-y-2">
-					@forelse(($stats['coverage']['unserved_union_ids'] ?? []) as $id)
-						<li class="text-sm text-gray-900 dark:text-gray-100">{{ $stats['unionNames'][$id] ?? ('#'.$id) }}</li>
-					@empty
-						<li class="text-sm text-gray-500 dark:text-gray-400">All unions have distributions.</li>
-					@endforelse
-				</ul>
+				<div class="p-6">
+					@php
+						$unservedUnionNames = collect($stats['coverage']['unserved_union_ids'] ?? [])
+							->map(function($id) use ($stats) { return $stats['unionNames'][$id] ?? ('#'.$id) ;})
+							->implode(', ');
+					@endphp
+					<p class="text-sm text-gray-900 dark:text-gray-100">
+						{{ $unservedUnionNames !== '' ? $unservedUnionNames : 'All unions have distributions.' }}
+					</p>
+				</div>
 			</div>
 		</div>
 		@endif
