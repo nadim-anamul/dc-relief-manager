@@ -15,6 +15,9 @@ return Application::configure(basePath: dirname(__DIR__))
             'role' => \App\Http\Middleware\CheckRole::class,
             'permission' => \App\Http\Middleware\PermissionMiddleware::class,
         ]);
+
+        // Apply locale after session is started (web group)
+        $middleware->appendToGroup('web', \App\Http\Middleware\SetLocale::class);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

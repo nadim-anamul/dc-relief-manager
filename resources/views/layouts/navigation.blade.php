@@ -20,6 +20,14 @@
 
             <!-- Settings Dropdown -->
             <div class="hidden sm:flex sm:items-center sm:ms-6">
+                <!-- Language Switch -->
+                <div class="mr-4">
+                    <div class="inline-flex items-center gap-2 text-sm text-gray-600">
+                        <a href="{{ route('locale.switch', ['lang' => 'bn']) }}" class="px-2 py-1 rounded {{ app()->isLocale('bn') ? 'bg-gray-200 font-semibold' : '' }}">বাংলা</a>
+                        <span class="text-gray-400">|</span>
+                        <a href="{{ route('locale.switch', ['lang' => 'en']) }}" class="px-2 py-1 rounded {{ app()->isLocale('en') ? 'bg-gray-200 font-semibold' : '' }}">English</a>
+                    </div>
+                </div>
                 <x-dropdown align="right" width="48">
                     <x-slot name="trigger">
                         <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150">
@@ -80,6 +88,14 @@
             </div>
 
             <div class="mt-3 space-y-1">
+                <!-- Language Switch (mobile) -->
+                <div class="px-4 py-2">
+                    <div class="inline-flex items-center gap-2 text-sm text-gray-600">
+                        <a href="{{ route('locale.switch', ['lang' => 'bn']) }}" class="px-2 py-1 rounded {{ app()->isLocale('bn') ? 'bg-gray-200 font-semibold' : '' }}">বাংলা</a>
+                        <span class="text-gray-400">|</span>
+                        <a href="{{ route('locale.switch', ['lang' => 'en']) }}" class="px-2 py-1 rounded {{ app()->isLocale('en') ? 'bg-gray-200 font-semibold' : '' }}">English</a>
+                    </div>
+                </div>
                 <x-responsive-nav-link :href="route('profile.edit')">
                     {{ __('Profile') }}
                 </x-responsive-nav-link>

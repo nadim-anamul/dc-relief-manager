@@ -22,6 +22,11 @@ class Ward extends Model
 		'is_active' => 'boolean',
 	];
 
+    public function getNameDisplayAttribute(): string
+    {
+        return app()->isLocale('bn') ? ($this->name_bn ?: $this->name) : ($this->name ?: $this->name_bn);
+    }
+
 	/**
 	 * Get the union that owns the ward.
 	 */

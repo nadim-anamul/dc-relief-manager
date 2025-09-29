@@ -9,6 +9,15 @@ Route::get('/', function () {
     return redirect()->route('dashboard');
 })->middleware(['auth', 'verified']);
 
+// Locale switch (available without auth to toggle before login as well)
+Route::get('/locale/{lang}', function (string $lang) {
+    if (in_array($lang, ['bn', 'en'])) {
+        app()->setLocale($lang);
+        session(['app_locale' => $lang]);
+    }
+    return redirect()->back();
+})->name('locale.switch');
+
     // All authenticated routes
     Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');

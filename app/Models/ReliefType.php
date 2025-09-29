@@ -64,7 +64,7 @@ class ReliefType extends Model
 	 */
 	public function getDisplayNameAttribute(): string
 	{
-		return $this->name_bn ?: $this->name;
+		return app()->isLocale('bn') ? ($this->name_bn ?: $this->name) : ($this->name ?: $this->name_bn);
 	}
 
 	/**
@@ -72,6 +72,6 @@ class ReliefType extends Model
 	 */
 	public function getDisplayUnitAttribute(): string
 	{
-		return $this->unit_bn ?: $this->unit;
+		return app()->isLocale('bn') ? ($this->unit_bn ?: $this->unit) : ($this->unit ?: $this->unit_bn);
 	}
 }

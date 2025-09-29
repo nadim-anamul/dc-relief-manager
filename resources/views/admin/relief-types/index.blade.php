@@ -8,17 +8,17 @@
 					</svg>
 				</div>
 				<div>
-					<h1 class="text-2xl font-bold text-gray-900 dark:text-white">Relief Types Management</h1>
-					<p class="text-sm text-gray-500 dark:text-gray-400">Manage different types of relief assistance and their properties</p>
+                    <h1 class="text-2xl font-bold text-gray-900 dark:text-white">{{ __('Relief Types') }} {{ __('Management') }}</h1>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">{{ __('Manage different types of relief assistance and their properties') }}</p>
 				</div>
 			</div>
 			<div class="flex flex-wrap gap-3">
-				<a href="{{ route('admin.relief-types.create') }}" 
+                <a href="{{ route('admin.relief-types.create') }}" 
 					class="inline-flex items-center px-6 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium rounded-lg transition-colors duration-200 shadow-sm hover:shadow-md">
 					<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
 					</svg>
-					Add New Relief Type
+                    {{ __('Add New Relief Type') }}
 				</a>
 			</div>
 		</div>
@@ -37,8 +37,8 @@
 							</svg>
 						</div>
 						<div>
-							<p class="text-sm font-medium text-gray-500 dark:text-gray-400">Total</p>
-							<p class="text-2xl font-bold text-gray-900 dark:text-white">{{ $reliefTypes->total() }}</p>
+                            <p class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('Total') }}</p>
+                            <p class="text-2xl font-bold text-gray-900 dark:text-white">@bn($reliefTypes->total())</p>
 						</div>
 					</div>
 				</div>
@@ -54,8 +54,8 @@
 							</svg>
 						</div>
 						<div>
-							<p class="text-sm font-medium text-gray-500 dark:text-gray-400">Active</p>
-							<p class="text-2xl font-bold text-gray-900 dark:text-white">{{ $reliefTypes->where('is_active', true)->count() }}</p>
+                            <p class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('Active') }}</p>
+                            <p class="text-2xl font-bold text-gray-900 dark:text-white">@bn($reliefTypes->where('is_active', true)->count())</p>
 						</div>
 					</div>
 				</div>
@@ -71,8 +71,8 @@
 							</svg>
 						</div>
 						<div>
-							<p class="text-sm font-medium text-gray-500 dark:text-gray-400">Inactive</p>
-							<p class="text-2xl font-bold text-gray-900 dark:text-white">{{ $reliefTypes->where('is_active', false)->count() }}</p>
+                            <p class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('Inactive') }}</p>
+                            <p class="text-2xl font-bold text-gray-900 dark:text-white">@bn($reliefTypes->where('is_active', false)->count())</p>
 						</div>
 					</div>
 				</div>
@@ -88,8 +88,8 @@
 							</svg>
 						</div>
 						<div>
-							<p class="text-sm font-medium text-gray-500 dark:text-gray-400">Categories</p>
-							<p class="text-2xl font-bold text-gray-900 dark:text-white">{{ $reliefTypes->unique('category')->count() }}</p>
+                            <p class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('Categories') }}</p>
+                            <p class="text-2xl font-bold text-gray-900 dark:text-white">@bn($reliefTypes->unique('category')->count())</p>
 						</div>
 					</div>
 				</div>
@@ -101,13 +101,13 @@
 			<div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
 				<div class="flex items-center justify-between">
 					<div class="flex items-center space-x-3">
-						<h3 class="text-lg font-semibold text-gray-900 dark:text-white">Relief Types</h3>
-						<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200">
-							{{ $reliefTypes->total() }} total
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ __('Relief Types') }}</h3>
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200">
+                            @bn($reliefTypes->total()) {{ __('total') }}
 						</span>
 					</div>
 					<div class="flex items-center space-x-2">
-						<span class="text-sm text-gray-500 dark:text-gray-400">Showing {{ $reliefTypes->firstItem() ?? 0 }} to {{ $reliefTypes->lastItem() ?? 0 }} of {{ $reliefTypes->total() }}</span>
+                        <span class="text-sm text-gray-500 dark:text-gray-400">{{ __('Showing') }} @bn($reliefTypes->firstItem() ?? 0) {{ __('to') }} @bn($reliefTypes->lastItem() ?? 0) {{ __('of') }} @bn($reliefTypes->total())</span>
 					</div>
 				</div>
 			</div>
@@ -115,13 +115,13 @@
 				<table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
 					<thead class="bg-gray-50 dark:bg-gray-800">
 						<tr>
-							<th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Name</th>
-							<th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Bengali Name</th>
-							<th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Unit</th>
-							<th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Color</th>
-							<th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Sort Order</th>
-							<th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Status</th>
-							<th class="px-6 py-4 text-right text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">Actions</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">{{ __('Name') }}</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">{{ __('Bengali Name') }}</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">{{ __('Unit') }}</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">{{ __('Color') }}</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">{{ __('Sort Order') }}</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">{{ __('Status') }}</th>
+                            <th class="px-6 py-4 text-right text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">{{ __('Actions') }}</th>
 						</tr>
 					</thead>
 					<tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
@@ -143,7 +143,7 @@
 											@endif
 										</div>
 										<div class="ml-4">
-											<div class="text-sm font-semibold text-gray-900 dark:text-white">{{ $reliefType->name }}</div>
+                                            <div class="text-sm font-semibold text-gray-900 dark:text-white">{{ $reliefType->display_name ?? localized_attr($reliefType,'name') }}</div>
 											@if($reliefType->description)
 												<div class="text-xs text-gray-500 dark:text-gray-400">{{ Str::limit($reliefType->description, 50) }}</div>
 											@endif
@@ -154,7 +154,7 @@
 									<div class="text-sm font-medium text-gray-900 dark:text-white">{{ $reliefType->name_bn ?? '-' }}</div>
 								</td>
 								<td class="px-6 py-5 whitespace-nowrap">
-									<div class="text-sm font-medium text-gray-900 dark:text-white">{{ $reliefType->unit ?? '-' }}</div>
+                                    <div class="text-sm font-medium text-gray-900 dark:text-white">{{ $reliefType->display_unit ?? ($reliefType->unit ?? '-') }}</div>
 									@if($reliefType->unit_bn)
 										<div class="text-xs text-gray-500 dark:text-gray-400">{{ $reliefType->unit_bn }}</div>
 									@endif
@@ -166,22 +166,22 @@
 											<span class="text-xs text-gray-500 dark:text-gray-400">{{ $reliefType->color_code }}</span>
 										</div>
 									@else
-										<span class="text-sm text-gray-500 dark:text-gray-400">-</span>
+                                        <span class="text-sm text-gray-500 dark:text-gray-400">-</span>
 									@endif
 								</td>
 								<td class="px-6 py-5 whitespace-nowrap">
 									<span class="inline-flex items-center justify-center w-8 h-8 bg-gray-100 dark:bg-gray-700 text-sm font-medium text-gray-900 dark:text-white rounded-lg">
-										{{ $reliefType->sort_order }}
+                                        @bn($reliefType->sort_order)
 									</span>
 								</td>
 								<td class="px-6 py-5 whitespace-nowrap">
 									@if($reliefType->is_active)
-										<span class="inline-flex items-center px-3 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
-											Active
+                                        <span class="inline-flex items-center px-3 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                                            {{ __('Active') }}
 										</span>
 									@else
-										<span class="inline-flex items-center px-3 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200">
-											Inactive
+                                        <span class="inline-flex items-center px-3 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200">
+                                            {{ __('Inactive') }}
 										</span>
 									@endif
 								</td>
@@ -189,7 +189,7 @@
 									<div class="flex justify-end space-x-2">
 										<a href="{{ route('admin.relief-types.show', $reliefType) }}" 
 											class="inline-flex items-center justify-center w-8 h-8 text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-900 rounded-lg transition-colors duration-200"
-											title="View Details">
+                                        title="{{ __('View Details') }}">
 											<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 												<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
 												<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
@@ -197,17 +197,17 @@
 										</a>
 										<a href="{{ route('admin.relief-types.edit', $reliefType) }}" 
 											class="inline-flex items-center justify-center w-8 h-8 text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 dark:hover:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-900 rounded-lg transition-colors duration-200"
-											title="Edit Relief Type">
+                                        title="{{ __('Edit Relief Type') }}">
 											<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 												<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
 											</svg>
 										</a>
-										<form action="{{ route('admin.relief-types.destroy', $reliefType) }}" method="POST" class="inline" onsubmit="return confirm('Are you sure you want to delete this relief type?')">
+                                    <form action="{{ route('admin.relief-types.destroy', $reliefType) }}" method="POST" class="inline" onsubmit="return confirm('{{ __('Are you sure you want to delete this relief type?') }}')">
 											@csrf
 											@method('DELETE')
 											<button type="submit" 
 												class="inline-flex items-center justify-center w-8 h-8 text-red-600 dark:text-red-400 hover:text-red-900 dark:hover:text-red-300 hover:bg-red-100 dark:hover:bg-red-900 rounded-lg transition-colors duration-200"
-												title="Delete Relief Type">
+                                                title="{{ __('Delete Relief Type') }}">
 												<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 													<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
 												</svg>
@@ -223,13 +223,13 @@
 										<svg class="w-12 h-12 text-gray-400 dark:text-gray-500 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 											<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
 										</svg>
-										<h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">No relief types found</h3>
-										<p class="text-gray-500 dark:text-gray-400">Get started by creating your first relief type.</p>
+                                    <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">{{ __('No relief types found') }}</h3>
+                                    <p class="text-gray-500 dark:text-gray-400">{{ __('Get started by creating your first relief type.') }}</p>
 										<a href="{{ route('admin.relief-types.create') }}" class="mt-4 inline-flex items-center px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium rounded-lg transition-colors duration-200">
 											<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 												<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
 											</svg>
-											Add Relief Type
+                                            {{ __('Add Relief Type') }}
 										</a>
 									</div>
 								</td>

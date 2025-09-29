@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\Blade;
+use Carbon\Carbon;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -19,6 +21,15 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        // Carbon locale based on app locale
+        Carbon::setLocale(app()->getLocale());
+        // Blade directives for Bangla numerals and money
+        Blade::directive('bn', function ($expression) {
+            return "<?= strtr($expression, ['0'=>'০','1'=>'১','2'=>'২','3'=>'৩','4'=>'৪','5'=>'৫','6'=>'৬','7'=>'৭','8'=>'৮','9'=>'৯']); ?>";
+        });
+
+        Blade::directive('moneybn', function ($expression) {
+            return "<?= '৳'.strtr(number_format((float)($expression), 2), ['0'=>'০','1'=>'১','2'=>'২','3'=>'৩','4'=>'৪','5'=>'৫','6'=>'৬','7'=>'৭','8'=>'৮','9'=>'৯']); ?>";
+        });
     }
 }

@@ -28,7 +28,7 @@ class DashboardController extends Controller
 		$sort = $request->get('sort');
 
 		// Load zillas and apply default when exactly one exists
-		$zillas = Zilla::orderBy('name')->get(['id','name']);
+		$zillas = Zilla::orderBy('name')->get(['id','name','name_bn']);
 		if (!$selectedZillaId && $zillas->count() === 1) {
 			$selectedZillaId = $zillas->first()->id;
 		}
@@ -122,13 +122,33 @@ class DashboardController extends Controller
 			->orderBy('total_amount', 'desc')
 			->get();
 		
-		// Project allocated amounts for current economic year (active projects)
-		$projectAllocationStats = ($year ? Project::forEconomicYear($year->id) : Project::active())
-			->select('name', 'allocated_amount', 'relief_type_id')
-			->with(['reliefType', 'economicYear'])
-			->orderBy('allocated_amount', 'desc')
-			->take(10) // Limit to top 10 for better display
-			->get();
+        // Project allocated amounts for selected/current year (top 10)
+        $projectAllocationStats = ($year ? Project::forEconomicYear($year->id) : Project::active())
+            ->select('name', 'allocated_amount', 'relief_type_id', 'economic_year_id')
+            ->with(['reliefType', 'economicYear'])
+            ->orderBy('allocated_amount', 'desc')
+            ->take(10)
+            ->get()
+            ->map(function ($p) use ($year) {
+                // Build a display string for the economic year with Bangla digits if locale is bn
+                if ($p->economicYear) {
+                    $display = $p->economicYear->name
+                        ?: ($p->economicYear->start_date?->format('Y') . ' - ' . $p->economicYear->end_date?->format('Y'));
+                } elseif ($year) {
+                    $display = $year->name ?: ($year->start_date?->format('Y') . ' - ' . $year->end_date?->format('Y'));
+                } else {
+                    $display = null;
+                }
+
+                // Convert digits to Bangla if available helper exists
+                if (function_exists('bn_number') && $display) {
+                    $p->economic_year_display = bn_number($display);
+                } else {
+                    $p->economic_year_display = $display;
+                }
+
+                return $p;
+            });
 
         // Relief type allocation statistics for selected/current year, including available and used
         $reliefTypeAllocationStats = ($year ? Project::forEconomicYear($year->id) : Project::active())
@@ -233,10 +253,17 @@ class DashboardController extends Controller
 			->orderByDesc('allocations')
 			->get();
 
-        $zillaNames = Zilla::pluck('name', 'id');
+        // Locale-aware name maps for display (prefer Bengali when available)
+        if (app()->isLocale('bn')) {
+            $zillaNames = Zilla::selectRaw('id, COALESCE(name_bn, name) as disp')->pluck('disp', 'id');
+            $upazilaNames = Upazila::selectRaw('id, COALESCE(name_bn, name) as disp')->pluck('disp', 'id');
+            $unionNames = Union::selectRaw('id, COALESCE(name_bn, name) as disp')->pluck('disp', 'id');
+        } else {
+            $zillaNames = Zilla::selectRaw('id, COALESCE(name, name_bn) as disp')->pluck('disp', 'id');
+            $upazilaNames = Upazila::selectRaw('id, COALESCE(name, name_bn) as disp')->pluck('disp', 'id');
+            $unionNames = Union::selectRaw('id, COALESCE(name, name_bn) as disp')->pluck('disp', 'id');
+        }
         $projectNames = Project::pluck('name', 'id');
-        $upazilaNames = Upazila::pluck('name', 'id');
-        $unionNames = Union::pluck('name', 'id');
 
         // Project units (for formatting amounts based on project relief type)
         $projectUnits = Project::with('reliefType')->get()->mapWithKeys(function ($p) {

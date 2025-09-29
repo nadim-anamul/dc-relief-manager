@@ -8,22 +8,22 @@
 					</svg>
 				</div>
 				<div>
-					<h1 class="text-2xl font-bold text-gray-900 dark:text-white">Relief Management Dashboard</h1>
-					<p class="text-sm text-gray-500 dark:text-gray-400">Comprehensive overview of relief operations and analytics</p>
+					<h1 class="text-2xl font-bold text-gray-900 dark:text-white">{{ __('Relief Management Dashboard') }}</h1>
+					<p class="text-sm text-gray-500 dark:text-gray-400">{{ __('Comprehensive overview of relief operations and analytics') }}</p>
 				</div>
 			</div>
 			<div class="flex flex-wrap gap-3">
-				<button onclick="refreshDashboard()" class="inline-flex items-center px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white text-sm font-medium rounded-lg transition-colors duration-200 shadow-sm hover:shadow-md">
+                    <button onclick="refreshDashboard()" class="inline-flex items-center px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white text-sm font-medium rounded-lg transition-colors duration-200 shadow-sm hover:shadow-md">
 					<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
 					</svg>
-					Refresh Data
+                    {{ __('Refresh Data') }}
 				</button>
 				<a href="{{ route('admin.relief-applications.create') }}" class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors duration-200 shadow-sm hover:shadow-md">
 					<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
 					</svg>
-					Quick Actions
+                    {{ __('Quick Actions') }}
 				</a>
 			</div>
 		</div>
@@ -37,7 +37,7 @@
 				<div class="absolute inset-0 bg-gradient-to-r from-indigo-500/10 via-purple-500/10 to-cyan-500/10 pointer-events-none"></div>
 				<div class="relative w-full bg-white/70 dark:bg-gray-900/60 backdrop-blur-xl border border-white/40 dark:border-gray-700/60 px-5 py-3 flex items-center gap-6">
 				<div class="flex items-center gap-3">
-					<span class="text-[11px] font-semibold uppercase tracking-wider text-gray-600 dark:text-gray-300">Economic Year</span>
+					<span class="text-[11px] font-semibold uppercase tracking-wider text-gray-600 dark:text-gray-300">{{ __('Economic Year') }}</span>
 					<div class="relative">
 						<svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8V7m0 10v1"/></svg>
 						<select id="economic_year_id" name="economic_year_id" class="smart-input appearance-none pl-9 pr-8 py-2 rounded-full border border-gray-200 dark:border-gray-700 bg-white/90 dark:bg-gray-800/90 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm">
@@ -52,14 +52,14 @@
 				</div>
 				@if(isset($zillas))
 				<div class="flex items-center gap-3">
-					<span class="text-[11px] font-semibold uppercase tracking-wider text-gray-600 dark:text-gray-300">Zilla (for detail tables)</span>
+					<span class="text-[11px] font-semibold uppercase tracking-wider text-gray-600 dark:text-gray-300">{{ __('Zilla (for detail tables)') }}</span>
 					<div class="relative">
 						<svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7l9-4 9 4-9 4-9-4zm0 6l9 4 9-4"/></svg>
-						<select id="zilla_id" name="zilla_id" class="smart-input appearance-none pl-9 pr-8 py-2 rounded-full border border-gray-200 dark:border-gray-700 bg-white/90 dark:bg-gray-800/90 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm">
-							<option value="">All Zillas</option>
+                        <select id="zilla_id" name="zilla_id" class="smart-input appearance-none pl-9 pr-8 py-2 rounded-full border border-gray-200 dark:border-gray-700 bg-white/90 dark:bg-gray-800/90 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm">
+                            <option value="">{{ __('All Zillas') }}</option>
 							@foreach($zillas as $z)
 								<option value="{{ $z->id }}" {{ ($selectedZillaId ?? null) == $z->id ? 'selected' : '' }}>
-									{{ $z->name }}
+								{{ app()->isLocale('bn') ? ($z->name_bn ?: $z->name) : ($z->name ?: $z->name_bn) }}
 								</option>
 							@endforeach
 						</select>
@@ -68,10 +68,10 @@
 				</div>
 				@endif
 				<div class="ml-auto flex items-center gap-2">
-					<a href="{{ route('dashboard') }}" class="inline-flex items-center px-3 py-2 text-sm rounded-full border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700">Reset</a>
-					<button type="submit" class="inline-flex items-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-full shadow-md">
+					<a href="{{ route('dashboard') }}" class="inline-flex items-center px-3 py-2 text-sm rounded-full border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700">{{ __('Reset') }}</a>
+						<button type="submit" class="inline-flex items-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-full shadow-md">
 						<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h8M8 11h8m-7 4h6"/></svg>
-						Apply
+							{{ __('Apply') }}
 					</button>
 				</div>
 				</div>
@@ -82,8 +82,8 @@
 		<div class="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-700 rounded-2xl p-8 text-white shadow-2xl">
 			<div class="flex flex-col lg:flex-row lg:justify-between lg:items-center space-y-6 lg:space-y-0">
 				<div class="flex-1">
-					<h2 class="text-3xl font-bold mb-2">Welcome to Relief Management System</h2>
-					<p class="text-blue-100 text-lg">Real-time insights into relief operations and distribution analytics</p>
+                    <h2 class="text-3xl font-bold mb-2">{{ __('Welcome to Relief Management System') }}</h2>
+                    <p class="text-blue-100 text-lg">{{ __('Real-time insights into relief operations and distribution analytics') }}</p>
 				</div>
 			</div>
 		</div>
@@ -96,21 +96,21 @@
 						<svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3v18h18"/></svg>
 					</div>
 					<div>
-						<h3 class="text-lg font-semibold text-gray-900 dark:text-white">Allocation by Relief Type</h3>
-						<p class="text-sm text-gray-500 dark:text-gray-400">Allocated vs Used vs Available for the selected year</p>
+						<h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ __('Allocation by Relief Type') }}</h3>
+						<p class="text-sm text-gray-500 dark:text-gray-400">{{ __('Allocated vs Used vs Available for the selected year') }}</p>
 					</div>
 				</div>
 				<div class="flex items-center gap-2">
-					<a href="{{ route('admin.projects.index') }}" class="inline-flex items-center px-3 py-1.5 bg-indigo-100 hover:bg-indigo-200 dark:bg-indigo-900 dark:hover:bg-indigo-800 text-indigo-700 dark:text-indigo-300 text-sm font-medium rounded-lg transition-colors duration-200">View Projects</a>
+					<a href="{{ route('admin.projects.index') }}" class="inline-flex items-center px-3 py-1.5 bg-indigo-100 hover:bg-indigo-200 dark:bg-indigo-900 dark:hover:bg-indigo-800 text-indigo-700 dark:text-indigo-300 text-sm font-medium rounded-lg transition-colors duration-200">{{ __('View Projects') }}</a>
 					<!-- Sort pills -->
 					<form method="GET" action="{{ route('dashboard') }}" class="flex items-center gap-2">
 						<input type="hidden" name="economic_year_id" value="{{ $selectedYearId }}" />
 						@if(isset($selectedZillaId) && $selectedZillaId)
 							<input type="hidden" name="zilla_id" value="{{ $selectedZillaId }}" />
 						@endif
-						<button name="sort" value="allocated" class="px-2.5 py-1 text-xs rounded-full border {{ ($currentSort ?? '') === 'allocated' ? 'bg-indigo-600 text-white border-indigo-600' : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200' }}">Allocated</button>
-						<button name="sort" value="used" class="px-2.5 py-1 text-xs rounded-full border {{ ($currentSort ?? '') === 'used' ? 'bg-indigo-600 text-white border-indigo-600' : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200' }}">Used %</button>
-						<button name="sort" value="available" class="px-2.5 py-1 text-xs rounded-full border {{ ($currentSort ?? '') === 'available' ? 'bg-indigo-600 text-white border-indigo-600' : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200' }}">Available</button>
+						<button name="sort" value="allocated" class="px-2.5 py-1 text-xs rounded-full border {{ ($currentSort ?? '') === 'allocated' ? 'bg-indigo-600 text-white border-indigo-600' : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200' }}">{{ __('Allocated') }}</button>
+						<button name="sort" value="used" class="px-2.5 py-1 text-xs rounded-full border {{ ($currentSort ?? '') === 'used' ? 'bg-indigo-600 text-white border-indigo-600' : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200' }}">{{ __('Used') }} %</button>
+						<button name="sort" value="available" class="px-2.5 py-1 text-xs rounded-full border {{ ($currentSort ?? '') === 'available' ? 'bg-indigo-600 text-white border-indigo-600' : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200' }}">{{ __('Available') }}</button>
 					</form>
 				</div>
 			</div>
@@ -123,22 +123,22 @@
 								@if($allocation->reliefType?->color_code)
 									<span class="w-3 h-3 rounded-full" style="background-color: {{ $allocation->reliefType->color_code }}"></span>
 								@endif
-								<span class="font-medium text-gray-900 dark:text-white">{{ $allocation->reliefType->name ?? 'Unknown Type' }}</span>
+                                <span class="font-medium text-gray-900 dark:text-white">{{ $allocation->reliefType->name_display ?? $allocation->reliefType->name ?? __('Unknown Type') }}</span>
 							</div>
-							<span class="text-xs text-gray-500 dark:text-gray-300">{{ $allocation->project_count }} {{ $allocation->project_count == 1 ? 'project' : 'projects' }}</span>
+                            <span class="text-xs text-gray-500 dark:text-gray-300">@bn($allocation->project_count) {{ __('projects') }}</span>
 						</div>
 						<div class="mt-3 space-y-1 text-sm">
-							<div class="flex justify-between"><span class="text-gray-600 dark:text-gray-300">Allocated</span><span class="font-semibold text-gray-900 dark:text-white">{{ $allocation->formatted_allocated }}</span></div>
-							<div class="flex justify-between"><span class="text-gray-600 dark:text-gray-300">Used</span><span class="font-semibold text-gray-900 dark:text-white">{{ $allocation->formatted_used }}</span></div>
-							<div class="flex justify-between"><span class="text-gray-600 dark:text-gray-300">Available</span><span class="font-semibold text-gray-900 dark:text-white">{{ $allocation->formatted_available }}</span></div>
+                            <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-300">{{ __('Allocated') }}</span><span class="font-semibold text-gray-900 dark:text-white">{{ bn_number($allocation->formatted_allocated) }}</span></div>
+                            <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-300">{{ __('Used') }}</span><span class="font-semibold text-gray-900 dark:text-white">{{ bn_number($allocation->formatted_used) }}</span></div>
+                            <div class="flex justify-between"><span class="text-gray-600 dark:text-gray-300">{{ __('Available') }}</span><span class="font-semibold text-gray-900 dark:text-white">{{ bn_number($allocation->formatted_available) }}</span></div>
 							<div class="w-full h-2 bg-gray-200 dark:bg-gray-600 rounded-full overflow-hidden">
 								<div class="h-2 bg-indigo-500" style="width: {{ (int)round(($allocation->used_ratio ?? 0) * 100) }}%"></div>
 							</div>
-							<div class="text-xs text-gray-500 dark:text-gray-400">{{ (int)round(($allocation->used_ratio ?? 0) * 100) }}% used</div>
+                            <div class="text-xs text-gray-500 dark:text-gray-400">@bn((int)round(($allocation->used_ratio ?? 0) * 100))% {{ __('used') }}</div>
 						</div>
 					</div>
 					@empty
-					<div class="col-span-full text-center text-sm text-gray-500 dark:text-gray-400">No allocations found for the selected year.</div>
+                    <div class="col-span-full text-center text-sm text-gray-500 dark:text-gray-400">{{ __('No allocations found for the selected year.') }}</div>
 					@endforelse
 				</div>
 			</div>
@@ -156,14 +156,14 @@
 							</svg>
 						</div>
 						<div>
-							<h3 class="text-lg font-semibold text-gray-900 dark:text-white">Relief Type Allocation</h3>
-							<p class="text-sm text-gray-500 dark:text-gray-400">Current year active project allocations by relief type</p>
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ __('Relief Type Allocation') }}</h3>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">{{ __('Current year active project allocations by relief type') }}</p>
 						</div>
 					</div>
 					<div class="flex items-center space-x-2">
-						<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200">
-							{{ $stats['reliefTypeAllocationStats']->count() }} types
-						</span>
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200">
+                            @bn($stats['reliefTypeAllocationStats']->count()) {{ __('types') }}
+                        </span>
 					</div>
 				</div>
 			</div>
@@ -174,9 +174,9 @@
 						<div class="flex items-center space-x-3">
 							<div class="w-4 h-4 rounded-full" style="background-color: {{ $allocation->reliefType->color_code ?? '#6366f1' }}"></div>
 							<div class="flex-1 min-w-0">
-								<p class="text-sm font-medium text-gray-900 dark:text-white truncate">{{ $allocation->reliefType->name ?? 'Unknown Type' }}</p>
-								<p class="text-lg font-bold text-gray-900 dark:text-white">{{ $allocation->formatted_total }}</p>
-								<p class="text-xs text-gray-500 dark:text-gray-400">{{ $allocation->project_count }} {{ $allocation->project_count == 1 ? 'project' : 'projects' }}</p>
+                                <p class="text-sm font-medium text-gray-900 dark:text-white truncate">{{ $allocation->reliefType->name_display ?? $allocation->reliefType->name ?? __('Unknown Type') }}</p>
+                                <p class="text-lg font-bold text-gray-900 dark:text-white">{{ bn_number($allocation->formatted_total) }}</p>
+                                <p class="text-xs text-gray-500 dark:text-gray-400">@bn($allocation->project_count) {{ __('projects') }}</p>
 							</div>
 						</div>
 					</div>
@@ -199,12 +199,12 @@
 							</svg>
 						</div>
 						<div>
-							<h3 class="text-lg font-semibold text-gray-900 dark:text-white">Application Status Overview</h3>
-							<p class="text-sm text-gray-500 dark:text-gray-400">Current status distribution of relief applications</p>
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ __('Application Status Overview') }}</h3>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">{{ __('Current status distribution of relief applications') }}</p>
 						</div>
 					</div>
-					<a href="{{ route('admin.relief-applications.index') }}" class="inline-flex items-center px-3 py-1.5 bg-blue-100 hover:bg-blue-200 dark:bg-blue-900 dark:hover:bg-blue-800 text-blue-700 dark:text-blue-300 text-sm font-medium rounded-lg transition-colors duration-200">
-						View All
+                    <a href="{{ route('admin.relief-applications.index') }}" class="inline-flex items-center px-3 py-1.5 bg-blue-100 hover:bg-blue-200 dark:bg-blue-900 dark:hover:bg-blue-800 text-blue-700 dark:text-blue-300 text-sm font-medium rounded-lg transition-colors duration-200">
+                        {{ __('View All') }}
 					</a>
 				</div>
 			</div>
@@ -214,9 +214,9 @@
 					<div class="bg-gradient-to-br from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20 rounded-xl p-6 border border-yellow-200 dark:border-yellow-800">
 						<div class="flex items-center justify-between">
 							<div>
-								<p class="text-sm font-medium text-yellow-700 dark:text-yellow-300">Pending Review</p>
-								<p class="text-3xl font-bold text-yellow-800 dark:text-yellow-200">{{ $stats['pendingApplications'] }}</p>
-								<p class="text-xs text-yellow-600 dark:text-yellow-400 mt-1">Awaiting approval</p>
+                                <p class="text-sm font-medium text-yellow-700 dark:text-yellow-300">{{ __('Pending Review') }}</p>
+                                <p class="text-3xl font-bold text-yellow-800 dark:text-yellow-200">@bn($stats['pendingApplications'])</p>
+                                <p class="text-xs text-yellow-600 dark:text-yellow-400 mt-1">{{ __('Awaiting approval') }}</p>
 							</div>
 							<div class="p-3 bg-yellow-500 rounded-xl">
 								<svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -230,9 +230,9 @@
 					<div class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-xl p-6 border border-green-200 dark:border-green-800">
 						<div class="flex items-center justify-between">
 							<div>
-								<p class="text-sm font-medium text-green-700 dark:text-green-300">Approved</p>
-								<p class="text-3xl font-bold text-green-800 dark:text-green-200">{{ $stats['approvedApplications'] }}</p>
-								<p class="text-xs text-green-600 dark:text-green-400 mt-1">Successfully processed</p>
+                                <p class="text-sm font-medium text-green-700 dark:text-green-300">{{ __('Approved') }}</p>
+                                <p class="text-3xl font-bold text-green-800 dark:text-green-200">@bn($stats['approvedApplications'])</p>
+                                <p class="text-xs text-green-600 dark:text-green-400 mt-1">{{ __('Successfully processed') }}</p>
 							</div>
 							<div class="p-3 bg-green-500 rounded-xl">
 								<svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -246,9 +246,9 @@
 					<div class="bg-gradient-to-br from-red-50 to-pink-50 dark:from-red-900/20 dark:to-pink-900/20 rounded-xl p-6 border border-red-200 dark:border-red-800">
 						<div class="flex items-center justify-between">
 							<div>
-								<p class="text-sm font-medium text-red-700 dark:text-red-300">Rejected</p>
-								<p class="text-3xl font-bold text-red-800 dark:text-red-200">{{ $stats['rejectedApplications'] }}</p>
-								<p class="text-xs text-red-600 dark:text-red-400 mt-1">Not eligible</p>
+                                <p class="text-sm font-medium text-red-700 dark:text-red-300">{{ __('Rejected') }}</p>
+                                <p class="text-3xl font-bold text-red-800 dark:text-red-200">@bn($stats['rejectedApplications'])</p>
+                                <p class="text-xs text-red-600 dark:text-red-400 mt-1">{{ __('Not eligible') }}</p>
 							</div>
 							<div class="p-3 bg-red-500 rounded-xl">
 								<svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -275,17 +275,17 @@
 								</svg>
 							</div>
 							<div>
-								<h3 class="text-lg font-semibold text-gray-900 dark:text-white">Application Status</h3>
-								<p class="text-sm text-gray-500 dark:text-gray-400">Distribution by status</p>
+                                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ __('Application Status') }}</h3>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">{{ __('Distribution by status') }}</p>
 							</div>
 						</div>
 						<div class="flex items-center space-x-2">
 							<div class="w-3 h-3 bg-green-500 rounded-full"></div>
-							<span class="text-xs text-gray-500 dark:text-gray-400">Approved</span>
+                            <span class="text-xs text-gray-500 dark:text-gray-400">{{ __('Approved') }}</span>
 							<div class="w-3 h-3 bg-yellow-500 rounded-full"></div>
-							<span class="text-xs text-gray-500 dark:text-gray-400">Pending</span>
+                            <span class="text-xs text-gray-500 dark:text-gray-400">{{ __('Pending') }}</span>
 							<div class="w-3 h-3 bg-red-500 rounded-full"></div>
-							<span class="text-xs text-gray-500 dark:text-gray-400">Rejected</span>
+                            <span class="text-xs text-gray-500 dark:text-gray-400">{{ __('Rejected') }}</span>
 						</div>
 					</div>
 				</div>
@@ -307,8 +307,8 @@
 								</svg>
 							</div>
 							<div>
-								<h3 class="text-lg font-semibold text-gray-900 dark:text-white">Geographic Distribution</h3>
-								<p class="text-sm text-gray-500 dark:text-gray-400">Relief by administrative areas</p>
+                                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ __('Geographic Distribution') }}</h3>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">{{ __('Relief by administrative areas') }}</p>
 							</div>
 						</div>
 						<div class="flex items-center space-x-2">
@@ -316,13 +316,13 @@
 								<svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
 								</svg>
-								Excel
+                                {{ __('Excel') }}
 							</a>
 							<a href="{{ route('admin.exports.area-wise-relief.pdf') }}" class="inline-flex items-center px-2 py-1 bg-red-100 hover:bg-red-200 dark:bg-red-900 dark:hover:bg-red-800 text-red-700 dark:text-red-300 text-xs font-medium rounded transition-colors duration-200">
 								<svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
 								</svg>
-								PDF
+                                {{ __('PDF') }}
 							</a>
 						</div>
 					</div>
@@ -338,19 +338,19 @@
 		<!-- Project × Zilla Distribution -->
 		<div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden mt-8">
 			<div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
-				<h3 class="text-lg font-semibold text-gray-900 dark:text-white">Project × Zilla Distribution</h3>
-				<a href="{{ route('admin.distributions.project-upazila', ['economic_year_id' => $selectedYearId, 'zilla_id' => $selectedZillaId]) }}" class="inline-flex items-center px-3 py-1.5 bg-blue-100 hover:bg-blue-200 dark:bg-blue-900 dark:hover:bg-blue-800 text-blue-700 dark:text-blue-300 text-sm font-medium rounded-lg transition-colors duration-200">
-					See All
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ __('Project × Zilla Distribution') }}</h3>
+                <a href="{{ route('admin.distributions.project-upazila', ['economic_year_id' => $selectedYearId, 'zilla_id' => $selectedZillaId]) }}" class="inline-flex items-center px-3 py-1.5 bg-blue-100 hover:bg-blue-200 dark:bg-blue-900 dark:hover:bg-blue-800 text-blue-700 dark:text-blue-300 text-sm font-medium rounded-lg transition-colors duration-200">
+                    {{ __('See All') }}
 				</a>
 			</div>
 			<div class="overflow-x-auto">
 				<table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
 					<thead class="bg-gray-50 dark:bg-gray-800">
 						<tr>
-							<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Project</th>
-							<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Zilla</th>
-							<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Approved Amount</th>
-							<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Applications</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{ __('Project') }}</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{ __('Zilla') }}</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{ __('Approved Amount') }}</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{ __('Applications') }}</th>
 						</tr>
 					</thead>
 					<tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
@@ -358,12 +358,12 @@
 							<tr>
 								<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ ($stats['projectNames'][$row->project_id] ?? '—') }}</td>
 								<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ ($stats['zillaNames'][$row->zilla_id] ?? '—') }}</td>
-								<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">৳{{ number_format($row->total_amount, 2) }}</td>
-								<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ $row->application_count }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">@moneybn($row->total_amount)</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">@bn($row->application_count)</td>
 							</tr>
 						@empty
 							<tr>
-								<td colspan="4" class="px-6 py-4 text-center text-gray-500 dark:text-gray-400">No data available</td>
+                                <td colspan="4" class="px-6 py-4 text-center text-gray-500 dark:text-gray-400">{{ __('No data available') }}</td>
 							</tr>
 						@endforelse
 					</tbody>
@@ -375,21 +375,21 @@
 		<div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden mt-8">
 			<div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
 				<div class="flex items-center gap-4">
-					<h3 class="text-lg font-semibold text-gray-900 dark:text-white">Project × Upazila Distribution</h3>
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ __('Project × Upazila Distribution') }}</h3>
 					@if(!empty($selectedZillaId))
-						<span class="text-xs text-gray-500 dark:text-gray-400">Zilla: {{ $stats['zillaNames'][$selectedZillaId] ?? ('#'.$selectedZillaId) }}</span>
+                        <span class="text-xs text-gray-500 dark:text-gray-400">{{ __('Zilla') }}: {{ $stats['zillaNames'][$selectedZillaId] ?? ('#'.$selectedZillaId) }}</span>
 					@endif
 				</div>
 				<div class="flex items-center gap-2">
-					<a href="{{ route('admin.distributions.project-upazila-union', ['economic_year_id' => $selectedYearId, 'zilla_id' => $selectedZillaId]) }}" class="inline-flex items-center px-3 py-1.5 bg-green-100 hover:bg-green-200 dark:bg-green-900 dark:hover:bg-green-800 text-green-700 dark:text-green-300 text-sm font-medium rounded-lg transition-colors duration-200">
-						See All
+                    <a href="{{ route('admin.distributions.project-upazila-union', ['economic_year_id' => $selectedYearId, 'zilla_id' => $selectedZillaId]) }}" class="inline-flex items-center px-3 py-1.5 bg-green-100 hover:bg-green-200 dark:bg-green-900 dark:hover:bg-green-800 text-green-700 dark:text-green-300 text-sm font-medium rounded-lg transition-colors duration-200">
+                        {{ __('See All') }}
 					</a>
 					<a href="{{ route('admin.exports.area-wise-relief.pdf', ['economic_year_id' => $selectedYearId, 'zilla_id' => $selectedZillaId]) }}" 
 					   class="inline-flex items-center px-3 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg transition-colors duration-200 shadow-sm hover:shadow-md">
 						<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
 						</svg>
-						PDF
+                        {{ __('PDF') }}
 					</a>
 				</div>
 			</div>
@@ -397,10 +397,10 @@
 				<table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
 					<thead class="bg-gray-50 dark:bg-gray-800">
                             <tr>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Project</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Upazila</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Approved</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Applications</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{ __('Project') }}</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{ __('Upazila') }}</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{ __('Approved') }}</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{ __('Applications') }}</th>
                             </tr>
 					</thead>
 					<tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
@@ -415,16 +415,16 @@
                                         $unit = $pu['unit'] ?? '';
                                     @endphp
                                     @if($isMoney)
-                                        ৳{{ number_format($row->total_amount, 2) }}
+                                        @moneybn($row->total_amount)
                                     @else
-                                        {{ number_format($row->total_amount, 2) }} {{ $unit }}
+                                        @bn(number_format($row->total_amount, 2)) {{ $unit }}
                                     @endif
                                 </td>
-								<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ $row->application_count }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">@bn($row->application_count)</td>
 							</tr>
 						@empty
 							<tr>
-								<td colspan="4" class="px-6 py-4 text-center text-gray-500 dark:text-gray-400">No data available</td>
+                                <td colspan="4" class="px-6 py-4 text-center text-gray-500 dark:text-gray-400">{{ __('No data available') }}</td>
 							</tr>
 						@endforelse
 					</tbody>
@@ -433,30 +433,30 @@
 			
 			@if(isset($stats['upazilaPagination']) && $stats['upazilaPagination']['total_pages'] > 1)
 			<div class="px-6 py-3 border-t border-gray-200 dark:border-gray-700 flex items-center justify-between">
-				<div class="flex items-center text-sm text-gray-700 dark:text-gray-300">
-					<span>Showing {{ (($stats['upazilaPagination']['current_page'] - 1) * $pageSize) + 1 }} to {{ min($stats['upazilaPagination']['current_page'] * $pageSize, $stats['upazilaPagination']['total_items']) }} of {{ $stats['upazilaPagination']['total_items'] }} results</span>
+                <div class="flex items-center text-sm text-gray-700 dark:text-gray-300">
+                    <span>{{ __('Showing') }} @bn((($stats['upazilaPagination']['current_page'] - 1) * $pageSize) + 1) {{ __('to') }} @bn(min($stats['upazilaPagination']['current_page'] * $pageSize, $stats['upazilaPagination']['total_items'])) {{ __('of') }} @bn($stats['upazilaPagination']['total_items']) {{ __('results') }}</span>
 				</div>
 				<div class="flex items-center space-x-2">
 					@if($stats['upazilaPagination']['has_previous'])
 						<a href="{{ request()->fullUrlWithQuery(['upazila_page' => $stats['upazilaPagination']['previous_page']]) }}" 
 						   class="px-3 py-1 text-sm bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg transition-colors">
-							Previous
+                            {{ __('Previous') }}
 						</a>
 					@else
-						<span class="px-3 py-1 text-sm bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-600 rounded-lg cursor-not-allowed">Previous</span>
+                        <span class="px-3 py-1 text-sm bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-600 rounded-lg cursor-not-allowed">{{ __('Previous') }}</span>
 					@endif
 					
 					<span class="px-3 py-1 text-sm bg-blue-600 text-white rounded-lg">
-						{{ $stats['upazilaPagination']['current_page'] }} / {{ $stats['upazilaPagination']['total_pages'] }}
+                        @bn($stats['upazilaPagination']['current_page']) / @bn($stats['upazilaPagination']['total_pages'])
 					</span>
 					
 					@if($stats['upazilaPagination']['has_next'])
 						<a href="{{ request()->fullUrlWithQuery(['upazila_page' => $stats['upazilaPagination']['next_page']]) }}" 
 						   class="px-3 py-1 text-sm bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg transition-colors">
-							Next
+                            {{ __('Next') }}
 						</a>
 					@else
-						<span class="px-3 py-1 text-sm bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-600 rounded-lg cursor-not-allowed">Next</span>
+                        <span class="px-3 py-1 text-sm bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-600 rounded-lg cursor-not-allowed">{{ __('Next') }}</span>
 					@endif
 				</div>
 			</div>
@@ -467,21 +467,21 @@
 		<div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden mt-8">
 			<div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
 				<div class="flex items-center gap-4">
-					<h3 class="text-lg font-semibold text-gray-900 dark:text-white">Project × Upazila × Union Distribution</h3>
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ __('Project × Upazila × Union Distribution') }}</h3>
 					@if(!empty($selectedZillaId))
-						<span class="text-xs text-gray-500 dark:text-gray-400">Zilla: {{ $stats['zillaNames'][$selectedZillaId] ?? ('#'.$selectedZillaId) }}</span>
+                        <span class="text-xs text-gray-500 dark:text-gray-400">{{ __('Zilla') }}: {{ $stats['zillaNames'][$selectedZillaId] ?? ('#'.$selectedZillaId) }}</span>
 					@endif
 				</div>
 				<div class="flex items-center gap-2">
-					<a href="{{ route('admin.distributions.project-upazila-union', ['economic_year_id' => $selectedYearId, 'zilla_id' => $selectedZillaId]) }}" class="inline-flex items-center px-3 py-1.5 bg-purple-100 hover:bg-purple-200 dark:bg-purple-900 dark:hover:bg-purple-800 text-purple-700 dark:text-purple-300 text-sm font-medium rounded-lg transition-colors duration-200">
-						See All
+                    <a href="{{ route('admin.distributions.project-upazila-union', ['economic_year_id' => $selectedYearId, 'zilla_id' => $selectedZillaId]) }}" class="inline-flex items-center px-3 py-1.5 bg-purple-100 hover:bg-purple-200 dark:bg-purple-900 dark:hover:bg-purple-800 text-purple-700 dark:text-purple-300 text-sm font-medium rounded-lg transition-colors duration-200">
+                        {{ __('See All') }}
 					</a>
 					<a href="{{ route('admin.exports.area-wise-relief.pdf', ['economic_year_id' => $selectedYearId, 'zilla_id' => $selectedZillaId]) }}" 
 					   class="inline-flex items-center px-3 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg transition-colors duration-200 shadow-sm hover:shadow-md">
 						<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
 						</svg>
-						PDF
+                        {{ __('PDF') }}
 					</a>
 				</div>
 			</div>
@@ -489,11 +489,11 @@
 				<table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
 					<thead class="bg-gray-50 dark:bg-gray-800">
                             <tr>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Project</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Upazila</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Union</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Approved</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Applications</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{ __('Project') }}</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{ __('Upazila') }}</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{ __('Union') }}</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{ __('Approved') }}</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{ __('Applications') }}</th>
                             </tr>
 					</thead>
 					<tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
@@ -509,16 +509,16 @@
                                         $unit = $pu['unit'] ?? '';
                                     @endphp
                                     @if($isMoney)
-                                        ৳{{ number_format($row->total_amount, 2) }}
+                                        @moneybn($row->total_amount)
                                     @else
-                                        {{ number_format($row->total_amount, 2) }} {{ $unit }}
+                                        @bn(number_format($row->total_amount, 2)) {{ $unit }}
                                     @endif
                                 </td>
-								<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ $row->application_count }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">@bn($row->application_count)</td>
 							</tr>
 						@empty
 							<tr>
-								<td colspan="5" class="px-6 py-4 text-center text-gray-500 dark:text-gray-400">No data available</td>
+                                <td colspan="5" class="px-6 py-4 text-center text-gray-500 dark:text-gray-400">{{ __('No data available') }}</td>
 							</tr>
 						@endforelse
 					</tbody>
@@ -527,30 +527,30 @@
 			
 			@if(isset($stats['upazilaUnionPagination']) && $stats['upazilaUnionPagination']['total_pages'] > 1)
 			<div class="px-6 py-3 border-t border-gray-200 dark:border-gray-700 flex items-center justify-between">
-				<div class="flex items-center text-sm text-gray-700 dark:text-gray-300">
-					<span>Showing {{ (($stats['upazilaUnionPagination']['current_page'] - 1) * $pageSize) + 1 }} to {{ min($stats['upazilaUnionPagination']['current_page'] * $pageSize, $stats['upazilaUnionPagination']['total_items']) }} of {{ $stats['upazilaUnionPagination']['total_items'] }} results</span>
+                <div class="flex items-center text-sm text-gray-700 dark:text-gray-300">
+                    <span>{{ __('Showing') }} @bn((($stats['upazilaUnionPagination']['current_page'] - 1) * $pageSize) + 1) {{ __('to') }} @bn(min($stats['upazilaUnionPagination']['current_page'] * $pageSize, $stats['upazilaUnionPagination']['total_items'])) {{ __('of') }} @bn($stats['upazilaUnionPagination']['total_items']) {{ __('results') }}</span>
 				</div>
 				<div class="flex items-center space-x-2">
 					@if($stats['upazilaUnionPagination']['has_previous'])
 						<a href="{{ request()->fullUrlWithQuery(['upazila_union_page' => $stats['upazilaUnionPagination']['previous_page']]) }}" 
 						   class="px-3 py-1 text-sm bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg transition-colors">
-							Previous
+                            {{ __('Previous') }}
 						</a>
 					@else
-						<span class="px-3 py-1 text-sm bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-600 rounded-lg cursor-not-allowed">Previous</span>
+                        <span class="px-3 py-1 text-sm bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-600 rounded-lg cursor-not-allowed">{{ __('Previous') }}</span>
 					@endif
 					
 					<span class="px-3 py-1 text-sm bg-blue-600 text-white rounded-lg">
-						{{ $stats['upazilaUnionPagination']['current_page'] }} / {{ $stats['upazilaUnionPagination']['total_pages'] }}
+                        @bn($stats['upazilaUnionPagination']['current_page']) / @bn($stats['upazilaUnionPagination']['total_pages'])
 					</span>
 					
 					@if($stats['upazilaUnionPagination']['has_next'])
 						<a href="{{ request()->fullUrlWithQuery(['upazila_union_page' => $stats['upazilaUnionPagination']['next_page']]) }}" 
 						   class="px-3 py-1 text-sm bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg transition-colors">
-							Next
+                            {{ __('Next') }}
 						</a>
 					@else
-						<span class="px-3 py-1 text-sm bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-600 rounded-lg cursor-not-allowed">Next</span>
+                        <span class="px-3 py-1 text-sm bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-600 rounded-lg cursor-not-allowed">{{ __('Next') }}</span>
 					@endif
 				</div>
 			</div>
@@ -562,7 +562,7 @@
 		<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-8">
 			<div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
 				<div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-					<h3 class="text-lg font-semibold text-gray-900 dark:text-white">Unserved Upazilas (Selected Zilla & Year)</h3>
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ __('Unserved Upazilas (Selected Zilla & Year)') }}</h3>
 				</div>
 				<div class="p-6">
 					@php
@@ -571,13 +571,13 @@
 							->implode(', ');
 					@endphp
 					<p class="text-sm text-gray-900 dark:text-gray-100">
-						{{ $unservedUpazilaNames !== '' ? $unservedUpazilaNames : 'All upazilas have distributions.' }}
+                        {{ $unservedUpazilaNames !== '' ? $unservedUpazilaNames : __('All upazilas have distributions.') }}
 					</p>
 				</div>
 			</div>
 			<div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
 				<div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-					<h3 class="text-lg font-semibold text-gray-900 dark:text-white">Unserved Unions (Selected Zilla & Year)</h3>
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ __('Unserved Unions (Selected Zilla & Year)') }}</h3>
 				</div>
 				<div class="p-6">
 					@php
@@ -586,7 +586,7 @@
 							->implode(', ');
 					@endphp
 					<p class="text-sm text-gray-900 dark:text-gray-100">
-						{{ $unservedUnionNames !== '' ? $unservedUnionNames : 'All unions have distributions.' }}
+                        {{ $unservedUnionNames !== '' ? $unservedUnionNames : __('All unions have distributions.') }}
 					</p>
 				</div>
 			</div>
@@ -596,27 +596,27 @@
 		<!-- Duplicate Allocations -->
 		<div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden mt-8">
 			<div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
-				<h3 class="text-lg font-semibold text-gray-900 dark:text-white">Duplicate Allocations (Same Organization in Year)</h3>
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ __('Duplicate Allocations (Same Organization in Year)') }}</h3>
 			</div>
 			<div class="overflow-x-auto">
 				<table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
 					<thead class="bg-gray-50 dark:bg-gray-800">
 						<tr>
-							<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Organization</th>
-							<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Allocations</th>
-							<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Total Approved</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{ __('Organization') }}</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{ __('Allocations') }}</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{ __('Total Approved') }}</th>
 						</tr>
 					</thead>
 					<tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
 						@forelse(($stats['duplicateAllocations'] ?? []) as $row)
 							<tr>
-								<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ $row->organization_name ?? '—' }}</td>
-								<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ $row->allocations }}</td>
-								<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">৳{{ number_format($row->total_approved, 2) }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ $row->organization_name ?? '—' }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">@bn($row->allocations)</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">@moneybn($row->total_approved)</td>
 							</tr>
 						@empty
 							<tr>
-								<td colspan="3" class="px-6 py-4 text-center text-gray-500 dark:text-gray-400">No duplicates detected</td>
+                                <td colspan="3" class="px-6 py-4 text-center text-gray-500 dark:text-gray-400">{{ __('No duplicates detected') }}</td>
 							</tr>
 						@endforelse
 					</tbody>
@@ -637,8 +637,8 @@
 								</svg>
 							</div>
 							<div>
-								<h3 class="text-lg font-semibold text-gray-900 dark:text-white">Quick Actions</h3>
-								<p class="text-sm text-gray-500 dark:text-gray-400">Common administrative tasks</p>
+                                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ __('Quick Actions') }}</h3>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">{{ __('Common administrative tasks') }}</p>
 							</div>
 						</div>
 					</div>
@@ -650,8 +650,8 @@
 								</svg>
 							</div>
 							<div class="ml-3">
-								<p class="text-sm font-medium text-blue-900 dark:text-blue-100">New Application</p>
-								<p class="text-xs text-blue-600 dark:text-blue-300">Create relief application</p>
+                                <p class="text-sm font-medium text-blue-900 dark:text-blue-100">{{ __('New Application') }}</p>
+                                <p class="text-xs text-blue-600 dark:text-blue-300">{{ __('Create relief application') }}</p>
 							</div>
 						</a>
 						
@@ -662,8 +662,8 @@
 								</svg>
 							</div>
 							<div class="ml-3">
-								<p class="text-sm font-medium text-green-900 dark:text-green-100">New Project</p>
-								<p class="text-xs text-green-600 dark:text-green-300">Create relief project</p>
+                                <p class="text-sm font-medium text-green-900 dark:text-green-100">{{ __('New Project') }}</p>
+                                <p class="text-xs text-green-600 dark:text-green-300">{{ __('Create relief project') }}</p>
 							</div>
 						</a>
 						
@@ -674,8 +674,8 @@
 								</svg>
 							</div>
 							<div class="ml-3">
-								<p class="text-sm font-medium text-yellow-900 dark:text-yellow-100">Review Applications</p>
-								<p class="text-xs text-yellow-600 dark:text-yellow-300">{{ $stats['pendingApplications'] }} pending</p>
+                                <p class="text-sm font-medium text-yellow-900 dark:text-yellow-100">{{ __('Review Applications') }}</p>
+                                <p class="text-xs text-yellow-600 dark:text-yellow-300">@bn($stats['pendingApplications']) {{ __('pending') }}</p>
 							</div>
 						</a>
 						
@@ -686,8 +686,8 @@
 								</svg>
 							</div>
 							<div class="ml-3">
-								<p class="text-sm font-medium text-purple-900 dark:text-purple-100">Export Data</p>
-								<p class="text-xs text-purple-600 dark:text-purple-300">Download reports</p>
+                                <p class="text-sm font-medium text-purple-900 dark:text-purple-100">{{ __('Export Data') }}</p>
+                                <p class="text-xs text-purple-600 dark:text-purple-300">{{ __('Download reports') }}</p>
 							</div>
 						</a>
 					</div>
@@ -741,8 +741,8 @@
                             @forelse(($stats['upazilaSummary'] ?? []) as $row)
                                 <tr>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">Upazila: {{ $stats['upazilaNames'][$row->upazila_id] ?? ('#'.$row->upazila_id) }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">৳{{ number_format($row->total_amount, 2) }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ $row->application_count }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">@moneybn($row->total_amount)</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">@bn($row->application_count)</td>
                                 </tr>
                             @empty
 								<tr>
@@ -820,8 +820,8 @@
                                             <span class="text-gray-500 dark:text-gray-300"> ({{ $stats['upazilaNames'][$row->upazila_id] ?? ('#'.$row->upazila_id) }})</span>
                                         @endif
                                     </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">৳{{ number_format($row->total_amount, 2) }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ $row->application_count }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">@moneybn($row->total_amount)</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">@bn($row->application_count)</td>
                                 </tr>
                             @empty
 								<tr>
@@ -868,16 +868,16 @@
 		<!-- Project Budget Remaining -->
 		<div class="card">
 			<div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-				<h3 class="text-lg font-medium text-gray-900 dark:text-white">Active Project Allocations (Current Year)</h3>
+                <h3 class="text-lg font-medium text-gray-900 dark:text-white">{{ __('Active Project Allocations (Current Year)') }}</h3>
 			</div>
 			<div class="overflow-x-auto">
 				<table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
 					<thead class="bg-gray-50 dark:bg-gray-800">
 						<tr>
-							<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Project Name</th>
-							<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Relief Type</th>
-							<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Allocated Amount</th>
-							<th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Economic Year</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{ __('Project Name') }}</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{ __('Relief Type') }}</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{ __('Allocated Amount') }}</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{ __('Economic Year') }}</th>
 						</tr>
 					</thead>
 					<tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
@@ -892,18 +892,12 @@
 										{{ $project->reliefType->name }}
 									</div>
 								</td>
-								<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ $project->formatted_allocated_amount }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                                    @if($project->economicYear)
-                                        {{ $project->economicYear->name ?? ($project->economicYear->start_date?->format('Y') . ' - ' . $project->economicYear->end_date?->format('Y')) }}
-                                    @else
-                                        N/A
-                                    @endif
-                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{{ bn_number($project->formatted_allocated_amount) }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{{ $project->economic_year_display ?? 'N/A' }}</td>
 							</tr>
 						@empty
 							<tr>
-								<td colspan="4" class="px-6 py-4 text-center text-gray-500 dark:text-gray-400">No active projects found</td>
+                                <td colspan="4" class="px-6 py-4 text-center text-gray-500 dark:text-gray-400">{{ __('No active projects found') }}</td>
 							</tr>
 						@endforelse
 					</tbody>

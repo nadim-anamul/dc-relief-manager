@@ -23,6 +23,16 @@ class ReliefItem extends Model
         'is_active' => 'boolean',
     ];
 
+    public function getNameDisplayAttribute(): string
+    {
+        return app()->isLocale('bn') ? ($this->name_bn ?: $this->name) : ($this->name ?: $this->name_bn);
+    }
+
+    public function getUnitDisplayAttribute(): string
+    {
+        return app()->isLocale('bn') ? ($this->unit_bn ?: $this->unit) : ($this->unit ?: $this->unit_bn);
+    }
+
     /**
      * Get the relief application items for this relief item.
      */
