@@ -14,6 +14,12 @@ done
 
 echo "Database is ready!"
 
+# Ensure .env file exists
+if [ ! -f .env ]; then
+	echo "Creating .env file..."
+	cp env.example.dist .env || cp .env.example .env
+fi
+
 # Generate app key if not set
 if [ -z "$APP_KEY" ] || [ "$APP_KEY" = "" ]; then
 	echo "Generating application key..."
