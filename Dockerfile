@@ -53,8 +53,8 @@ COPY . .
 # Create .env file from env.example.dist
 RUN cp env.example.dist .env || cp .env.example .env
 
-# Install dependencies
-RUN composer install --no-dev --optimize-autoloader --no-interaction
+# Install dependencies (include dev for seeders)
+RUN composer install --optimize-autoloader --no-interaction
 
 # Build frontend assets
 RUN npm ci && npm run build
