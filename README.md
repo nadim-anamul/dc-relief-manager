@@ -308,7 +308,35 @@ php artisan test --coverage
 
 ## 🚀 Deployment
 
-### Production Setup
+### Docker Deployment (Recommended)
+
+The easiest way to deploy DC Relief Manager is using Docker:
+
+```bash
+# 1. Make deploy script executable
+chmod +x deploy.sh
+
+# 2. Run deployment
+./deploy.sh
+
+# 3. Access application at http://YOUR_SERVER_IP:8182
+```
+
+For detailed Docker deployment instructions, see:
+- **[QUICKSTART.md](QUICKSTART.md)** - Quick start guide
+- **[DEPLOYMENT.md](DEPLOYMENT.md)** - Complete deployment documentation
+
+The Docker setup includes:
+- PHP 8.3 with Apache
+- MySQL 8.0 database
+- Automatic migrations
+- Pre-configured on port 8182
+- Production-ready optimization
+
+### Manual Production Setup
+
+If you prefer manual deployment:
+
 1. Set `APP_ENV=production` in `.env`
 2. Run `php artisan config:cache`
 3. Run `php artisan route:cache`

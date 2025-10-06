@@ -1,136 +1,104 @@
 #!/bin/bash
 
-# DC Relief Manager Deployment Script
-# This script helps deploy the application using Docker
+# DC Relief Manager - Server Deployment Script
+# This script deploys the application on a server with Docker
 
 set -e
 
-echo "🚀 Starting DC Relief Manager deployment..."
+echo "========================================="
+echo "DC Relief Manager - Deployment Script"
+echo "========================================="
+echo ""
+
+# Color codes for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m' # No Color
 
 # Check if Docker is installed
 if ! command -v docker &> /dev/null; then
-    echo "❌ Docker is not installed. Please install Docker first."
-    exit 1
+	echo -e "${RED}Error: Docker is not installed.${NC}"
+	echo "Please install Docker first: https://docs.docker.com/engine/install/"
+	exit 1
 fi
 
-# Check if Docker Compose is installed
+# Check if Docker Compose is available
 if ! command -v docker compose &> /dev/null; then
-    echo "❌ Docker Compose is not installed. Please install Docker Compose first."
-    exit 1
+	echo -e "${RED}Error: Docker Compose is not installed.${NC}"
+	echo "Please install Docker Compose first: https://docs.docker.com/compose/install/"
+	exit 1
 fi
 
-# Create .env file if it doesn't exist (prefer env.example.dist if present)
+# Check if .env file exists
 if [ ! -f .env ]; then
-    echo "📝 Creating .env file..."
-    if [ -f env.example.dist ]; then
-        cp env.example.dist .env
-    elif [ -f .env.example ]; then
-        cp .env.example .env
-    else
-        cat > .env << EOF
-APP_NAME="DC Relief Manager"
-APP_ENV=production
-APP_KEY=
-APP_DEBUG=false
-APP_URL=http://localhost:8182
-
-LOG_CHANNEL=stack
-LOG_DEPRECATIONS_CHANNEL=null
-LOG_LEVEL=debug
-
-DB_CONNECTION=mysql
-DB_HOST=db
-DB_PORT=3306
-DB_DATABASE=dc_relief_manager
-DB_USERNAME=root
-DB_PASSWORD=password
-
-BROADCAST_DRIVER=file
-CACHE_DRIVER=file
-FILESYSTEM_DISK=local
-QUEUE_CONNECTION=sync
-SESSION_DRIVER=file
-SESSION_LIFETIME=120
-
-MEMCACHED_HOST=127.0.0.1
-
-REDIS_HOST=127.0.0.1
-REDIS_PASSWORD=null
-REDIS_PORT=6379
-
-MAIL_MAILER=smtp
-MAIL_HOST=mailpit
-MAIL_PORT=1025
-MAIL_USERNAME=null
-MAIL_PASSWORD=null
-MAIL_ENCRYPTION=null
-MAIL_FROM_ADDRESS="hello@example.com"
-MAIL_FROM_NAME="\${APP_NAME}"
-
-AWS_ACCESS_KEY_ID=
-AWS_SECRET_ACCESS_KEY=
-AWS_DEFAULT_REGION=us-east-1
-AWS_BUCKET=
-AWS_USE_PATH_STYLE_ENDPOINT=false
-
-PUSHER_APP_ID=
-PUSHER_APP_KEY=
-PUSHER_APP_SECRET=
-PUSHER_HOST=
-PUSHER_PORT=443
-PUSHER_SCHEME=https
-PUSHER_APP_CLUSTER=mt1
-
-VITE_PUSHER_APP_KEY="\${PUSHER_APP_KEY}"
-VITE_PUSHER_HOST="\${PUSHER_HOST}"
-VITE_PUSHER_PORT="\${PUSHER_PORT}"
-VITE_PUSHER_SCHEME="\${PUSHER_SCHEME}"
-VITE_PUSHER_APP_CLUSTER="\${PUSHER_APP_CLUSTER}"
-EOF
-    fi
-    echo "✅ .env file created"
-else
-    echo "✅ .env file already exists"
+	echo -e "${YELLOW}Warning: .env file not found. Creating from env.example.dist...${NC}"
+	if [ -f env.example.dist ]; then
+		cp env.example.dist .env
+		echo -e "${GREEN}.env file created. Please update it with your settings.${NC}"
+	else
+		echo -e "${RED}Error: env.example.dist not found. Cannot create .env file.${NC}"
+		exit 1
+	fi
 fi
 
-# Stop existing containers if they exist
-echo "🛑 Stopping existing containers..."
+# Confirm deployment
+echo -e "${YELLOW}This will deploy the application on port 8182.${NC}"
+read -p "Do you want to continue? (y/n) " -n 1 -r
+echo
+if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+	echo "Deployment cancelled."
+	exit 0
+fi
+
+echo ""
+echo "Step 1: Stopping existing containers..."
 docker compose down 2>/dev/null || true
 
-# Build and start the application
-echo "🔨 Building and starting the application..."
-docker compose up -d --build
+echo ""
+echo "Step 2: Building Docker images..."
+docker compose build --no-cache
 
-# Wait for database to be ready
-echo "⏳ Waiting for database to be ready..."
-sleep 30
+echo ""
+echo "Step 3: Starting services..."
+docker compose up -d
 
-# Generate application key if not set
-echo "🔑 Generating application key..."
-docker compose exec -T app php artisan key:generate --force
+echo ""
+echo "Step 4: Waiting for database to be ready..."
+sleep 10
 
-# Run database migrations
-echo "🗄️  Running database migrations..."
+echo ""
+echo "Step 5: Running database migrations..."
 docker compose exec -T app php artisan migrate --force
 
-# Clear and cache configuration
-echo "⚙️  Optimizing application..."
-docker compose exec -T app php artisan config:clear
+echo ""
+echo "Step 6: Seeding database (optional)..."
+read -p "Do you want to seed the database? (y/n) " -n 1 -r
+echo
+if [[ $REPLY =~ ^[Yy]$ ]]; then
+	docker compose exec -T app php artisan db:seed --force
+fi
+
+echo ""
+echo "Step 7: Clearing and caching configuration..."
 docker compose exec -T app php artisan config:cache
-docker compose exec -T app php artisan route:clear
 docker compose exec -T app php artisan route:cache
-docker compose exec -T app php artisan view:clear
 docker compose exec -T app php artisan view:cache
 
-echo "✅ Deployment completed successfully!"
 echo ""
-echo "🌐 Application is now available at: http://localhost:8182"
-echo "📧 Mailpit (for email testing) is available at: http://localhost:8025"
-echo "🗄️  Database is available at: localhost:3311"
+echo -e "${GREEN}=========================================${NC}"
+echo -e "${GREEN}Deployment completed successfully!${NC}"
+echo -e "${GREEN}=========================================${NC}"
 echo ""
-echo "📋 Useful commands:"
-echo "  - View logs: docker compose logs -f app"
-echo "  - Stop application: docker compose down"
-echo "  - Restart application: docker compose restart"
-echo "  - Access application shell: docker compose exec app bash"
-echo "  - Access database: docker compose exec db mysql -u root -p dc_relief_manager"
+echo -e "Application URL: ${GREEN}http://YOUR_SERVER_IP:8182${NC}"
+echo -e "Database Port: ${GREEN}3306${NC}"
+echo ""
+echo "Useful commands:"
+echo "  View logs:           docker compose logs -f app"
+echo "  Stop application:    docker compose down"
+echo "  Restart application: docker compose restart"
+echo "  Access app shell:    docker compose exec app bash"
+echo "  Run migrations:      docker compose exec app php artisan migrate"
+echo "  Clear cache:         docker compose exec app php artisan cache:clear"
+echo ""
+
