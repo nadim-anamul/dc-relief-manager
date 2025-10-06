@@ -68,8 +68,8 @@ RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 755 /var/www/html/storage \
     && chmod -R 755 /var/www/html/bootstrap/cache
 
-# Create .env file if it doesn't exist
-RUN if [ ! -f .env ]; then cp .env.example .env 2>/dev/null || echo "APP_NAME=DC Relief Manager\n\
+# Create .env file if it doesn't exist (prefer env.example.dist if present)
+RUN if [ ! -f .env ]; then cp env.example.dist .env 2>/dev/null || cp .env.example .env 2>/dev/null || echo "APP_NAME=DC Relief Manager\n\
 APP_ENV=production\n\
 APP_KEY=\n\
 APP_DEBUG=false\n\

@@ -19,10 +19,15 @@ if ! command -v docker compose &> /dev/null; then
     exit 1
 fi
 
-# Create .env file if it doesn't exist
+# Create .env file if it doesn't exist (prefer env.example.dist if present)
 if [ ! -f .env ]; then
     echo "📝 Creating .env file..."
-    cat > .env << EOF
+    if [ -f env.example.dist ]; then
+        cp env.example.dist .env
+    elif [ -f .env.example ]; then
+        cp .env.example .env
+    else
+        cat > .env << EOF
 APP_NAME="DC Relief Manager"
 APP_ENV=production
 APP_KEY=
@@ -82,6 +87,7 @@ VITE_PUSHER_PORT="\${PUSHER_PORT}"
 VITE_PUSHER_SCHEME="\${PUSHER_SCHEME}"
 VITE_PUSHER_APP_CLUSTER="\${PUSHER_APP_CLUSTER}"
 EOF
+    fi
     echo "✅ .env file created"
 else
     echo "✅ .env file already exists"
