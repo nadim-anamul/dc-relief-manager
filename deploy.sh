@@ -101,20 +101,20 @@ sleep 30
 
 # Generate application key if not set
 echo "🔑 Generating application key..."
-docker compose exec app php artisan key:generate --force
+docker compose exec -T app php artisan key:generate --force
 
 # Run database migrations
 echo "🗄️  Running database migrations..."
-docker compose exec app php artisan migrate --force
+docker compose exec -T app php artisan migrate --force
 
 # Clear and cache configuration
 echo "⚙️  Optimizing application..."
-docker compose exec app php artisan config:clear
-docker compose exec app php artisan config:cache
-docker compose exec app php artisan route:clear
-docker compose exec app php artisan route:cache
-docker compose exec app php artisan view:clear
-docker compose exec app php artisan view:cache
+docker compose exec -T app php artisan config:clear
+docker compose exec -T app php artisan config:cache
+docker compose exec -T app php artisan route:clear
+docker compose exec -T app php artisan route:cache
+docker compose exec -T app php artisan view:clear
+docker compose exec -T app php artisan view:cache
 
 echo "✅ Deployment completed successfully!"
 echo ""
