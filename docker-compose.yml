@@ -1,0 +1,76 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: dc_relief_manager_app
+    restart: unless-stopped
+    working_dir: /var/www/html
+    ports:
+      - "8182:8182"
+    volumes:
+      - ./storage:/var/www/html/storage
+      - ./bootstrap/cache:/var/www/html/bootstrap/cache
+    environment:
+      - APP_ENV=production
+      - APP_DEBUG=false
+      - DB_HOST=db
+      - DB_PORT=3306
+      - DB_DATABASE=dc_relief_manager
+      - DB_USERNAME=root
+      - DB_PASSWORD=password
+      - CACHE_DRIVER=file
+      - SESSION_DRIVER=file
+      - QUEUE_CONNECTION=sync
+    depends_on:
+      - db
+    networks:
+      - dc_relief_network
+
+  db:
+    image: mysql:8.0
+    container_name: dc_relief_manager_db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: dc_relief_manager
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_PASSWORD: password
+      MYSQL_USER: dc_user
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./database/init:/docker-entrypoint-initdb.d
+    ports:
+      - "3311:3306"
+    networks:
+      - dc_relief_network
+
+  # Optional: Redis for caching and sessions (uncomment if needed)
+  # redis:
+  #   image: redis:7-alpine
+  #   container_name: dc_relief_manager_redis
+  #   restart: unless-stopped
+  #   ports:
+  #     - "6379:6379"
+  #   networks:
+  #     - dc_relief_network
+
+  # Optional: Mailpit for email testing (uncomment if needed)
+  # mailpit:
+  #   image: axllent/mailpit
+  #   container_name: dc_relief_manager_mailpit
+  #   restart: unless-stopped
+  #   ports:
+  #     - "1025:1025"
+  #     - "8025:8025"
+  #   networks:
+  #     - dc_relief_network
+
+volumes:
+  db_data:
+    driver: local
+
+networks:
+  dc_relief_network:
+    driver: bridge
