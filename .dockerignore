@@ -67,4 +67,3 @@ phpunit.xml
 vendor
 
 # Laravel specific
-artisan

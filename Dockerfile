@@ -1,5 +1,5 @@
-# Use PHP 8.2 with Apache
-FROM php:8.2-apache
+# Use PHP 8.3 with Apache
+FROM php:8.3-apache
 
 # Set working directory
 WORKDIR /var/www/html
@@ -55,12 +55,12 @@ RUN mkdir -p storage/app/public storage/framework/cache storage/framework/sessio
 # Install PHP dependencies with verbose output for debugging
 RUN composer install --no-dev --optimize-autoloader --no-scripts --no-interaction --prefer-dist -vvv
 
-# Install Node.js and npm
-RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
+# Install Node.js 20 and npm (required by vite 7)
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
     && apt-get install -y nodejs
 
-# Install npm dependencies and build assets
-RUN npm ci --only=production && npm run build
+# Install npm dependencies (including dev) and build assets
+RUN npm ci && npm run build
 
 # Set proper permissions
 RUN chown -R www-data:www-data /var/www/html \
@@ -138,28 +138,36 @@ RUN echo "Listen 8182" >> /etc/apache2/ports.conf \
 RUN echo '#!/bin/bash\n\
 set -e\n\
 \n\
-# Run composer scripts that require the app to be set up\n\
-composer run-script post-autoload-dump || true\n\
+cd /var/www/html\n\
+\n\
+# Ensure no stale discovery cache\n\
+rm -f bootstrap/cache/packages.php bootstrap/cache/services.php || true\n\
+\n\
+# Re-discover packages\n\
+php artisan package:discover || true\n\
 \n\
 # Generate application key if not set\n\
 if [ -z "$APP_KEY" ] || [ "$APP_KEY" = "" ]; then\n\
     php artisan key:generate --force\n\
 fi\n\
 \n\
-# Run database migrations\n\
-php artisan migrate --force\n\
-\n\
+# Run database migrations (ignore if DB not ready)\n\
+php artisan migrate --force || true\n\
+\
+\
 # Clear and cache config\n\
-php artisan config:clear\n\
-php artisan config:cache\n\
-\n\
+php artisan config:clear || true\n\
+php artisan config:cache || true\n\
+\
+\
 # Clear and cache routes\n\
-php artisan route:clear\n\
-php artisan route:cache\n\
-\n\
+php artisan route:clear || true\n\
+php artisan route:cache || true\n\
+\
+\
 # Clear and cache views\n\
-php artisan view:clear\n\
-php artisan view:cache\n\
+php artisan view:clear || true\n\
+php artisan view:cache || true\n\
 \n\
 # Start Apache\n\
 exec apache2-foreground' > /usr/local/bin/start.sh \
