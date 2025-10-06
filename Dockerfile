@@ -20,9 +20,6 @@ RUN apt-get update && apt-get install -y \
     libgd-dev \
     jpegoptim optipng pngquant gifsicle \
     vim \
-    unzip \
-    git \
-    curl \
     && rm -rf /var/lib/apt/lists/*
 
 # Install PHP extensions
@@ -49,32 +46,26 @@ RUN echo '<VirtualHost *:80>\n\
     CustomLog ${APACHE_LOG_DIR}/access.log combined\n\
 </VirtualHost>' > /etc/apache2/sites-available/000-default.conf
 
-# Copy composer files first for better layer caching
-COPY composer.json composer.lock ./
+# Copy application code
+COPY . .
 
-# Install PHP dependencies (with no scripts to avoid errors)
-RUN composer install --no-dev --optimize-autoloader --no-scripts --no-interaction --prefer-dist
+# Create necessary directories that might be missing
+RUN mkdir -p storage/app/public storage/framework/cache storage/framework/sessions storage/framework/views storage/logs bootstrap/cache
 
-# Copy package.json files for npm
-COPY package*.json ./
+# Install PHP dependencies with verbose output for debugging
+RUN composer install --no-dev --optimize-autoloader --no-scripts --no-interaction --prefer-dist -vvv
 
 # Install Node.js and npm
 RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
     && apt-get install -y nodejs
 
-# Install npm dependencies
-RUN npm ci --only=production
-
-# Copy application code
-COPY . .
+# Install npm dependencies and build assets
+RUN npm ci --only=production && npm run build
 
 # Set proper permissions
 RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 755 /var/www/html/storage \
     && chmod -R 755 /var/www/html/bootstrap/cache
-
-# Build assets
-RUN npm run build
 
 # Create .env file if it doesn't exist
 RUN if [ ! -f .env ]; then cp .env.example .env 2>/dev/null || echo "APP_NAME=DC Relief Manager\n\
