@@ -64,18 +64,18 @@ DB_PASSWORD=your_secure_password
 
 ```bash
 # Build and start the application
-docker-compose up -d --build
+docker compose up -d --build
 
 # Generate application key
-docker-compose exec app php artisan key:generate --force
+docker compose exec app php artisan key:generate --force
 
 # Run database migrations
-docker-compose exec app php artisan migrate --force
+docker compose exec app php artisan migrate --force
 
 # Optimize for production
-docker-compose exec app php artisan config:cache
-docker-compose exec app php artisan route:cache
-docker-compose exec app php artisan view:cache
+docker compose exec app php artisan config:cache
+docker compose exec app php artisan route:cache
+docker compose exec app php artisan view:cache
 ```
 
 ## Accessing the Application
@@ -90,7 +90,7 @@ docker-compose exec app php artisan view:cache
 
 The application is configured to run on port **8182** as requested. To change this:
 
-1. Edit `docker-compose.yml`:
+1. Edit `docker compose.yml`:
    ```yaml
    ports:
      - "YOUR_PORT:8182"
@@ -131,55 +131,55 @@ Key environment variables to configure:
 
 ```bash
 # View running containers
-docker-compose ps
+docker compose ps
 
 # View application logs
-docker-compose logs -f app
+docker compose logs -f app
 
 # View database logs
-docker-compose logs -f db
+docker compose logs -f db
 
 # Stop all services
-docker-compose down
+docker compose down
 
 # Restart application
-docker-compose restart app
+docker compose restart app
 
 # Rebuild and restart
-docker-compose up -d --build
+docker compose up -d --build
 ```
 
 ### Application Management
 
 ```bash
 # Access application shell
-docker-compose exec app bash
+docker compose exec app bash
 
 # Run Laravel commands
-docker-compose exec app php artisan migrate
-docker-compose exec app php artisan db:seed
-docker-compose exec app php artisan cache:clear
+docker compose exec app php artisan migrate
+docker compose exec app php artisan db:seed
+docker compose exec app php artisan cache:clear
 
 # Access database
-docker-compose exec db mysql -u root -p dc_relief_manager
+docker compose exec db mysql -u root -p dc_relief_manager
 ```
 
 ### Backup and Maintenance
 
 ```bash
 # Backup database
-docker-compose exec db mysqldump -u root -p dc_relief_manager > backup.sql
+docker compose exec db mysqldump -u root -p dc_relief_manager > backup.sql
 
 # Clear application cache
-docker-compose exec app php artisan cache:clear
-docker-compose exec app php artisan config:clear
-docker-compose exec app php artisan route:clear
-docker-compose exec app php artisan view:clear
+docker compose exec app php artisan cache:clear
+docker compose exec app php artisan config:clear
+docker compose exec app php artisan route:clear
+docker compose exec app php artisan view:clear
 
 # Re-optimize for production
-docker-compose exec app php artisan config:cache
-docker-compose exec app php artisan route:cache
-docker-compose exec app php artisan view:cache
+docker compose exec app php artisan config:cache
+docker compose exec app php artisan route:cache
+docker compose exec app php artisan view:cache
 ```
 
 ## Development vs Production
@@ -189,7 +189,7 @@ docker-compose exec app php artisan view:cache
 For development with live reloading:
 
 ```bash
-docker-compose -f docker-compose.dev.yml up -d --build
+docker compose -f docker-compose.dev.yml up -d --build
 ```
 
 ### Production Setup
@@ -197,7 +197,7 @@ docker-compose -f docker-compose.dev.yml up -d --build
 For production deployment:
 
 ```bash
-docker-compose up -d --build
+docker compose up -d --build
 ```
 
 ## Security Considerations
@@ -223,31 +223,31 @@ docker-compose up -d --build
 2. **Database connection failed**:
    ```bash
    # Check database logs
-   docker-compose logs db
+   docker compose logs db
    # Restart database
-   docker-compose restart db
+   docker compose restart db
    ```
 
 3. **Application won't start**:
    ```bash
    # Check application logs
-   docker-compose logs app
+   docker compose logs app
    # Rebuild containers
-   docker-compose down
-   docker-compose up -d --build
+   docker compose down
+   docker compose up -d --build
    ```
 
 4. **Permission issues**:
    ```bash
    # Fix storage permissions
-   docker-compose exec app chown -R www-data:www-data storage
-   docker-compose exec app chmod -R 755 storage
+   docker compose exec app chown -R www-data:www-data storage
+   docker compose exec app chmod -R 755 storage
    ```
 
 ### Logs Location
 
 - Application logs: `storage/logs/laravel.log`
-- Docker logs: `docker-compose logs app`
+- Docker logs: `docker compose logs app`
 - Apache logs: Inside container at `/var/log/apache2/`
 
 ## File Structure
@@ -255,8 +255,8 @@ docker-compose up -d --build
 ```
 dc-relief-manager/
 ├── Dockerfile              # Main application container
-├── docker-compose.yml      # Production setup
-├── docker-compose.dev.yml  # Development setup
+├── docker compose.yml      # Production setup
+├── docker compose.dev.yml  # Development setup
 ├── .dockerignore           # Docker ignore file
 ├── deploy.sh              # Automated deployment script
 └── DOCKER_DEPLOYMENT.md   # This documentation
@@ -265,7 +265,7 @@ dc-relief-manager/
 ## Support
 
 For issues or questions:
-1. Check the application logs: `docker-compose logs app`
+1. Check the application logs: `docker compose logs app`
 2. Verify your environment configuration
 3. Ensure all required ports are available
 4. Check Docker and Docker Compose versions

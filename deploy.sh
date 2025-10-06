@@ -14,7 +14,7 @@ if ! command -v docker &> /dev/null; then
 fi
 
 # Check if Docker Compose is installed
-if ! command -v docker-compose &> /dev/null; then
+if ! command -v docker compose &> /dev/null; then
     echo "❌ Docker Compose is not installed. Please install Docker Compose first."
     exit 1
 fi
@@ -89,11 +89,11 @@ fi
 
 # Stop existing containers if they exist
 echo "🛑 Stopping existing containers..."
-docker-compose down 2>/dev/null || true
+docker compose down 2>/dev/null || true
 
 # Build and start the application
 echo "🔨 Building and starting the application..."
-docker-compose up -d --build
+docker compose up -d --build
 
 # Wait for database to be ready
 echo "⏳ Waiting for database to be ready..."
@@ -101,20 +101,20 @@ sleep 30
 
 # Generate application key if not set
 echo "🔑 Generating application key..."
-docker-compose exec app php artisan key:generate --force
+docker compose exec app php artisan key:generate --force
 
 # Run database migrations
 echo "🗄️  Running database migrations..."
-docker-compose exec app php artisan migrate --force
+docker compose exec app php artisan migrate --force
 
 # Clear and cache configuration
 echo "⚙️  Optimizing application..."
-docker-compose exec app php artisan config:clear
-docker-compose exec app php artisan config:cache
-docker-compose exec app php artisan route:clear
-docker-compose exec app php artisan route:cache
-docker-compose exec app php artisan view:clear
-docker-compose exec app php artisan view:cache
+docker compose exec app php artisan config:clear
+docker compose exec app php artisan config:cache
+docker compose exec app php artisan route:clear
+docker compose exec app php artisan route:cache
+docker compose exec app php artisan view:clear
+docker compose exec app php artisan view:cache
 
 echo "✅ Deployment completed successfully!"
 echo ""
@@ -123,8 +123,8 @@ echo "📧 Mailpit (for email testing) is available at: http://localhost:8025"
 echo "🗄️  Database is available at: localhost:3311"
 echo ""
 echo "📋 Useful commands:"
-echo "  - View logs: docker-compose logs -f app"
-echo "  - Stop application: docker-compose down"
-echo "  - Restart application: docker-compose restart"
-echo "  - Access application shell: docker-compose exec app bash"
-echo "  - Access database: docker-compose exec db mysql -u root -p dc_relief_manager"
+echo "  - View logs: docker compose logs -f app"
+echo "  - Stop application: docker compose down"
+echo "  - Restart application: docker compose restart"
+echo "  - Access application shell: docker compose exec app bash"
+echo "  - Access database: docker compose exec db mysql -u root -p dc_relief_manager"
