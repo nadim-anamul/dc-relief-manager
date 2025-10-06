@@ -36,7 +36,8 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 RUN a2enmod rewrite
 
 # Configure Apache
-RUN echo '<VirtualHost *:80>\n\
+RUN echo 'ServerName localhost' >> /etc/apache2/apache2.conf && \
+    echo '<VirtualHost *:80>\n\
     DocumentRoot /var/www/html/public\n\
     <Directory /var/www/html/public>\n\
         AllowOverride All\n\
