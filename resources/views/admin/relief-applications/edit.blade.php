@@ -6,15 +6,15 @@
 					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
 				</svg>
 			</a>
-			<h1 class="text-2xl font-bold text-gray-900 dark:text-white">Review Application: {{ $reliefApplication->subject }}</h1>
+            <h1 class="text-2xl font-bold text-gray-900 dark:text-white">{{ __('Review Application') }}: {{ $reliefApplication->subject }}</h1>
 		</div>
 	</x-slot>
 
 	<div class="max-w-4xl mx-auto">
 		<div class="card">
 			<div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-				<h3 class="text-lg font-medium text-gray-900 dark:text-white">Application Review & Decision</h3>
-				<p class="mt-1 text-sm text-gray-600 dark:text-gray-400">Review the application details and make your decision.</p>
+                <h3 class="text-lg font-medium text-gray-900 dark:text-white">{{ __('Application Review & Decision') }}</h3>
+                <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">{{ __('Review the application details and make your decision.') }}</p>
 			</div>
 			<div class="p-6">
 				<form action="{{ route('admin.relief-applications.update', $reliefApplication) }}" method="POST" class="space-y-8" x-data="approvalForm()">
@@ -23,11 +23,11 @@
 
 					<!-- Application Summary -->
 					<div class="border-b border-gray-200 dark:border-gray-700 pb-8">
-						<h4 class="text-lg font-medium text-gray-900 dark:text-white mb-6">Application Summary</h4>
+                        <h4 class="text-lg font-medium text-gray-900 dark:text-white mb-6">{{ __('Application Summary') }}</h4>
 						
 						<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 							<div>
-								<label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Organization</label>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{{ __('Organization') }}</label>
 								<div class="p-3 bg-gray-50 dark:bg-gray-700 rounded-md">
 									<p class="text-sm text-gray-900 dark:text-white">{{ $reliefApplication->organization_name }}</p>
 									@if($reliefApplication->organizationType)
@@ -36,7 +36,7 @@
 								</div>
 							</div>
 							<div>
-								<label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Relief Type</label>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{{ __('Relief Type') }}</label>
 								<div class="p-3 bg-gray-50 dark:bg-gray-700 rounded-md">
 									@if($reliefApplication->reliefType)
 										<div class="flex items-center">
@@ -46,33 +46,33 @@
 											<p class="text-sm text-gray-900 dark:text-white">{{ $reliefApplication->reliefType->name }}</p>
 										</div>
 									@else
-										<p class="text-sm text-gray-500 dark:text-gray-400">Not specified</p>
+                                        <p class="text-sm text-gray-500 dark:text-gray-400">{{ __('Not specified') }}</p>
 									@endif
 								</div>
 							</div>
 							<div>
-								<label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Amount Requested</label>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{{ __('Amount Requested') }}</label>
 								<div class="p-3 bg-blue-50 dark:bg-blue-900 rounded-lg border border-blue-200 dark:border-blue-700">
 									<p class="text-lg font-semibold text-blue-900 dark:text-blue-100">{{ $reliefApplication->formatted_amount }}</p>
-									<p class="text-xs text-blue-700 dark:text-blue-300 mt-1">Total amount requested by applicant</p>
+                                    <p class="text-xs text-blue-700 dark:text-blue-300 mt-1">{{ __('Total amount requested by applicant') }}</p>
 								</div>
 							</div>
 							<div>
-								<label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Location</label>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{{ __('Location') }}</label>
 								<div class="p-3 bg-gray-50 dark:bg-gray-700 rounded-md">
-									<p class="text-sm text-gray-900 dark:text-white">{{ $reliefApplication->zilla?->name ?? 'Not specified' }}, {{ $reliefApplication->upazila?->name ?? 'Not specified' }}</p>
+                                    <p class="text-sm text-gray-900 dark:text-white">{{ $reliefApplication->zilla?->name ?? __('Not specified') }}, {{ $reliefApplication->upazila?->name ?? __('Not specified') }}</p>
 								</div>
 							</div>
 							<div>
-								<label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Project</label>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{{ __('Project') }}</label>
 								<div class="p-3 bg-gray-50 dark:bg-gray-700 rounded-md">
 									@if($reliefApplication->project)
 										<p class="text-sm font-medium text-gray-900 dark:text-white">{{ $reliefApplication->project->name }}</p>
-										<p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
-											Available: {{ $reliefApplication->project->formatted_available_amount }}
-										</p>
+                                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                            {{ __('Available') }}: {{ $reliefApplication->project->formatted_available_amount }}
+                                        </p>
 									@else
-										<p class="text-sm text-gray-500 dark:text-gray-400">No project assigned</p>
+                                        <p class="text-sm text-gray-500 dark:text-gray-400">{{ __('No project assigned') }}</p>
 									@endif
 								</div>
 							</div>
@@ -82,7 +82,7 @@
 					<!-- Decision Section -->
 					<div class="border-b border-gray-200 dark:border-gray-700 pb-8">
 						<div class="flex items-center justify-between mb-6">
-							<h4 class="text-lg font-medium text-gray-900 dark:text-white">Review Decision</h4>
+                            <h4 class="text-lg font-medium text-gray-900 dark:text-white">{{ __('Review Decision') }}</h4>
 							<div class="flex items-center space-x-2">
 								<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $reliefApplication->status === 'pending' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200' : ($reliefApplication->status === 'approved' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200') }}">
 									{{ ucfirst($reliefApplication->status) }}
@@ -111,10 +111,10 @@
 													:class="status === 'pending' ? 'border-blue-500 bg-blue-500' : 'border-gray-300 dark:border-gray-500'">
 													<div x-show="status === 'pending'" class="w-2 h-2 bg-white rounded-full m-0.5"></div>
 												</div>
-												<div>
-													<p class="text-sm font-medium text-gray-900 dark:text-white">Pending Review</p>
-													<p class="text-xs text-gray-500 dark:text-gray-400">Keep under review</p>
-												</div>
+                                                <div>
+                                                    <p class="text-sm font-medium text-gray-900 dark:text-white">{{ __('Pending Review') }}</p>
+                                                    <p class="text-xs text-gray-500 dark:text-gray-400">{{ __('Keep under review') }}</p>
+                                                </div>
 											</div>
 										</div>
 									</label>
@@ -133,10 +133,10 @@
 													:class="status === 'approved' ? 'border-green-500 bg-green-500' : 'border-gray-300 dark:border-gray-500'">
 													<div x-show="status === 'approved'" class="w-2 h-2 bg-white rounded-full m-0.5"></div>
 												</div>
-												<div>
-													<p class="text-sm font-medium text-gray-900 dark:text-white">Approve</p>
-													<p class="text-xs text-gray-500 dark:text-gray-400">Grant relief</p>
-												</div>
+                                                <div>
+                                                    <p class="text-sm font-medium text-gray-900 dark:text-white">{{ __('Approve') }}</p>
+                                                    <p class="text-xs text-gray-500 dark:text-gray-400">{{ __('Grant relief') }}</p>
+                                                </div>
 											</div>
 										</div>
 									</label>
@@ -155,10 +155,10 @@
 													:class="status === 'rejected' ? 'border-red-500 bg-red-500' : 'border-gray-300 dark:border-gray-500'">
 													<div x-show="status === 'rejected'" class="w-2 h-2 bg-white rounded-full m-0.5"></div>
 												</div>
-												<div>
-													<p class="text-sm font-medium text-gray-900 dark:text-white">Reject</p>
-													<p class="text-xs text-gray-500 dark:text-gray-400">Deny application</p>
-												</div>
+                                                <div>
+                                                    <p class="text-sm font-medium text-gray-900 dark:text-white">{{ __('Reject') }}</p>
+                                                    <p class="text-xs text-gray-500 dark:text-gray-400">{{ __('Deny application') }}</p>
+                                                </div>
 											</div>
 										</div>
 									</label>
@@ -178,22 +178,22 @@
 										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
 									</svg>
 								</div>
-								<h5 class="ml-3 text-lg font-medium text-green-800 dark:text-green-200">Approval Details</h5>
+                                <h5 class="ml-3 text-lg font-medium text-green-800 dark:text-green-200">{{ __('Approval Details') }}</h5>
 							</div>
 							
 							<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
 								<!-- Approval Amount Input -->
 								<div>
-									<label for="approved_amount" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-										Final Approval Amount <span class="text-red-500">*</span>
-									</label>
+                                    <label for="approved_amount" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                        {{ __('Final Approval Amount') }} <span class="text-red-500">*</span>
+                                    </label>
 									<div class="relative">
 										<input type="number" 
 											name="approved_amount" 
 											id="approved_amount"
 											value="{{ old('approved_amount', $reliefApplication->approved_amount) }}"
 											class="input-field @error('approved_amount') border-red-500 dark:border-red-400 @enderror"
-											placeholder="0.00"
+                                            placeholder="0.00"
 											min="0"
 											max="{{ $reliefApplication->project ? $reliefApplication->project->available_amount : 0 }}"
 											step="0.01"
@@ -216,22 +216,22 @@
 											</span>
 										</div>
 									</div>
-									<p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-										Enter the final amount to be approved for this application
-									</p>
+                                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                                        {{ __('Enter the final amount to be approved for this application') }}
+                                    </p>
 									@error('approved_amount')
 										<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
 									@enderror
 									<div x-show="insufficientFunds" class="mt-2 p-2 bg-red-50 dark:bg-red-900 border border-red-200 dark:border-red-700 rounded text-sm">
-										<p class="text-red-800 dark:text-red-200">
-											<span class="font-medium">Insufficient funds!</span> Approval amount exceeds available project budget.
-										</p>
+                                        <p class="text-red-800 dark:text-red-200">
+                                            <span class="font-medium">{{ __('Insufficient funds!') }}</span> {{ __('Approval amount exceeds available project budget.') }}
+                                        </p>
 									</div>
 								</div>
 
 								<!-- Available Project Budget -->
 								<div>
-									<label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Available Project Budget</label>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{{ __('Available Project Budget') }}</label>
 									@if($reliefApplication->project)
 										<div class="p-3 bg-blue-50 dark:bg-blue-900 border border-blue-200 dark:border-blue-700 rounded-lg">
 											<div class="flex items-center mb-2">
@@ -239,15 +239,15 @@
 													<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
 												</svg>
 												<div>
-													<p class="text-sm font-medium text-blue-800 dark:text-blue-200">Project: {{ $reliefApplication->project->name }}</p>
+                                                    <p class="text-sm font-medium text-blue-800 dark:text-blue-200">{{ __('Project') }}: {{ $reliefApplication->project->name }}</p>
 													<p class="text-lg font-semibold text-blue-900 dark:text-blue-100">
 														{{ $reliefApplication->project->formatted_available_amount }}
 													</p>
 												</div>
 											</div>
-											<p class="text-xs text-blue-700 dark:text-blue-300">
-												Maximum amount that can be approved
-											</p>
+                                            <p class="text-xs text-blue-700 dark:text-blue-300">
+                                                {{ __('Maximum amount that can be approved') }}
+                                            </p>
 										</div>
 									@else
 										<div class="p-3 bg-red-50 dark:bg-red-900 border border-red-200 dark:border-red-700 rounded-lg">
@@ -256,8 +256,8 @@
 													<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
 												</svg>
 												<div>
-													<p class="text-sm font-medium text-red-800 dark:text-red-200">No Project Assigned</p>
-													<p class="text-xs text-red-700 dark:text-red-300">Cannot approve without a project</p>
+                                                    <p class="text-sm font-medium text-red-800 dark:text-red-200">{{ __('No Project Assigned') }}</p>
+                                                    <p class="text-xs text-red-700 dark:text-red-300">{{ __('Cannot approve without a project') }}</p>
 												</div>
 											</div>
 										</div>
@@ -282,17 +282,17 @@
 
 					<!-- Admin Remarks -->
 					<div class="pb-8">
-						<h4 class="text-lg font-medium text-gray-900 dark:text-white mb-6">Admin Remarks</h4>
+                        <h4 class="text-lg font-medium text-gray-900 dark:text-white mb-6">{{ __('Admin Remarks') }}</h4>
 						
 						<div>
 							<label for="admin_remarks" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-								Remarks/Comments
+                                {{ __('Remarks/Comments') }}
 							</label>
 							<textarea name="admin_remarks" 
 								id="admin_remarks" 
 								rows="4"
 								class="input-field @error('admin_remarks') border-red-500 dark:border-red-400 @enderror"
-								placeholder="Enter your remarks or comments about this application">{{ old('admin_remarks', $reliefApplication->admin_remarks) }}</textarea>
+                                placeholder="{{ __('Enter your remarks or comments about this application') }}">{{ old('admin_remarks', $reliefApplication->admin_remarks) }}</textarea>
 							@error('admin_remarks')
 								<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
 							@enderror
@@ -301,14 +301,14 @@
 
 					<!-- Submit Buttons -->
 					<div class="flex justify-end space-x-3">
-						<a href="{{ route('admin.relief-applications.show', $reliefApplication) }}" class="btn-secondary">
-							Cancel
-						</a>
-						<button type="submit" class="btn-primary">
-							<span x-show="status === 'approved'">Approve Application</span>
-							<span x-show="status === 'rejected'">Reject Application</span>
-							<span x-show="status === 'pending'">Update Status</span>
-						</button>
+                        <a href="{{ route('admin.relief-applications.show', $reliefApplication) }}" class="btn-secondary">
+                            {{ __('Cancel') }}
+                        </a>
+                        <button type="submit" class="btn-primary">
+                            <span x-show="status === 'approved'">{{ __('Approve Application') }}</span>
+                            <span x-show="status === 'rejected'">{{ __('Reject Application') }}</span>
+                            <span x-show="status === 'pending'">{{ __('Update Status') }}</span>
+                        </button>
 					</div>
 				</form>
 			</div>

@@ -6,7 +6,7 @@
 					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
 				</svg>
 			</a>
-			<h1 class="text-2xl font-bold text-gray-900 dark:text-white">{{ $reliefApplication->subject }}</h1>
+            <h1 class="text-2xl font-bold text-gray-900 dark:text-white">{{ $reliefApplication->subject }}</h1>
 		</div>
 	</x-slot>
 
@@ -15,7 +15,7 @@
 		<div class="card">
 			<div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
 				<div class="flex justify-between items-center">
-					<h3 class="text-lg font-medium text-gray-900 dark:text-white">Application Status</h3>
+                    <h3 class="text-lg font-medium text-gray-900 dark:text-white">{{ __('Application Status') }}</h3>
 					<span class="inline-flex px-3 py-1 text-sm font-semibold rounded-full {{ $reliefApplication->status_badge_class }}">
 						{{ $reliefApplication->status_display }}
 					</span>
@@ -24,15 +24,15 @@
 			<div class="p-6">
 				<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
 					<div>
-						<dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Application Date</dt>
+                        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('Application Date') }}</dt>
 						<dd class="mt-1 text-sm text-gray-900 dark:text-white">{{ $reliefApplication->date->format('F d, Y') }}</dd>
 					</div>
 					<div>
-						<dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Submitted</dt>
+                        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('Submitted') }}</dt>
 						<dd class="mt-1 text-sm text-gray-900 dark:text-white">{{ $reliefApplication->created_at->format('F d, Y g:i A') }}</dd>
 					</div>
 					<div>
-						<dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Last Updated</dt>
+                        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('Last Updated') }}</dt>
 						<dd class="mt-1 text-sm text-gray-900 dark:text-white">{{ $reliefApplication->updated_at->format('F d, Y g:i A') }}</dd>
 					</div>
 				</div>
@@ -40,11 +40,11 @@
 					<div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
 						<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 							<div>
-								<dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Approved By</dt>
+                                <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('Approved By') }}</dt>
 								<dd class="mt-1 text-sm text-gray-900 dark:text-white">{{ $reliefApplication->approvedBy->name ?? 'Unknown' }}</dd>
 							</div>
 							<div>
-								<dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Approved At</dt>
+                                <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('Approved At') }}</dt>
 								<dd class="mt-1 text-sm text-gray-900 dark:text-white">{{ $reliefApplication->approved_at->format('F d, Y g:i A') }}</dd>
 							</div>
 						</div>
@@ -54,11 +54,11 @@
 					<div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
 						<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 							<div>
-								<dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Rejected By</dt>
+                                <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('Rejected By') }}</dt>
 								<dd class="mt-1 text-sm text-gray-900 dark:text-white">{{ $reliefApplication->rejectedBy->name ?? 'Unknown' }}</dd>
 							</div>
 							<div>
-								<dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Rejected At</dt>
+                                <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('Rejected At') }}</dt>
 								<dd class="mt-1 text-sm text-gray-900 dark:text-white">{{ $reliefApplication->rejected_at->format('F d, Y g:i A') }}</dd>
 							</div>
 						</div>
@@ -70,20 +70,20 @@
 		<!-- Organization Information -->
 		<div class="card">
 			<div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-				<h3 class="text-lg font-medium text-gray-900 dark:text-white">Organization Information</h3>
+                <h3 class="text-lg font-medium text-gray-900 dark:text-white">{{ __('Organization Information') }}</h3>
 			</div>
 			<div class="p-6">
 				<dl class="grid grid-cols-1 gap-x-4 gap-y-6 sm:grid-cols-2">
 					<div>
-						<dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Organization Name</dt>
+                        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('Organization Name') }}</dt>
 						<dd class="mt-1 text-sm text-gray-900 dark:text-white">{{ $reliefApplication->organization_name }}</dd>
 					</div>
 					<div>
-						<dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Organization Type</dt>
+                        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('Organization Type') }}</dt>
 						<dd class="mt-1 text-sm text-gray-900 dark:text-white">{{ $reliefApplication->organizationType->name ?? 'Not specified' }}</dd>
 					</div>
 					<div class="sm:col-span-2">
-						<dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Organization Address</dt>
+                        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('Organization Address') }}</dt>
 						<dd class="mt-1 text-sm text-gray-900 dark:text-white">{{ $reliefApplication->organization_address }}</dd>
 					</div>
 				</dl>
@@ -93,24 +93,24 @@
 		<!-- Location Information -->
 		<div class="card">
 			<div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-				<h3 class="text-lg font-medium text-gray-900 dark:text-white">Location Information</h3>
+                <h3 class="text-lg font-medium text-gray-900 dark:text-white">{{ __('Location Information') }}</h3>
 			</div>
 			<div class="p-6">
 				<dl class="grid grid-cols-1 gap-x-4 gap-y-6 sm:grid-cols-2">
 					<div>
-						<dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Zilla (District)</dt>
+                        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('Zilla (District)') }}</dt>
 						<dd class="mt-1 text-sm text-gray-900 dark:text-white">{{ $reliefApplication->zilla?->name ?? 'Not specified' }}</dd>
 					</div>
 					<div>
-						<dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Upazila (Sub-district)</dt>
+                        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('Upazila (Sub-district)') }}</dt>
 						<dd class="mt-1 text-sm text-gray-900 dark:text-white">{{ $reliefApplication->upazila?->name ?? 'Not specified' }}</dd>
 					</div>
 					<div>
-						<dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Union</dt>
+                        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('Union') }}</dt>
 						<dd class="mt-1 text-sm text-gray-900 dark:text-white">{{ $reliefApplication->union?->name ?? 'Not specified' }}</dd>
 					</div>
 					<div>
-						<dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Ward</dt>
+                        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('Ward') }}</dt>
 						<dd class="mt-1 text-sm text-gray-900 dark:text-white">{{ $reliefApplication->ward?->name ?? 'Not specified' }}</dd>
 					</div>
 				</dl>
@@ -120,12 +120,12 @@
 		<!-- Relief Information -->
 		<div class="card">
 			<div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-				<h3 class="text-lg font-medium text-gray-900 dark:text-white">Relief Information</h3>
+                <h3 class="text-lg font-medium text-gray-900 dark:text-white">{{ __('Relief Information') }}</h3>
 			</div>
 			<div class="p-6">
 				<dl class="grid grid-cols-1 gap-x-4 gap-y-6 sm:grid-cols-2">
 					<div>
-						<dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Subject</dt>
+                        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('Subject') }}</dt>
 						<dd class="mt-1 text-sm text-gray-900 dark:text-white">{{ $reliefApplication->subject }}</dd>
 					</div>
 					<div>
@@ -139,28 +139,28 @@
 									{{ $reliefApplication->reliefType->name }}
 								</div>
 							@else
-								<span class="text-gray-500 dark:text-gray-400">Not specified</span>
+                                <span class="text-gray-500 dark:text-gray-400">{{ __('Not specified') }}</span>
 							@endif
 						</dd>
 					</div>
 					<div>
-						<dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Amount Requested</dt>
+                        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('Amount Requested') }}</dt>
 						<dd class="mt-1 text-sm text-gray-900 dark:text-white font-semibold text-lg">{{ $reliefApplication->formatted_amount }}</dd>
 					</div>
 					@if($reliefApplication->approved_amount)
 						<div>
-							<dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Amount Approved</dt>
+                            <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('Amount Approved') }}</dt>
 							<dd class="mt-1 text-sm text-gray-900 dark:text-white font-semibold text-lg text-green-600 dark:text-green-400">{{ $reliefApplication->formatted_approved_amount }}</dd>
 						</div>
 					@endif
 					@if($reliefApplication->project)
 						<div>
-							<dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Project</dt>
+                        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('Project') }}</dt>
 							<dd class="mt-1 text-sm text-gray-900 dark:text-white">{{ $reliefApplication->project->name }}</dd>
 						</div>
 					@endif
 					<div class="sm:col-span-2">
-						<dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Details</dt>
+                        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('Details') }}</dt>
 						<dd class="mt-1 text-sm text-gray-900 dark:text-white">
 							<div class="prose dark:prose-invert max-w-none">
 								<p class="whitespace-pre-wrap">{{ $reliefApplication->details }}</p>
@@ -174,24 +174,24 @@
 		<!-- Applicant Information -->
 		<div class="card">
 			<div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-				<h3 class="text-lg font-medium text-gray-900 dark:text-white">Applicant Information</h3>
+                <h3 class="text-lg font-medium text-gray-900 dark:text-white">{{ __('Applicant Information') }}</h3>
 			</div>
 			<div class="p-6">
 				<dl class="grid grid-cols-1 gap-x-4 gap-y-6 sm:grid-cols-2">
 					<div>
-						<dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Applicant Name</dt>
+                        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('Applicant Name') }}</dt>
 						<dd class="mt-1 text-sm text-gray-900 dark:text-white">{{ $reliefApplication->applicant_name }}</dd>
 					</div>
 					<div>
-						<dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Designation</dt>
+                        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('Designation') }}</dt>
 						<dd class="mt-1 text-sm text-gray-900 dark:text-white">{{ $reliefApplication->applicant_designation ?? 'Not specified' }}</dd>
 					</div>
 					<div>
-						<dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Phone Number</dt>
+                        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('Phone Number') }}</dt>
 						<dd class="mt-1 text-sm text-gray-900 dark:text-white">{{ $reliefApplication->applicant_phone }}</dd>
 					</div>
 					<div class="sm:col-span-2">
-						<dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Applicant Address</dt>
+                        <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('Applicant Address') }}</dt>
 						<dd class="mt-1 text-sm text-gray-900 dark:text-white">{{ $reliefApplication->applicant_address }}</dd>
 					</div>
 				</dl>
@@ -202,7 +202,7 @@
 		@if($reliefApplication->admin_remarks)
 			<div class="card">
 				<div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-					<h3 class="text-lg font-medium text-gray-900 dark:text-white">Admin Remarks</h3>
+                    <h3 class="text-lg font-medium text-gray-900 dark:text-white">{{ __('Admin Remarks') }}</h3>
 				</div>
 				<div class="p-6">
 					<div class="prose dark:prose-invert max-w-none">
@@ -216,7 +216,7 @@
 		@if($reliefApplication->application_file)
 			<div class="card">
 				<div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-					<h3 class="text-lg font-medium text-gray-900 dark:text-white">Supporting Documents</h3>
+                    <h3 class="text-lg font-medium text-gray-900 dark:text-white">{{ __('Supporting Documents') }}</h3>
 				</div>
 				<div class="p-6">
 					<div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
@@ -226,14 +226,14 @@
 							</svg>
 							<div>
 								<p class="text-sm font-medium text-gray-900 dark:text-white">{{ $reliefApplication->file_name }}</p>
-								<p class="text-xs text-gray-500 dark:text-gray-400">Application file</p>
+                                <p class="text-xs text-gray-500 dark:text-gray-400">{{ __('Application file') }}</p>
 							</div>
 						</div>
-						<a href="{{ $reliefApplication->file_url }}" target="_blank" class="btn-primary">
+                        <a href="{{ $reliefApplication->file_url }}" target="_blank" class="btn-primary">
 							<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
 							</svg>
-							Download
+                            {{ __('Download') }}
 						</a>
 					</div>
 				</div>
@@ -242,13 +242,13 @@
 
 		<!-- Actions -->
 		<div class="flex justify-end space-x-3">
-			<a href="{{ route('admin.relief-applications.index') }}" class="btn-secondary">
-				Back to Applications
-			</a>
+            <a href="{{ route('admin.relief-applications.index') }}" class="btn-secondary">
+                {{ __('Back to Applications') }}
+            </a>
 			@if(auth()->user()->hasPermissionTo('relief-applications.approve') || auth()->user()->hasPermissionTo('relief-applications.reject'))
-				<a href="{{ route('admin.relief-applications.edit', $reliefApplication) }}" class="btn-primary">
-					Review & Approve/Reject
-				</a>
+                <a href="{{ route('admin.relief-applications.edit', $reliefApplication) }}" class="btn-primary">
+                    {{ __('Review & Approve/Reject') }}
+                </a>
 			@endif
 		</div>
 	</div>
