@@ -49,13 +49,13 @@ RUN echo '<VirtualHost *:80>\n\
     CustomLog ${APACHE_LOG_DIR}/access.log combined\n\
 </VirtualHost>' > /etc/apache2/sites-available/000-default.conf
 
-# Copy composer files
+# Copy composer files first for better layer caching
 COPY composer.json composer.lock ./
 
-# Install PHP dependencies
-RUN composer install --no-dev --optimize-autoloader --no-scripts
+# Install PHP dependencies (with no scripts to avoid errors)
+RUN composer install --no-dev --optimize-autoloader --no-scripts --no-interaction --prefer-dist
 
-# Copy package.json files
+# Copy package.json files for npm
 COPY package*.json ./
 
 # Install Node.js and npm
@@ -75,9 +75,6 @@ RUN chown -R www-data:www-data /var/www/html \
 
 # Build assets
 RUN npm run build
-
-# Run composer scripts
-RUN composer run-script post-autoload-dump
 
 # Create .env file if it doesn't exist
 RUN if [ ! -f .env ]; then cp .env.example .env 2>/dev/null || echo "APP_NAME=DC Relief Manager\n\
@@ -149,6 +146,9 @@ RUN echo "Listen 8182" >> /etc/apache2/ports.conf \
 # Create startup script
 RUN echo '#!/bin/bash\n\
 set -e\n\
+\n\
+# Run composer scripts that require the app to be set up\n\
+composer run-script post-autoload-dump || true\n\
 \n\
 # Generate application key if not set\n\
 if [ -z "$APP_KEY" ] || [ "$APP_KEY" = "" ]; then\n\
