@@ -20,11 +20,14 @@ if [ ! -f .env ]; then
 	cp env.example.dist .env || cp .env.example .env
 fi
 
-# Generate app key if not set
-if [ -z "$APP_KEY" ] || [ "$APP_KEY" = "" ]; then
+# Generate app key if not set or if .env doesn't have it
+if ! grep -q "^APP_KEY=base64:" .env 2>/dev/null; then
 	echo "Generating application key..."
 	php artisan key:generate --force
 fi
+
+# Set proper permissions for .env
+chmod 644 .env
 
 # Run migrations
 echo "Running migrations..."
