@@ -50,9 +50,6 @@ RUN echo 'ServerName localhost' >> /etc/apache2/apache2.conf && \
 # Copy application files
 COPY . .
 
-# Create .env file from env.example.dist
-RUN cp env.example.dist .env || cp .env.example .env
-
 # Install dependencies (include dev for seeders)
 RUN composer install --optimize-autoloader --no-interaction
 

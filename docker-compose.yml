@@ -9,8 +9,8 @@ services:
       - "8182:8182"
     environment:
       - APP_NAME=DC Relief Manager
-      - APP_ENV=production
-      - APP_DEBUG=false
+      - APP_ENV=development
+      - APP_DEBUG=true
       - APP_URL=http://localhost:8182
       - DB_CONNECTION=mysql
       - DB_HOST=db
@@ -38,9 +38,15 @@ services:
     volumes:
       - db_data:/var/lib/mysql
     ports:
-      - "3306:3306"
+      - "33011:3306"
     networks:
       - dc_network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "dc_user", "-pdc_password_2024"]
+      timeout: 20s
+      retries: 10
+      interval: 10s
+      start_period: 30s
 
 volumes:
   db_data:
