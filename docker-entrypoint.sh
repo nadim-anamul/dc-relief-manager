@@ -5,7 +5,61 @@ echo "Starting DC Relief Manager..."
 
 cd /var/www/html
 
-# Wait for database to be ready
+# CRITICAL: Create .env file FIRST before any Laravel commands
+echo "Checking for .env file..."
+if [ ! -f .env ]; then
+	echo "Creating .env file from template..."
+	if [ -f env.example.dist ]; then
+		cp env.example.dist .env
+		echo ".env created from env.example.dist"
+	elif [ -f .env.example ]; then
+		cp .env.example .env
+		echo ".env created from .env.example"
+	else
+		echo "ERROR: No env template file found!"
+		exit 1
+	fi
+else
+	echo ".env file already exists"
+fi
+
+# Always update environment variables from docker-compose
+echo "Updating .env with environment variables..."
+if [ ! -z "$DB_HOST" ]; then
+	sed -i "s/^DB_HOST=.*/DB_HOST=${DB_HOST}/" .env
+fi
+if [ ! -z "$DB_PORT" ]; then
+	sed -i "s/^DB_PORT=.*/DB_PORT=${DB_PORT}/" .env
+fi
+if [ ! -z "$DB_DATABASE" ]; then
+	sed -i "s/^DB_DATABASE=.*/DB_DATABASE=${DB_DATABASE}/" .env
+fi
+if [ ! -z "$DB_USERNAME" ]; then
+	sed -i "s/^DB_USERNAME=.*/DB_USERNAME=${DB_USERNAME}/" .env
+fi
+if [ ! -z "$DB_PASSWORD" ]; then
+	sed -i "s/^DB_PASSWORD=.*/DB_PASSWORD=${DB_PASSWORD}/" .env
+fi
+if [ ! -z "$APP_ENV" ]; then
+	sed -i "s/^APP_ENV=.*/APP_ENV=${APP_ENV}/" .env
+fi
+if [ ! -z "$APP_DEBUG" ]; then
+	sed -i "s/^APP_DEBUG=.*/APP_DEBUG=${APP_DEBUG}/" .env
+fi
+if [ ! -z "$APP_URL" ]; then
+	sed -i "s|^APP_URL=.*|APP_URL=${APP_URL}|" .env
+fi
+
+# CRITICAL: Always ensure APP_KEY is set before anything else
+if ! grep -q "^APP_KEY=base64:" .env 2>/dev/null; then
+	echo "Generating application key..."
+	php artisan key:generate --force
+fi
+
+# Set proper permissions for .env
+chmod 644 .env
+
+# Now wait for database to be ready
 echo "Waiting for database..."
 timeout=120
 counter=0
@@ -23,47 +77,6 @@ if [ $counter -ge $timeout ]; then
 	echo "Error: Database failed to start within $timeout seconds"
 	echo "Application will continue but database operations may fail"
 fi
-
-# Ensure .env file exists
-if [ ! -f .env ]; then
-	echo "Creating .env file from template..."
-	cp env.example.dist .env || cp .env.example .env
-	
-	# Override with environment variables from docker-compose if set
-	if [ ! -z "$DB_HOST" ]; then
-		sed -i "s/^DB_HOST=.*/DB_HOST=${DB_HOST}/" .env
-	fi
-	if [ ! -z "$DB_PORT" ]; then
-		sed -i "s/^DB_PORT=.*/DB_PORT=${DB_PORT}/" .env
-	fi
-	if [ ! -z "$DB_DATABASE" ]; then
-		sed -i "s/^DB_DATABASE=.*/DB_DATABASE=${DB_DATABASE}/" .env
-	fi
-	if [ ! -z "$DB_USERNAME" ]; then
-		sed -i "s/^DB_USERNAME=.*/DB_USERNAME=${DB_USERNAME}/" .env
-	fi
-	if [ ! -z "$DB_PASSWORD" ]; then
-		sed -i "s/^DB_PASSWORD=.*/DB_PASSWORD=${DB_PASSWORD}/" .env
-	fi
-	if [ ! -z "$APP_ENV" ]; then
-		sed -i "s/^APP_ENV=.*/APP_ENV=${APP_ENV}/" .env
-	fi
-	if [ ! -z "$APP_DEBUG" ]; then
-		sed -i "s/^APP_DEBUG=.*/APP_DEBUG=${APP_DEBUG}/" .env
-	fi
-	if [ ! -z "$APP_URL" ]; then
-		sed -i "s|^APP_URL=.*|APP_URL=${APP_URL}|" .env
-	fi
-fi
-
-# Generate app key if not set or if .env doesn't have it
-if ! grep -q "^APP_KEY=base64:" .env 2>/dev/null; then
-	echo "Generating application key..."
-	php artisan key:generate --force
-fi
-
-# Set proper permissions for .env
-chmod 644 .env
 
 # Ensure storage and cache directories exist and have correct permissions
 echo "Setting up storage directories..."
@@ -84,6 +97,18 @@ if php artisan migrate:status &>/dev/null; then
 	php artisan config:cache
 	php artisan route:cache
 	php artisan view:cache
+else
+	echo "Database not ready or migrations not run. Clearing caches to prevent errors..."
+	php artisan config:clear 2>/dev/null || true
+	php artisan cache:clear 2>/dev/null || true
+	php artisan route:clear 2>/dev/null || true
+	php artisan view:clear 2>/dev/null || true
+fi
+
+# Ensure APP_KEY is set
+if ! grep -q "^APP_KEY=base64:" .env 2>/dev/null; then
+	echo "APP_KEY not found, generating..."
+	php artisan key:generate --force
 fi
 
 echo "Starting Apache..."

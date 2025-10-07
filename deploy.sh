@@ -131,7 +131,14 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
 fi
 
 echo ""
-echo "Step 7: Clearing and caching configuration..."
+echo "Step 7: Clearing all caches first..."
+docker compose exec -T app php artisan config:clear
+docker compose exec -T app php artisan cache:clear
+docker compose exec -T app php artisan route:clear
+docker compose exec -T app php artisan view:clear
+
+echo ""
+echo "Step 8: Caching configuration for production..."
 docker compose exec -T app php artisan config:cache
 docker compose exec -T app php artisan route:cache
 docker compose exec -T app php artisan view:cache
