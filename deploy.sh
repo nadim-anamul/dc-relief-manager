@@ -148,8 +148,9 @@ echo "Useful commands:"
 echo "  View logs:           docker compose logs -f app"
 echo "  Stop application:    docker compose down"
 echo "  Restart application: docker compose restart"
-echo "  Access app shell:    docker compose exec app bash"
+echo "  Access app shell:    "
 echo "  Run migrations:      docker compose exec app php artisan migrate"
 echo "  Clear cache:         docker compose exec app php artisan cache:clear"
 echo ""
 
+docker compose exec app bash
