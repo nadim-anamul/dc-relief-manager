@@ -122,90 +122,80 @@
 
 		<!-- Stats Cards -->
 		<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
-			<!-- Total Applications -->
-			<div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 hover:shadow-md transition-shadow duration-200">
-				<div class="flex items-center justify-between">
-					<div class="flex items-center space-x-3">
-						<div class="p-3 bg-blue-100 dark:bg-blue-900 rounded-lg">
-							<svg class="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-							</svg>
-						</div>
-						<div>
-                            <p class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('Total') }}</p>
-                            <p class="text-2xl font-bold text-gray-900 dark:text-white">@bn($totalApplications)</p>
-						</div>
-					</div>
+		<!-- Total Applications -->
+		<div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 hover:shadow-md transition-shadow duration-200 overflow-hidden">
+			<div class="flex items-start space-x-3">
+				<div class="p-3 bg-blue-100 dark:bg-blue-900 rounded-lg flex-shrink-0">
+					<svg class="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+					</svg>
+				</div>
+				<div class="min-w-0 flex-1 overflow-hidden">
+					<p class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">{{ __('Total') }}</p>
+					<p class="text-base sm:text-lg lg:text-xl font-bold text-gray-900 dark:text-white break-all" style="word-break: break-all; overflow-wrap: anywhere;">@bn($totalApplications)</p>
 				</div>
 			</div>
+		</div>
 
-			<!-- Pending Applications -->
-			<div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 hover:shadow-md transition-shadow duration-200">
-				<div class="flex items-center justify-between">
-					<div class="flex items-center space-x-3">
-						<div class="p-3 bg-yellow-100 dark:bg-yellow-900 rounded-lg">
-							<svg class="w-6 h-6 text-yellow-600 dark:text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-							</svg>
-						</div>
-						<div>
-                            <p class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('Pending') }}</p>
-                            <p class="text-2xl font-bold text-gray-900 dark:text-white">@bn($pendingApplications)</p>
-						</div>
-					</div>
+		<!-- Pending Applications -->
+		<div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 hover:shadow-md transition-shadow duration-200 overflow-hidden">
+			<div class="flex items-start space-x-3">
+				<div class="p-3 bg-yellow-100 dark:bg-yellow-900 rounded-lg flex-shrink-0">
+					<svg class="w-6 h-6 text-yellow-600 dark:text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+					</svg>
+				</div>
+				<div class="min-w-0 flex-1 overflow-hidden">
+					<p class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">{{ __('Pending') }}</p>
+					<p class="text-base sm:text-lg lg:text-xl font-bold text-gray-900 dark:text-white break-all" style="word-break: break-all; overflow-wrap: anywhere;">@bn($pendingApplications)</p>
 				</div>
 			</div>
+		</div>
 
-			<!-- Approved Applications -->
-			<div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 hover:shadow-md transition-shadow duration-200">
-				<div class="flex items-center justify-between">
-					<div class="flex items-center space-x-3">
-						<div class="p-3 bg-green-100 dark:bg-green-900 rounded-lg">
-							<svg class="w-6 h-6 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-							</svg>
-						</div>
-						<div>
-                            <p class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('Approved') }}</p>
-                            <p class="text-2xl font-bold text-gray-900 dark:text-white">@bn($approvedApplications)</p>
-						</div>
-					</div>
+		<!-- Approved Applications -->
+		<div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 hover:shadow-md transition-shadow duration-200 overflow-hidden">
+			<div class="flex items-start space-x-3">
+				<div class="p-3 bg-green-100 dark:bg-green-900 rounded-lg flex-shrink-0">
+					<svg class="w-6 h-6 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+					</svg>
+				</div>
+				<div class="min-w-0 flex-1 overflow-hidden">
+					<p class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">{{ __('Approved') }}</p>
+					<p class="text-base sm:text-lg lg:text-xl font-bold text-gray-900 dark:text-white break-all" style="word-break: break-all; overflow-wrap: anywhere;">@bn($approvedApplications)</p>
 				</div>
 			</div>
+		</div>
 
-			<!-- Rejected Applications -->
-			<div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 hover:shadow-md transition-shadow duration-200">
-				<div class="flex items-center justify-between">
-					<div class="flex items-center space-x-3">
-						<div class="p-3 bg-red-100 dark:bg-red-900 rounded-lg">
-							<svg class="w-6 h-6 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-							</svg>
-						</div>
-						<div>
-                            <p class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('Rejected') }}</p>
-                            <p class="text-2xl font-bold text-gray-900 dark:text-white">@bn($rejectedApplications)</p>
-						</div>
-					</div>
+		<!-- Rejected Applications -->
+		<div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 hover:shadow-md transition-shadow duration-200 overflow-hidden">
+			<div class="flex items-start space-x-3">
+				<div class="p-3 bg-red-100 dark:bg-red-900 rounded-lg flex-shrink-0">
+					<svg class="w-6 h-6 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+					</svg>
+				</div>
+				<div class="min-w-0 flex-1 overflow-hidden">
+					<p class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">{{ __('Rejected') }}</p>
+					<p class="text-base sm:text-lg lg:text-xl font-bold text-gray-900 dark:text-white break-all" style="word-break: break-all; overflow-wrap: anywhere;">@bn($rejectedApplications)</p>
 				</div>
 			</div>
+		</div>
 
-			<!-- Total Approved Amount -->
-			<div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 hover:shadow-md transition-shadow duration-200">
-				<div class="flex items-center justify-between">
-					<div class="flex items-center space-x-3">
-						<div class="p-3 bg-purple-100 dark:bg-purple-900 rounded-lg">
-							<svg class="w-6 h-6 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
-							</svg>
-						</div>
-						<div>
-                            <p class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('Total Approved') }}</p>
-                            <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ money_format_bn($totalApprovedAmount) }}</p>
-						</div>
-					</div>
+		<!-- Total Approved Amount -->
+		<div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 hover:shadow-md transition-shadow duration-200 overflow-hidden">
+			<div class="flex items-start space-x-3">
+				<div class="p-3 bg-purple-100 dark:bg-purple-900 rounded-lg flex-shrink-0">
+					<svg class="w-6 h-6 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+					</svg>
+				</div>
+				<div class="min-w-0 flex-1 overflow-hidden">
+					<p class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">{{ __('Total Approved') }}</p>
+					<p class="text-base sm:text-lg lg:text-xl font-bold text-gray-900 dark:text-white break-all" style="word-break: break-all; overflow-wrap: anywhere;">{{ money_format_bn($totalApprovedAmount) }}</p>
 				</div>
 			</div>
+		</div>
 		</div>
 
 		<!-- Applications Table -->

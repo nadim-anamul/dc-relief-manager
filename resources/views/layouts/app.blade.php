@@ -9,26 +9,57 @@
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+        <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700&display=swap" rel="stylesheet" />
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
-    <body class="font-sans antialiased">
-        <div class="min-h-screen bg-gray-100">
+    <body class="font-sans antialiased bg-gray-50 dark:bg-gray-900">
+        <div class="min-h-screen">
             @include('layouts.navigation')
 
             <!-- Page Heading -->
             @isset($header)
-                <header class="bg-white shadow">
-                    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+                <header class="bg-white dark:bg-gray-800 shadow border-b border-gray-200 dark:border-gray-700">
+                    <div class="max-w-7xl mx-auto py-4 sm:py-6 px-4 sm:px-6 lg:px-8">
                         {{ $header }}
                     </div>
                 </header>
             @endisset
 
             <!-- Page Content -->
-            <main>
+            <main class="max-w-7xl mx-auto py-4 sm:py-6 px-4 sm:px-6 lg:px-8">
+                @if (session('success'))
+                    <x-success-alert 
+                        title="{{ __('Success!') }}" 
+                        :message="session('success')" 
+                        class="mb-4 sm:mb-6"
+                    />
+                @endif
+
+                @if (session('error'))
+                    <x-error-alert 
+                        type="error" 
+                        title="{{ __('Error!') }}" 
+                        :message="session('error')" 
+                        class="mb-4 sm:mb-6"
+                    />
+                @endif
+
+                @if ($errors->any())
+                    <x-error-alert 
+                        type="error" 
+                        title="{{ __('Please correct the following errors:') }}" 
+                        class="mb-4 sm:mb-6"
+                    >
+                        <ul class="mt-2 list-disc list-inside text-sm">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </x-error-alert>
+                @endif
+
                 {{ $slot }}
             </main>
         </div>
