@@ -48,7 +48,7 @@
 		<div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
             <div class="flex items-center justify-between mb-4">
                 <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ __('Filter Applications') }}</h3>
-				@if(request('status') || request('relief_type_id') || request('organization_type_id') || request('zilla_id'))
+				@if(request('search') || request('status') || request('relief_type_id') || request('organization_type_id') || request('zilla_id') || request('economic_year_id') || request('upazila_id') || request('union_id') || request('project_id'))
 					<a href="{{ route('admin.relief-applications.index') }}" 
 						class="inline-flex items-center px-3 py-1.5 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 text-sm font-medium rounded-md transition-colors duration-200">
 						<svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -58,7 +58,77 @@
 					</a>
 				@endif
 			</div>
-			<form method="GET" action="{{ route('admin.relief-applications.index') }}" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+			<form method="GET" action="{{ route('admin.relief-applications.index') }}" class="space-y-4">
+				<!-- Search Field -->
+				<div class="mb-6">
+					<label for="search" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+						<svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+						</svg>
+						{{ __('Search Applications') }}
+					</label>
+					<input type="text" 
+						   name="search" 
+						   id="search" 
+						   value="{{ request('search') }}"
+						   placeholder="{{ __('Search by organization name, subject, details, applicant info, location...') }}"
+						   class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200 text-sm">
+				</div>
+
+				<!-- Filter Fields Grid -->
+				<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+				<div>
+					<label for="economic_year_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        {{ __('Economic Year') }}
+					</label>
+					<select name="economic_year_id" id="economic_year_id" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200">
+                        <option value="">{{ __('All Years') }}</option>
+						@foreach($economicYears as $year)
+							<option value="{{ $year->id }}" {{ (request('economic_year_id') == $year->id || (!request()->filled('economic_year_id') && $year->is_current)) ? 'selected' : '' }}>
+                                {{ $year->name_display ?? localized_attr($year,'name') }}
+							</option>
+						@endforeach
+					</select>
+				</div>
+				<div>
+					<label for="zilla_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        {{ __('Zilla') }}
+					</label>
+					<select name="zilla_id" id="zilla_id" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200">
+                        <option value="">{{ __('All Zillas') }}</option>
+						@foreach($zillas as $zilla)
+							<option value="{{ $zilla->id }}" {{ (request('zilla_id') == $zilla->id || (!request()->filled('zilla_id') && $zilla->id == 1)) ? 'selected' : '' }}>
+                                {{ $zilla->name_display ?? localized_attr($zilla,'name') }}
+							</option>
+						@endforeach
+					</select>
+				</div>
+				<div>
+					<label for="upazila_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        {{ __('Upazila') }}
+					</label>
+					<select name="upazila_id" id="upazila_id" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200">
+                        <option value="">{{ __('All Upazilas') }}</option>
+						@foreach($upazilas as $upazila)
+							<option value="{{ $upazila->id }}" {{ request('upazila_id') == $upazila->id ? 'selected' : '' }}>
+                                {{ $upazila->name_display ?? localized_attr($upazila,'name') }}
+							</option>
+						@endforeach
+					</select>
+				</div>
+				<div>
+					<label for="union_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        {{ __('Union') }}
+					</label>
+					<select name="union_id" id="union_id" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200">
+                        <option value="">{{ __('All Unions') }}</option>
+						@foreach($unions as $union)
+							<option value="{{ $union->id }}" {{ request('union_id') == $union->id ? 'selected' : '' }}>
+                                {{ $union->name_display ?? localized_attr($union,'name') }}
+							</option>
+						@endforeach
+					</select>
+				</div>
 				<div>
 					<label for="status" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                         {{ __('Status') }}
@@ -96,20 +166,7 @@
 						@endforeach
 					</select>
 				</div>
-				<div>
-					<label for="zilla_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        {{ __('Zilla') }}
-					</label>
-					<select name="zilla_id" id="zilla_id" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200">
-                        <option value="">{{ __('All Zillas') }}</option>
-						@foreach($zillas as $zilla)
-							<option value="{{ $zilla->id }}" {{ request('zilla_id') == $zilla->id ? 'selected' : '' }}>
-                                {{ $zilla->name_display ?? localized_attr($zilla,'name') }}
-							</option>
-						@endforeach
-					</select>
-				</div>
-				<div class="md:col-span-2 lg:col-span-4 flex justify-end">
+				<div class="md:col-span-2 lg:col-span-3 xl:col-span-4 flex justify-end">
 					<button type="submit" class="inline-flex items-center px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors duration-200 shadow-sm hover:shadow-md">
 						<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.207A1 1 0 013 6.5V4z"></path>
@@ -117,6 +174,7 @@
                         {{ __('Apply Filters') }}
 					</button>
 				</div>
+				</div> <!-- Close grid -->
 			</form>
 		</div>
 
@@ -348,4 +406,77 @@
 			</div>
 		@endif
 	</div>
+
+	<script>
+		document.addEventListener('DOMContentLoaded', function() {
+			const zillaSelect = document.getElementById('zilla_id');
+			const upazilaSelect = document.getElementById('upazila_id');
+			const unionSelect = document.getElementById('union_id');
+
+			// Handle zilla change
+			zillaSelect.addEventListener('change', function() {
+				const zillaId = this.value;
+				console.log('Zilla changed to:', zillaId);
+				
+				// Clear upazila and union selects
+				upazilaSelect.innerHTML = '<option value="">All Upazilas</option>';
+				unionSelect.innerHTML = '<option value="">All Unions</option>';
+				
+				if (zillaId) {
+					console.log('Fetching upazilas for zilla:', zillaId);
+					// Fetch upazilas for selected zilla
+					fetch(`/admin/relief-applications/upazilas?zilla_id=${zillaId}`)
+						.then(response => {
+							console.log('Upazilas response status:', response.status);
+							return response.json();
+						})
+						.then(data => {
+							console.log('Upazilas data:', data);
+							data.forEach(upazila => {
+								const option = document.createElement('option');
+								option.value = upazila.id;
+								option.textContent = upazila.name_bn || upazila.name;
+								upazilaSelect.appendChild(option);
+							});
+							console.log('Upazilas populated:', data.length);
+						})
+						.catch(error => {
+							console.error('Error fetching upazilas:', error);
+						});
+				}
+			});
+
+			// Handle upazila change
+			upazilaSelect.addEventListener('change', function() {
+				const upazilaId = this.value;
+				console.log('Upazila changed to:', upazilaId);
+				
+				// Clear union select
+				unionSelect.innerHTML = '<option value="">All Unions</option>';
+				
+				if (upazilaId) {
+					console.log('Fetching unions for upazila:', upazilaId);
+					// Fetch unions for selected upazila
+					fetch(`/admin/relief-applications/unions?upazila_id=${upazilaId}`)
+						.then(response => {
+							console.log('Response status:', response.status);
+							return response.json();
+						})
+						.then(data => {
+							console.log('Unions data:', data);
+							data.forEach(union => {
+								const option = document.createElement('option');
+								option.value = union.id;
+								option.textContent = union.name_bn || union.name;
+								unionSelect.appendChild(option);
+							});
+							console.log('Unions populated:', data.length);
+						})
+						.catch(error => {
+							console.error('Error fetching unions:', error);
+						});
+				}
+			});
+		});
+	</script>
 </x-main-layout>

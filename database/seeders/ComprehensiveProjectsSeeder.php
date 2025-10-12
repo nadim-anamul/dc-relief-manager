@@ -55,7 +55,7 @@ class ComprehensiveProjectsSeeder extends Seeder
         $numProjects = $this->getProjectCountForYear($year);
         
         // Core relief types that should have projects every year
-        $coreReliefTypes = ['Cash Relief', 'Food Relief', 'Medical Relief', 'Shelter Relief', 'Emergency Relief'];
+        $coreReliefTypes = ['Food Assistance for Destitute', 'Cash Assistance', 'Grain Assistance', 'Winter Clothing Assistance', 'Corrugated Iron Sheet Assistance', 'Housing Assistance', 'District Commissioner Assistance'];
         
         // Create projects for core relief types
         foreach ($coreReliefTypes as $coreType) {
@@ -65,11 +65,28 @@ class ComprehensiveProjectsSeeder extends Seeder
             }
         }
         
-        // Add additional projects for other relief types
-        $additionalTypes = $reliefTypes->whereNotIn('name', $coreReliefTypes)->random($numProjects - count($coreReliefTypes));
-        
-        foreach ($additionalTypes as $reliefType) {
-            $projects[] = $this->generateProjectData($year, $reliefType, false);
+        // For current and previous years, create 5 projects per relief type
+        if ($year->is_current || $year->end_date < now()) {
+            foreach ($coreReliefTypes as $coreType) {
+                $reliefType = $reliefTypes->where('name', $coreType)->first();
+                if ($reliefType) {
+                    // Create 5 projects for each relief type
+                    for ($i = 0; $i < 5; $i++) {
+                        $projects[] = $this->generateProjectData($year, $reliefType, true);
+                    }
+                }
+            }
+        } else {
+            // For future years, create 3 projects per relief type
+            foreach ($coreReliefTypes as $coreType) {
+                $reliefType = $reliefTypes->where('name', $coreType)->first();
+                if ($reliefType) {
+                    // Create 3 projects for each relief type
+                    for ($i = 0; $i < 3; $i++) {
+                        $projects[] = $this->generateProjectData($year, $reliefType, true);
+                    }
+                }
+            }
         }
         
         return $projects;
@@ -77,17 +94,17 @@ class ComprehensiveProjectsSeeder extends Seeder
 
     private function getProjectCountForYear($year)
     {
-        // Current year: more projects
+        // Current year: 5 projects per relief type (7 types = 35 projects)
         if ($year->is_current) {
-            return rand(12, 18);
+            return 35;
         }
-        // Past years: moderate number
+        // Previous year: 5 projects per relief type (7 types = 35 projects)
         elseif ($year->end_date < now()) {
-            return rand(8, 12);
+            return 35;
         }
-        // Future years: fewer projects
+        // Future years: fewer projects (3 per type = 21 projects)
         else {
-            return rand(5, 8);
+            return 21;
         }
     }
 
@@ -115,75 +132,54 @@ class ComprehensiveProjectsSeeder extends Seeder
     private function getProjectNamesForReliefType($reliefTypeName)
     {
         return match($reliefTypeName) {
-            'Cash Relief' => [
-                'নগদ সহায়তা প্রকল্প',
-                'জরুরি নগদ ত্রাণ',
-                'দরিদ্র পরিবার সহায়তা',
-                'বেকার যুবক সহায়তা',
-                'অসহায় মহিলা সহায়তা'
+            'Food Assistance for Destitute' => [
+                'দুঃস্থ পরিবারের জরুরি খাদ্য সহায়তা প্রকল্প',
+                'অসহায় পরিবারের খাদ্য নিরাপত্তা প্রকল্প',
+                'দরিদ্র পরিবারের পুষ্টি সহায়তা প্রকল্প',
+                'বেকার পরিবারের খাদ্য সহায়তা প্রকল্প',
+                'দুঃস্থদের খাদ্য সহায়তা প্রকল্প'
             ],
-            'Food Relief' => [
-                'খাদ্য নিরাপত্তা প্রকল্প',
-                'জরুরি খাদ্য ত্রাণ',
-                'দরিদ্র পরিবার খাদ্য সহায়তা',
-                'খাদ্য সংকট মোকাবেলা',
-                'পুষ্টি সহায়তা প্রকল্প'
+            'Cash Assistance' => [
+                'দুঃস্থ পরিবারের জরুরি নগদ সহায়তা প্রকল্প',
+                'অসহায় মহিলাদের নগদ সহায়তা প্রকল্প',
+                'বেকার যুবকদের নগদ সহায়তা প্রকল্প',
+                'প্রতিবন্ধীদের নগদ সহায়তা প্রকল্প',
+                'নগদ অর্থ সহায়তা প্রকল্প'
             ],
-            'Medical Relief' => [
-                'চিকিৎসা সহায়তা প্রকল্প',
-                'জরুরি চিকিৎসা ত্রাণ',
-                'দরিদ্র পরিবার চিকিৎসা সহায়তা',
-                'ঔষধ সহায়তা প্রকল্প',
-                'স্বাস্থ্য সুরক্ষা প্রকল্প'
+            'Grain Assistance' => [
+                'কৃষক পরিবারের খাদ্যশস্য সহায়তা প্রকল্প',
+                'খরা কবলিত কৃষকদের খাদ্যশস্য সহায়তা',
+                'দরিদ্র কৃষকদের বীজ সহায়তা প্রকল্প',
+                'নতুন কৃষকদের খাদ্যশস্য সহায়তা প্রকল্প',
+                'খাদ্যশস্য সহায়তা প্রকল্প'
             ],
-            'Shelter Relief' => [
-                'আশ্রয় সহায়তা প্রকল্প',
-                'গৃহহীন পরিবার সহায়তা',
-                'আবাসন সহায়তা প্রকল্প',
-                'আশ্রয় সামগ্রী বিতরণ',
-                'পুনর্বাসন সহায়তা'
+            'Winter Clothing Assistance' => [
+                'দরিদ্র পরিবারের শীতকালীন সহায়তা প্রকল্প',
+                'বৃদ্ধদের শীতকালীন সহায়তা প্রকল্প',
+                'শিশুদের শীতকালীন সহায়তা প্রকল্প',
+                'অসহায় পরিবারের শীতকালীন সহায়তা',
+                'শীতবস্ত্র সহায়তা প্রকল্প'
             ],
-            'Educational Relief' => [
-                'শিক্ষা সহায়তা প্রকল্প',
-                'দরিদ্র শিক্ষার্থী সহায়তা',
-                'শিক্ষা উপকরণ বিতরণ',
-                'স্কুল ফি সহায়তা',
-                'শিক্ষা উন্নয়ন প্রকল্প'
+            'Corrugated Iron Sheet Assistance' => [
+                'গৃহহীন পরিবারের ঢেউটিন সহায়তা প্রকল্প',
+                'বন্যা কবলিত পরিবারের ঢেউটিন সহায়তা',
+                'ঘূর্ণিঝড় কবলিত পরিবারের ঢেউটিন সহায়তা',
+                'দরিদ্র পরিবারের ঢেউটিন সহায়তা প্রকল্প',
+                'ঢেউটিন সহায়তা প্রকল্প'
             ],
-            'Winter Relief' => [
-                'শীতকালীন সহায়তা প্রকল্প',
-                'শীতবস্ত্র বিতরণ',
-                'দরিদ্র পরিবার শীতকালীন সহায়তা',
-                'কম্বল বিতরণ প্রকল্প',
-                'শীতকালীন ত্রাণ'
+            'Housing Assistance' => [
+                'অসহায় পরিবারের আবাসন সহায়তা প্রকল্প',
+                'দরিদ্র পরিবারের গৃহ নির্মাণ সহায়তা',
+                'বেকার পরিবারের আবাসন সহায়তা প্রকল্প',
+                'প্রতিবন্ধী পরিবারের গৃহ সহায়তা প্রকল্প',
+                'গৃহবাবদ সহায়তা প্রকল্প'
             ],
-            'Flood Relief' => [
-                'বন্যা ত্রাণ প্রকল্প',
-                'বন্যা কবলিত এলাকা সহায়তা',
-                'বন্যা পুনর্বাসন প্রকল্প',
-                'জরুরি বন্যা ত্রাণ',
-                'বন্যা ক্ষতি পূরণ'
-            ],
-            'Cyclone Relief' => [
-                'ঘূর্ণিঝড় ত্রাণ প্রকল্প',
-                'ঘূর্ণিঝড় কবলিত এলাকা সহায়তা',
-                'ঘূর্ণিঝড় পুনর্বাসন',
-                'জরুরি ঘূর্ণিঝড় ত্রাণ',
-                'ঘূর্ণিঝড় ক্ষতি পূরণ'
-            ],
-            'Drought Relief' => [
-                'খরা ত্রাণ প্রকল্প',
-                'খরা কবলিত কৃষক সহায়তা',
-                'কৃষি সহায়তা প্রকল্প',
-                'জল সংকট মোকাবেলা',
-                'খরা পুনরুদ্ধার'
-            ],
-            'Emergency Relief' => [
-                'জরুরি ত্রাণ প্রকল্প',
-                'দুর্যোগ ত্রাণ',
-                'জরুরি সাড়াদান',
-                'দুর্যোগ ব্যবস্থাপনা',
-                'জরুরি সহায়তা'
+            'District Commissioner Assistance' => [
+                'জেলা প্রশাসকের বিশেষ সহায়তা প্রকল্প',
+                'জেলা প্রশাসকের জরুরি ত্রাণ তহবিল',
+                'জেলা প্রশাসকের সামাজিক সহায়তা প্রকল্প',
+                'জেলা প্রশাসকের মানবিক সহায়তা প্রকল্প',
+                'জেলা প্রশাসকের সাহায্য প্রকল্প'
             ],
             default => [
                 'সামাজিক সহায়তা প্রকল্প',
@@ -198,16 +194,13 @@ class ComprehensiveProjectsSeeder extends Seeder
     private function generateBudgetForProject($year, $reliefType, $isCore)
     {
         $baseAmount = match($reliefType->name) {
-            'Cash Relief' => 5000000,
-            'Food Relief' => 8000000,
-            'Medical Relief' => 3000000,
-            'Shelter Relief' => 10000000,
-            'Educational Relief' => 4000000,
-            'Winter Relief' => 3000000,
-            'Flood Relief' => 12000000,
-            'Cyclone Relief' => 10000000,
-            'Drought Relief' => 6000000,
-            'Emergency Relief' => 7000000,
+            'Food Assistance for Destitute' => 8000000,
+            'Cash Assistance' => 5000000,
+            'Grain Assistance' => 7000000,
+            'Winter Clothing Assistance' => 3000000,
+            'Corrugated Iron Sheet Assistance' => 10000000,
+            'Housing Assistance' => 12000000,
+            'District Commissioner Assistance' => 15000000,
             default => 5000000
         };
         
@@ -252,16 +245,13 @@ class ComprehensiveProjectsSeeder extends Seeder
     private function generateProjectRemarks($reliefType, $year)
     {
         $remarks = [
-            'Cash Relief' => 'দরিদ্র ও অসহায় পরিবারগুলোর জন্য নগদ সহায়তা প্রদান।',
-            'Food Relief' => 'খাদ্য সংকটে পড়া পরিবারগুলোর জন্য খাদ্য সামগ্রী সরবরাহ।',
-            'Medical Relief' => 'চিকিৎসা ব্যয় বহনে অক্ষম পরিবারগুলোর জন্য চিকিৎসা সহায়তা।',
-            'Shelter Relief' => 'আবাসন সংকটে পড়া পরিবারগুলোর জন্য আশ্রয় সামগ্রী প্রদান।',
-            'Educational Relief' => 'দরিদ্র শিক্ষার্থীদের শিক্ষা ব্যয়ের জন্য সহায়তা প্রদান।',
-            'Winter Relief' => 'শীতকালে দরিদ্র পরিবারগুলোর জন্য শীতবস্ত্র ও কম্বল প্রদান।',
-            'Flood Relief' => 'বন্যা কবলিত এলাকার পরিবারগুলোর জন্য জরুরি ত্রাণ সহায়তা।',
-            'Cyclone Relief' => 'ঘূর্ণিঝড় কবলিত এলাকার পরিবারগুলোর জন্য পুনর্বাসন সহায়তা।',
-            'Drought Relief' => 'খরা কবলিত কৃষক পরিবারগুলোর জন্য কৃষি সহায়তা।',
-            'Emergency Relief' => 'জরুরি পরিস্থিতিতে ক্ষতিগ্রস্ত পরিবারগুলোর জন্য দ্রুত সহায়তা।',
+            'Food Assistance for Destitute' => 'দুঃস্থ ও দরিদ্র পরিবারগুলোর জন্য খাদ্য সহায়তা প্রদান।',
+            'Cash Assistance' => 'দরিদ্র ও অসহায় পরিবারগুলোর জন্য নগদ সহায়তা প্রদান।',
+            'Grain Assistance' => 'কৃষক পরিবারগুলোর জন্য খাদ্যশস্য সহায়তা প্রদান।',
+            'Winter Clothing Assistance' => 'শীতকালে দরিদ্র পরিবারগুলোর জন্য শীতবস্ত্র ও কম্বল প্রদান।',
+            'Corrugated Iron Sheet Assistance' => 'আবাসন নির্মাণের জন্য ঢেউটিন সহায়তা প্রদান।',
+            'Housing Assistance' => 'গৃহহীন পরিবারগুলোর জন্য আবাসন সহায়তা প্রদান।',
+            'District Commissioner Assistance' => 'জেলা প্রশাসকের বিশেষ সহায়তা প্রদান।',
         ];
         
         $baseRemark = $remarks[$reliefType->name] ?? 'সামাজিক কল্যাণমূলক প্রকল্প।';

@@ -49,8 +49,13 @@ class ComprehensiveApplicationsSeeder extends Seeder
 
         $createdCount = 0;
 
-        // Create applications for each economic year
+        // Create applications for each economic year (only current and previous years, not future)
         foreach ($economicYears as $year) {
+            // Skip future years - only create applications for current and previous years
+            if ($year->end_date > now()) {
+                continue;
+            }
+            
             $yearProjects = $projects->where('economic_year_id', $year->id);
             $this->command->info("Creating applications for economic year: {$year->name}");
             
@@ -64,7 +69,8 @@ class ComprehensiveApplicationsSeeder extends Seeder
                     $application = ReliefApplication::create($applicationData);
                     
                     // Add relief items for non-cash applications
-                    if ($applicationData['relief_type_id'] !== $reliefTypes->where('name', 'Cash Relief')->first()?->id) {
+                    $cashReliefTypeIds = $reliefTypes->whereIn('name', ['Cash Assistance', 'District Commissioner Assistance'])->pluck('id');
+                    if (!$cashReliefTypeIds->contains($applicationData['relief_type_id'])) {
                         $this->addReliefItems($application, $reliefItems);
                     }
                     
@@ -149,13 +155,13 @@ class ComprehensiveApplicationsSeeder extends Seeder
 
     private function getApplicationCountForProject($project, $year)
     {
-        // More applications for current year, fewer for past years
+        // More applications for current year (around 200 total for current year)
         if ($year->is_current) {
-            return rand(15, 25);
-        } elseif ($year->end_date < now()) {
-            return rand(8, 15); // Past years
+            // 7 relief types * 5 projects * ~6 applications = ~210 applications for current year
+            return rand(5, 8);
         } else {
-            return rand(3, 8); // Future years
+            // Previous years: moderate applications
+            return rand(8, 15);
         }
     }
 
@@ -164,9 +170,15 @@ class ComprehensiveApplicationsSeeder extends Seeder
         $startDate = Carbon::parse($year->start_date);
         $endDate = Carbon::parse($year->end_date);
         
-        // Don't generate dates in the future
-        if ($endDate->isFuture()) {
+        // Don't generate dates in the future or beyond MySQL's date limit (2038-01-19)
+        $maxDate = Carbon::parse('2038-01-19');
+        if ($endDate->isFuture() || $endDate->gt($maxDate)) {
             $endDate = now();
+        }
+        
+        // Ensure start date is not beyond max date
+        if ($startDate->gt($maxDate)) {
+            $startDate = $maxDate->copy()->subYear();
         }
         
         return Carbon::createFromTimestamp(rand($startDate->timestamp, $endDate->timestamp));
@@ -179,12 +191,8 @@ class ComprehensiveApplicationsSeeder extends Seeder
             $statuses = ['pending' => 30, 'approved' => 50, 'rejected' => 20];
         }
         // Past years: mostly approved/rejected, few pending
-        elseif ($year->end_date < now()) {
-            $statuses = ['pending' => 5, 'approved' => 70, 'rejected' => 25];
-        }
-        // Future years: mostly pending
         else {
-            $statuses = ['pending' => 80, 'approved' => 15, 'rejected' => 5];
+            $statuses = ['pending' => 5, 'approved' => 70, 'rejected' => 25];
         }
         
         $rand = rand(1, 100);
@@ -203,16 +211,13 @@ class ComprehensiveApplicationsSeeder extends Seeder
     private function generateAmountRequested($reliefType)
     {
         return match($reliefType->name) {
-            'Cash Relief' => rand(20000, 200000),
-            'Food Relief' => rand(50000, 500000),
-            'Medical Relief' => rand(30000, 300000),
-            'Shelter Relief' => rand(40000, 400000),
-            'Educational Relief' => rand(25000, 250000),
-            'Winter Relief' => rand(30000, 300000),
-            'Flood Relief' => rand(50000, 500000),
-            'Cyclone Relief' => rand(40000, 400000),
-            'Drought Relief' => rand(30000, 300000),
-            'Emergency Relief' => rand(35000, 350000),
+            'Food Assistance for Destitute' => rand(50000, 500000),
+            'Cash Assistance' => rand(20000, 200000),
+            'Grain Assistance' => rand(40000, 400000),
+            'Winter Clothing Assistance' => rand(30000, 300000),
+            'Corrugated Iron Sheet Assistance' => rand(40000, 400000),
+            'Housing Assistance' => rand(60000, 600000),
+            'District Commissioner Assistance' => rand(80000, 800000),
             default => rand(25000, 250000)
         };
     }
@@ -231,16 +236,16 @@ class ComprehensiveApplicationsSeeder extends Seeder
     private function generateOrganizationName($organizationType, $upazila)
     {
         $orgNames = [
+            'Madrasa' => ['আল-আমিন মাদ্রাসা', 'দারুল উলুম মাদ্রাসা', 'ইসলামিক একাডেমি', 'আল-জামিয়া মাদ্রাসা'],
+            'Mosque' => ['কেন্দ্রীয় জামে মসজিদ', 'নতুন মসজিদ', 'বড় মসজিদ', 'জামে মসজিদ'],
+            'Temple' => ['শ্রী শ্রী কালী মন্দির', 'হিন্দু ধর্মীয় মন্দির', 'রাধা কৃষ্ণ মন্দির', 'শিব মন্দির'],
             'NGO' => ['ব্র্যাক', 'গ্রামীণ ব্যাংক', 'প্রশিকা', 'আশা', 'কারিতাস'],
+            'Old Home' => ['বৃদ্ধাশ্রম', 'সিনিয়র সিটিজেন হোম', 'বৃদ্ধ নিবাস', 'এজড কেয়ার সেন্টার'],
+            'Educational Institute' => ['প্রাথমিক বিদ্যালয়', 'মাধ্যমিক বিদ্যালয়', 'কলেজ', 'বিদ্যালয়'],
+            'Charitable Foundation' => ['মানবিক ফাউন্ডেশন', 'সামাজিক উন্নয়ন ফাউন্ডেশন', 'দাতব্য ফাউন্ডেশন'],
+            'Social Welfare Organization' => ['সামাজিক কল্যাণ সংস্থা', 'মানবিক সহায়তা ফাউন্ডেশন'],
             'Community Organization' => ['সমাজ কল্যাণ সমিতি', 'নারী উন্নয়ন সংস্থা', 'যুব সংগঠন', 'কৃষক সমিতি'],
             'Religious Organization' => ['ইসলামিক রিলিফ কমিটি', 'হিন্দু কল্যাণ ট্রাস্ট', 'খ্রিস্টান সেবা সমিতি'],
-            'Social Welfare Organization' => ['সামাজিক কল্যাণ সংস্থা', 'মানবিক সহায়তা ফাউন্ডেশন'],
-            'Farmers Association' => ['কৃষক সমিতি', 'নারী কৃষক সংগঠন', 'কৃষি উন্নয়ন সমিতি'],
-            'Emergency Response Organization' => ['জরুরি সাড়া সংস্থা', 'দুর্যোগ ব্যবস্থাপনা কমিটি'],
-            'Foundation' => ['মানবিক ফাউন্ডেশন', 'সামাজিক উন্নয়ন ফাউন্ডেশন'],
-            'Youth Organization' => ['তরুণ সমাজ উন্নয়ন সংগঠন', 'যুব কল্যাণ সমিতি'],
-            'Women Organization' => ['মহিলা উন্নয়ন সংস্থা', 'নারী ক্ষমতায়ন সমিতি'],
-            'Educational Organization' => ['শিক্ষা উন্নয়ন সংস্থা', 'স্কুল উন্নয়ন কমিটি'],
         ];
         
         $typeName = $organizationType->name;
@@ -253,16 +258,13 @@ class ComprehensiveApplicationsSeeder extends Seeder
     private function generateSubject($reliefType, $upazila)
     {
         $subjects = [
-            'Cash Relief' => 'জরুরি নগদ সহায়তা',
-            'Food Relief' => 'খাদ্য সহায়তা',
-            'Medical Relief' => 'চিকিৎসা সহায়তা',
-            'Shelter Relief' => 'আশ্রয় সহায়তা',
-            'Educational Relief' => 'শিক্ষা সহায়তা',
-            'Winter Relief' => 'শীতকালীন সহায়তা',
-            'Flood Relief' => 'বন্যা ত্রাণ',
-            'Cyclone Relief' => 'ঘূর্ণিঝড় ত্রাণ',
-            'Drought Relief' => 'খরা ত্রাণ',
-            'Emergency Relief' => 'জরুরি ত্রাণ',
+            'Food Assistance for Destitute' => 'দুঃস্থদের খাদ্য সহায়তা',
+            'Cash Assistance' => 'জরুরি নগদ সহায়তা',
+            'Grain Assistance' => 'খাদ্যশস্য সহায়তা',
+            'Winter Clothing Assistance' => 'শীতকালীন সহায়তা',
+            'Corrugated Iron Sheet Assistance' => 'ঢেউটিন সহায়তা',
+            'Housing Assistance' => 'গৃহবাবদ সহায়তা',
+            'District Commissioner Assistance' => 'জেলা প্রশাসকের সাহায্য',
         ];
         
         $baseSubject = $subjects[$reliefType->name] ?? 'ত্রাণ সহায়তা';
@@ -309,16 +311,13 @@ class ComprehensiveApplicationsSeeder extends Seeder
     private function generateDetails($reliefType, $upazila)
     {
         $details = [
-            'Cash Relief' => 'আমাদের এলাকার দরিদ্র পরিবারগুলোকে জরুরি নগদ সহায়তা প্রয়োজন। বিশেষ করে বেকার যুবক ও অসহায় মহিলাদের জন্য।',
-            'Food Relief' => 'খাদ্য সংকটে পড়া পরিবারগুলোকে চাল, ডাল ও অন্যান্য খাদ্য সামগ্রী প্রদানের জন্য সহায়তা প্রয়োজন।',
-            'Medical Relief' => 'দরিদ্র পরিবারগুলোর চিকিৎসা ব্যয়ের জন্য ঔষধ ও চিকিৎসা সামগ্রী প্রয়োজন।',
-            'Shelter Relief' => 'আবাসন সংকটে পড়া পরিবারগুলোকে আশ্রয় সামগ্রী প্রদানের জন্য সহায়তা প্রয়োজন।',
-            'Educational Relief' => 'দরিদ্র শিক্ষার্থীদের শিক্ষা ব্যয়ের জন্য সহায়তা প্রয়োজন।',
-            'Winter Relief' => 'শীতকালে দরিদ্র পরিবারগুলোকে শীতবস্ত্র ও কম্বল প্রদানের জন্য সহায়তা প্রয়োজন।',
-            'Flood Relief' => 'বন্যা কবলিত এলাকার পরিবারগুলোকে জরুরি ত্রাণ সহায়তা প্রয়োজন।',
-            'Cyclone Relief' => 'ঘূর্ণিঝড় কবলিত এলাকার পরিবারগুলোকে পুনর্বাসন সহায়তা প্রয়োজন।',
-            'Drought Relief' => 'খরা কবলিত কৃষক পরিবারগুলোকে সহায়তা প্রয়োজন।',
-            'Emergency Relief' => 'জরুরি পরিস্থিতিতে ক্ষতিগ্রস্ত পরিবারগুলোকে দ্রুত সহায়তা প্রয়োজন।',
+            'Food Assistance for Destitute' => 'আমাদের এলাকার দুঃস্থ ও দরিদ্র পরিবারগুলোকে জরুরি খাদ্য সহায়তা প্রয়োজন। চাল, ডাল ও অন্যান্য খাদ্য সামগ্রী প্রদানের জন্য।',
+            'Cash Assistance' => 'আমাদের এলাকার দরিদ্র পরিবারগুলোকে জরুরি নগদ সহায়তা প্রয়োজন। বিশেষ করে বেকার যুবক ও অসহায় মহিলাদের জন্য।',
+            'Grain Assistance' => 'কৃষক পরিবারগুলোকে খাদ্যশস্য সহায়তা প্রয়োজন। বিশেষ করে দরিদ্র কৃষকদের জন্য চাল ও বীজ সহায়তা।',
+            'Winter Clothing Assistance' => 'শীতকালে দরিদ্র পরিবারগুলোকে শীতবস্ত্র ও কম্বল প্রদানের জন্য সহায়তা প্রয়োজন।',
+            'Corrugated Iron Sheet Assistance' => 'আবাসন নির্মাণের জন্য ঢেউটিন সহায়তা প্রয়োজন। বিশেষ করে গৃহহীন পরিবারদের জন্য।',
+            'Housing Assistance' => 'গৃহহীন পরিবারগুলোকে আবাসন সহায়তা প্রয়োজন। ঘর নির্মাণ সামগ্রী প্রদানের জন্য সহায়তা প্রয়োজন।',
+            'District Commissioner Assistance' => 'জেলা প্রশাসকের বিশেষ সহায়তা প্রয়োজন। বিভিন্ন ধরনের জরুরি সহায়তা প্রদানের জন্য।',
         ];
         
         $baseDetail = $details[$reliefType->name] ?? 'ত্রাণ সহায়তা প্রয়োজন।';
@@ -355,7 +354,7 @@ class ComprehensiveApplicationsSeeder extends Seeder
     {
         $reliefType = $application->reliefType;
         
-        if ($reliefType && $reliefType->name !== 'Cash Relief') {
+        if ($reliefType && !in_array($reliefType->name, ['Cash Assistance', 'District Commissioner Assistance'])) {
             $relevantItems = $reliefItems->where('type', $this->getItemTypeFromReliefType($reliefType->name));
             
             if ($relevantItems->count() > 0) {
@@ -379,10 +378,9 @@ class ComprehensiveApplicationsSeeder extends Seeder
     private function getItemTypeFromReliefType($reliefTypeName)
     {
         return match($reliefTypeName) {
-            'Food Relief' => 'food',
-            'Medical Relief' => 'medical',
-            'Shelter Relief', 'Winter Relief' => 'shelter',
-            'Educational Relief' => 'other',
+            'Food Assistance for Destitute', 'Grain Assistance' => 'food',
+            'Winter Clothing Assistance', 'Corrugated Iron Sheet Assistance', 'Housing Assistance' => 'shelter',
+            'Cash Assistance', 'District Commissioner Assistance' => 'other',
             default => 'food'
         };
     }

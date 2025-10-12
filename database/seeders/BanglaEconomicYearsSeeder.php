@@ -12,62 +12,39 @@ class BanglaEconomicYearsSeeder extends Seeder
      */
     public function run(): void
     {
-        $this->command->info('Creating comprehensive Bangla economic years...');
+        $this->command->info('Creating comprehensive Bangla economic years from 2020-2050...');
 
-        $economicYears = [
-            [
-                'name' => '2022-2023',
-                'name_bn' => '২০২২-২০২৩',
-                'start_date' => '2022-07-01',
-                'end_date' => '2023-06-30',
+        $economicYears = [];
+        $currentYear = date('Y');
+        $currentMonth = date('m');
+        
+        // Determine current economic year based on current date
+        // If current month is July or later, current fiscal year starts this year
+        // If current month is before July, current fiscal year started last year
+        $currentFiscalYear = ($currentMonth >= 7) ? $currentYear : $currentYear - 1;
+        
+        // Generate economic years from 2020 to 2050
+        for ($year = 2020; $year <= 2050; $year++) {
+            $startYear = $year;
+            $endYear = $year + 1;
+            $isCurrent = ($year === $currentFiscalYear);
+            
+            $economicYears[] = [
+                'name' => $startYear . '-' . $endYear,
+                'name_bn' => $this->convertToBanglaYear($startYear) . '-' . $this->convertToBanglaYear($endYear),
+                'start_date' => $startYear . '-07-01',
+                'end_date' => $endYear . '-06-30',
                 'is_active' => true,
-                'is_current' => false,
-                'description' => '২০২২-২০২৩ অর্থবছর',
-                'description_en' => 'Fiscal Year 2022-2023',
-            ],
-            [
-                'name' => '2023-2024',
-                'name_bn' => '২০২৩-২০২৪',
-                'start_date' => '2023-07-01',
-                'end_date' => '2024-06-30',
-                'is_active' => true,
-                'is_current' => false,
-                'description' => '২০২৩-২০২৪ অর্থবছর',
-                'description_en' => 'Fiscal Year 2023-2024',
-            ],
-            [
-                'name' => '2024-2025',
-                'name_bn' => '২০২৪-২০২৫',
-                'start_date' => '2024-07-01',
-                'end_date' => '2025-06-30',
-                'is_active' => true,
-                'is_current' => true, // Current economic year
-                'description' => '২০২৪-২০২৫ অর্থবছর (বর্তমান)',
-                'description_en' => 'Fiscal Year 2024-2025 (Current)',
-            ],
-            [
-                'name' => '2025-2026',
-                'name_bn' => '২০২৫-২০২৬',
-                'start_date' => '2025-07-01',
-                'end_date' => '2026-06-30',
-                'is_active' => true,
-                'is_current' => false,
-                'description' => '২০২৫-২০২৬ অর্থবছর (পরবর্তী)',
-                'description_en' => 'Fiscal Year 2025-2026 (Next)',
-            ],
-            [
-                'name' => '2026-2027',
-                'name_bn' => '২০২৬-২০২৭',
-                'start_date' => '2026-07-01',
-                'end_date' => '2027-06-30',
-                'is_active' => true,
-                'is_current' => false,
-                'description' => '২০২৬-২০২৭ অর্থবছর',
-                'description_en' => 'Fiscal Year 2026-2027',
-            ]
-        ];
+                'is_current' => $isCurrent,
+                'description' => $this->convertToBanglaYear($startYear) . '-' . $this->convertToBanglaYear($endYear) . ' অর্থবছর' . ($isCurrent ? ' (বর্তমান)' : ''),
+                'description_en' => 'Fiscal Year ' . $startYear . '-' . $endYear . ($isCurrent ? ' (Current)' : ''),
+            ];
+        }
 
         $createdCount = 0;
+
+        // First, set all existing years as not current
+        EconomicYear::query()->update(['is_current' => false]);
 
         foreach ($economicYears as $economicYearData) {
             $economicYear = EconomicYear::firstOrCreate(
@@ -82,11 +59,29 @@ class BanglaEconomicYearsSeeder extends Seeder
                 ]
             );
 
+            // Update the current year status if this year should be current
+            if ($economicYearData['is_current']) {
+                $economicYear->update(['is_current' => true]);
+            }
+
             $createdCount++;
         }
 
         $this->command->info("Created {$createdCount} comprehensive Bangla economic years.");
-        $this->command->info('Economic years include 2022-2023, 2023-2024, 2024-2025 (current), 2025-2026, and 2026-2027.');
+        $this->command->info("Economic years include 2020-2021 to 2050-2051 with current year: {$currentFiscalYear}-" . ($currentFiscalYear + 1));
         $this->command->info('All years follow Bangladesh fiscal year calendar (July to June).');
+    }
+
+    /**
+     * Convert English year to Bangla numerals
+     */
+    private function convertToBanglaYear($year)
+    {
+        $banglaNumbers = [
+            '0' => '০', '1' => '১', '2' => '২', '3' => '৩', '4' => '৪',
+            '5' => '৫', '6' => '৬', '7' => '৭', '8' => '৮', '9' => '৯'
+        ];
+        
+        return str_replace(array_keys($banglaNumbers), array_values($banglaNumbers), (string)$year);
     }
 }

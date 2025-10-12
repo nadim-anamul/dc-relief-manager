@@ -193,7 +193,15 @@ class DashboardController extends Controller
 			->get();
 
 		// Project × Upazila distribution (optional filter by zilla)
-		$projectUpazilaDistributionQuery = $applyDateRange(ReliefApplication::where('status', 'approved'), 'approved_at');
+		$projectUpazilaDistributionQuery = ReliefApplication::where('status', 'approved');
+		
+		// Filter by economic year through project relationship
+		if ($year) {
+			$projectUpazilaDistributionQuery->whereHas('project', function($q) use ($year) {
+				$q->where('economic_year_id', $year->id);
+			});
+		}
+		
 		if ($selectedZillaId) {
 			$projectUpazilaDistributionQuery->where('zilla_id', $selectedZillaId);
 		}
@@ -203,7 +211,15 @@ class DashboardController extends Controller
 			->get();
 
 		// Project × Upazila × Union distribution (optional filter by zilla)
-		$projectUpazilaUnionDistributionQuery = $applyDateRange(ReliefApplication::where('status', 'approved'), 'approved_at');
+		$projectUpazilaUnionDistributionQuery = ReliefApplication::where('status', 'approved');
+		
+		// Filter by economic year through project relationship
+		if ($year) {
+			$projectUpazilaUnionDistributionQuery->whereHas('project', function($q) use ($year) {
+				$q->where('economic_year_id', $year->id);
+			});
+		}
+		
 		if ($selectedZillaId) {
 			$projectUpazilaUnionDistributionQuery->where('zilla_id', $selectedZillaId);
 		}

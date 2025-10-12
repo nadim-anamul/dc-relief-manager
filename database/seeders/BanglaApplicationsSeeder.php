@@ -60,7 +60,7 @@ class BanglaApplicationsSeeder extends Seeder
                 'ward_id' => $wards->where('union_id', $unions->where('upazila_id', $upazilas->where('name', 'Sariakandi')->first()->id ?? $upazilas->first()->id)->first()->id)->first()->id,
                 'subject' => 'বন্যা কবলিত পরিবারগুলোর জরুরি খাদ্য সহায়তা',
                 'subject_en' => 'Emergency Food Assistance for Flood Affected Families',
-                'relief_type_id' => $reliefTypes->where('name', 'Food Relief')->first()->id ?? $reliefTypes->first()->id,
+                'relief_type_id' => $reliefTypes->where('name', 'Food Assistance for Destitute')->first()->id ?? $reliefTypes->first()->id,
                 'project_id' => $projects->where('name', 'like', '%বন্যা%')->first()->id ?? $projects->first()->id,
                 'applicant_name' => 'মোঃ আব্দুল হক',
                 'applicant_name_en' => 'Md. Abdul Haque',
@@ -90,7 +90,7 @@ class BanglaApplicationsSeeder extends Seeder
                 'ward_id' => $wards->where('union_id', $unions->where('upazila_id', $upazilas->where('name', 'Shibganj')->first()->id ?? $upazilas->skip(1)->first()->id)->first()->id)->first()->id,
                 'subject' => 'চরাঞ্চলের বন্যা কবলিত পরিবারদের আশ্রয় সহায়তা',
                 'subject_en' => 'Shelter Assistance for Char Area Flood Affected Families',
-                'relief_type_id' => $reliefTypes->where('name', 'Shelter Relief')->first()->id ?? $reliefTypes->skip(1)->first()->id,
+                'relief_type_id' => $reliefTypes->where('name', 'Corrugated Iron Sheet Assistance')->first()->id ?? $reliefTypes->skip(1)->first()->id,
                 'project_id' => $projects->where('name', 'like', '%আশ্রয়%')->first()->id ?? $projects->skip(1)->first()->id,
                 'applicant_name' => 'ফাতেমা খাতুন',
                 'applicant_name_en' => 'Fatema Khatun',
@@ -110,7 +110,7 @@ class BanglaApplicationsSeeder extends Seeder
             [
                 'organization_name' => 'ঘূর্ণিঝড় প্রস্তুতি সমিতি',
                 'organization_name_en' => 'Cyclone Preparedness Society',
-                'organization_type_id' => $organizationTypes->where('name', 'Emergency Response Organization')->first()->id,
+                'organization_type_id' => $organizationTypes->where('name', 'Community Organization')->first()->id,
                 'date' => Carbon::now()->subDays(25),
                 'zilla_id' => $zillas->first()->id,
                 'upazila_id' => $upazilas->where('name', 'Sariakandi')->first()->id ?? $upazilas->skip(2)->first()->id,
@@ -118,7 +118,7 @@ class BanglaApplicationsSeeder extends Seeder
                 'ward_id' => $wards->where('union_id', $unions->where('upazila_id', $upazilas->where('name', 'Sariakandi')->first()->id ?? $upazilas->skip(2)->first()->id)->first()->id)->first()->id,
                 'subject' => 'ঘূর্ণিঝড় প্রস্তুতি সামগ্রী ও জরুরি ত্রাণ',
                 'subject_en' => 'Cyclone Preparedness Materials and Emergency Relief',
-                'relief_type_id' => $reliefTypes->where('name', 'Cash Relief')->first()->id ?? $reliefTypes->skip(2)->first()->id,
+                'relief_type_id' => $reliefTypes->where('name', 'Cash Assistance')->first()->id ?? $reliefTypes->skip(2)->first()->id,
                 'project_id' => $projects->where('name', 'like', '%ঘূর্ণিঝড়%')->first()->id ?? $projects->skip(2)->first()->id,
                 'applicant_name' => 'মোঃ শহিদুল ইসলাম',
                 'applicant_name_en' => 'Md. Shahidul Islam',
@@ -142,7 +142,7 @@ class BanglaApplicationsSeeder extends Seeder
             [
                 'organization_name' => 'বগুড়া কৃষক সমিতি',
                 'organization_name_en' => 'Bogura Farmers Association',
-                'organization_type_id' => $organizationTypes->where('name', 'Farmers Association')->first()->id,
+                'organization_type_id' => $organizationTypes->where('name', 'Community Organization')->first()->id,
                 'date' => Carbon::now()->subDays(30),
                 'zilla_id' => $zillas->first()->id,
                 'upazila_id' => $upazilas->where('name', 'Dhunat')->first()->id ?? $upazilas->skip(3)->first()->id,
@@ -150,7 +150,7 @@ class BanglaApplicationsSeeder extends Seeder
                 'ward_id' => $wards->where('union_id', $unions->where('upazila_id', $upazilas->where('name', 'Dhunat')->first()->id ?? $upazilas->skip(3)->first()->id)->first()->id)->first()->id,
                 'subject' => 'খরা কবলিত কৃষকদের বীজ সহায়তা',
                 'subject_en' => 'Seed Assistance for Drought Affected Farmers',
-                'relief_type_id' => $reliefTypes->where('name', 'Cash Relief')->first()->id ?? $reliefTypes->skip(3)->first()->id,
+                'relief_type_id' => $reliefTypes->where('name', 'Cash Assistance')->first()->id ?? $reliefTypes->skip(3)->first()->id,
                 'project_id' => $projects->where('name', 'like', '%খরা%')->first()->id ?? $projects->skip(3)->first()->id,
                 'applicant_name' => 'মোঃ করিম উদ্দিন',
                 'applicant_name_en' => 'Md. Karim Uddin',
@@ -178,7 +178,7 @@ class BanglaApplicationsSeeder extends Seeder
                 'ward_id' => $wards->where('union_id', $unions->where('upazila_id', $upazilas->where('name', 'Bogura Sadar')->first()->id ?? $upazilas->skip(4)->first()->id)->first()->id)->first()->id,
                 'subject' => 'দরিদ্র পরিবারদের শীতকালীন কম্বল সহায়তা',
                 'subject_en' => 'Winter Blanket Assistance for Poor Families',
-                'relief_type_id' => $reliefTypes->where('name', 'Winter Relief')->first()->id ?? $reliefTypes->skip(4)->first()->id,
+                'relief_type_id' => $reliefTypes->where('name', 'Winter Clothing Assistance')->first()->id ?? $reliefTypes->skip(4)->first()->id,
                 'project_id' => $projects->where('name', 'like', '%শীতকালীন%')->first()->id ?? $projects->skip(4)->first()->id,
                 'applicant_name' => 'রোকসানা বেগম',
                 'applicant_name_en' => 'Roksana Begum',
@@ -210,7 +210,7 @@ class BanglaApplicationsSeeder extends Seeder
                 'ward_id' => $wards->where('union_id', $unions->where('upazila_id', $upazilas->where('name', 'Gabtali')->first()->id ?? $upazilas->skip(5)->first()->id)->first()->id)->first()->id,
                 'subject' => 'দরিদ্র পরিবারদের জরুরি চিকিৎসা সহায়তা',
                 'subject_en' => 'Emergency Medical Assistance for Poor Families',
-                'relief_type_id' => $reliefTypes->where('name', 'Cash Relief')->first()->id ?? $reliefTypes->skip(5)->first()->id,
+                'relief_type_id' => $reliefTypes->where('name', 'Cash Assistance')->first()->id ?? $reliefTypes->skip(5)->first()->id,
                 'project_id' => $projects->where('name', 'like', '%চিকিৎসা%')->first()->id ?? $projects->skip(5)->first()->id,
                 'applicant_name' => 'মুফতি আব্দুল হাই',
                 'applicant_name_en' => 'Mufti Abdul Hai',
@@ -233,7 +233,7 @@ class BanglaApplicationsSeeder extends Seeder
             [
                 'organization_name' => 'তরুণ সমাজ উন্নয়ন সংগঠন',
                 'organization_name_en' => 'Youth Social Development Organization',
-                'organization_type_id' => $organizationTypes->where('name', 'Youth Organization')->first()->id,
+                'organization_type_id' => $organizationTypes->where('name', 'Community Organization')->first()->id,
                 'date' => Carbon::now()->subDays(45),
                 'zilla_id' => $zillas->first()->id,
                 'upazila_id' => $upazilas->where('name', 'Nandigram')->first()->id ?? $upazilas->skip(6)->first()->id,
@@ -241,7 +241,7 @@ class BanglaApplicationsSeeder extends Seeder
                 'ward_id' => $wards->where('union_id', $unions->where('upazila_id', $upazilas->where('name', 'Nandigram')->first()->id ?? $upazilas->skip(6)->first()->id)->first()->id)->first()->id,
                 'subject' => 'দরিদ্র শিক্ষার্থীদের শিক্ষা সহায়তা',
                 'subject_en' => 'Educational Assistance for Poor Students',
-                'relief_type_id' => $reliefTypes->where('name', 'Cash Relief')->first()->id ?? $reliefTypes->skip(6)->first()->id,
+                'relief_type_id' => $reliefTypes->where('name', 'Cash Assistance')->first()->id ?? $reliefTypes->skip(6)->first()->id,
                 'project_id' => $projects->where('name', 'like', '%শিক্ষা%')->first()->id ?? $projects->skip(6)->first()->id,
                 'applicant_name' => 'মোঃ সাকিব আহমেদ',
                 'applicant_name_en' => 'Md. Sakib Ahmed',
@@ -301,7 +301,7 @@ class BanglaApplicationsSeeder extends Seeder
             }
 
             // Add relief items for non-cash applications
-            if ($applicationData['relief_type_id'] !== $reliefTypes->where('name', 'Cash Relief')->first()?->id) {
+            if ($applicationData['relief_type_id'] !== $reliefTypes->where('name', 'Cash Assistance')->first()?->id) {
                 $this->addReliefItems($application, $reliefItems);
             }
 
@@ -370,7 +370,7 @@ class BanglaApplicationsSeeder extends Seeder
                 'organization_name' => 'বগুড়া মহিলা সমিতি',
                 'organization_type_id' => $organizationTypes->where('name', 'Community Organization')->first()->id,
                 'subject' => 'অসহায় মহিলাদের আয় বৃদ্ধি সহায়তা',
-                'relief_type_id' => $reliefTypes->where('name', 'Cash Relief')->first()->id,
+                'relief_type_id' => $reliefTypes->where('name', 'Cash Assistance')->first()->id,
                 'applicant_name' => 'সালেহা খাতুন',
                 'amount_requested' => 75000.00,
                 'status' => 'approved',
@@ -380,7 +380,7 @@ class BanglaApplicationsSeeder extends Seeder
                 'organization_name' => 'প্রশিকা উন্নয়ন সংস্থা',
                 'organization_type_id' => $organizationTypes->where('name', 'NGO')->first()->id,
                 'subject' => 'বৃদ্ধদের সামাজিক সহায়তা',
-                'relief_type_id' => $reliefTypes->where('name', 'Cash Relief')->first()->id,
+                'relief_type_id' => $reliefTypes->where('name', 'Cash Assistance')->first()->id,
                 'applicant_name' => 'মোঃ হাসান আলী',
                 'amount_requested' => 120000.00,
                 'status' => 'pending',
@@ -389,7 +389,7 @@ class BanglaApplicationsSeeder extends Seeder
                 'organization_name' => 'গ্রামীণ ব্যাংক',
                 'organization_type_id' => $organizationTypes->where('name', 'NGO')->first()->id,
                 'subject' => 'ক্ষুদ্র ব্যবসা সহায়তা',
-                'relief_type_id' => $reliefTypes->where('name', 'Cash Relief')->first()->id,
+                'relief_type_id' => $reliefTypes->where('name', 'Cash Assistance')->first()->id,
                 'applicant_name' => 'শাহানা পারভীন',
                 'amount_requested' => 200000.00,
                 'status' => 'rejected',

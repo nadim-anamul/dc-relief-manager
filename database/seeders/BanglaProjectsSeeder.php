@@ -30,173 +30,253 @@ class BanglaProjectsSeeder extends Seeder
         }
 
         // Get relief type IDs
-        $cashReliefType = $reliefTypes->where('name', 'Cash')->first() ?? $reliefTypes->first();
-        $foodReliefType = $reliefTypes->where('name', 'Rice')->first() ?? $reliefTypes->skip(1)->first();
-        $shelterReliefType = $reliefTypes->where('name', 'Corrugated Iron Sheet Bundle')->first() ?? $reliefTypes->skip(2)->first();
-        $medicalReliefType = $reliefTypes->where('name', 'Winter Clothes')->first() ?? $reliefTypes->skip(3)->first();
-        $winterReliefType = $reliefTypes->where('name', 'Blanket')->first() ?? $reliefTypes->skip(4)->first();
+        $foodAssistanceType = $reliefTypes->where('name', 'Food Assistance for Destitute')->first() ?? $reliefTypes->first();
+        $cashAssistanceType = $reliefTypes->where('name', 'Cash Assistance')->first() ?? $reliefTypes->skip(1)->first();
+        $grainAssistanceType = $reliefTypes->where('name', 'Grain Assistance')->first() ?? $reliefTypes->skip(2)->first();
+        $winterClothingType = $reliefTypes->where('name', 'Winter Clothing Assistance')->first() ?? $reliefTypes->skip(3)->first();
+        $corrugatedIronType = $reliefTypes->where('name', 'Corrugated Iron Sheet Assistance')->first() ?? $reliefTypes->skip(4)->first();
+        $housingAssistanceType = $reliefTypes->where('name', 'Housing Assistance')->first() ?? $reliefTypes->skip(5)->first();
+        $dcAssistanceType = $reliefTypes->where('name', 'District Commissioner Assistance')->first() ?? $reliefTypes->skip(6)->first();
 
         $adminUser = $adminUsers->first();
 
-        // Create comprehensive relief projects
+        // Create comprehensive relief projects for each relief type (4 projects per type)
         $projects = [
-            // Flood Relief Projects
+            // দুঃস্থদের খাদ্য সহায়তা (Food Assistance for Destitute) - 4 projects
             [
-                'name' => 'বন্যা কবলিত এলাকার জরুরি ত্রাণ সহায়তা প্রকল্প',
-                'name_en' => 'Emergency Relief Assistance for Flood Affected Areas',
-                'relief_type_id' => $cashReliefType->id,
-                'allocated_amount' => 15000000.00,
-                'available_amount' => 12000000.00,
-                'remarks' => 'বগুড়া জেলার বন্যা কবলিত এলাকাগুলোতে জরুরি নগদ সহায়তা প্রদানের জন্য এই প্রকল্প। বিশেষ করে সারিয়াকান্দি ও শিবগঞ্জ উপজেলার চরাঞ্চলে বেশি প্রভাবিত পরিবারগুলোকে সহায়তা করা হবে।',
-                'created_by' => $adminUser->id,
-            ],
-            [
-                'name' => 'বন্যা পরবর্তী খাদ্য সহায়তা প্রকল্প',
-                'name_en' => 'Post-Flood Food Assistance Project',
-                'relief_type_id' => $foodReliefType->id,
+                'name' => 'দুঃস্থ পরিবারের জরুরি খাদ্য সহায়তা প্রকল্প',
+                'relief_type_id' => $foodAssistanceType->id,
                 'allocated_amount' => 8000000.00,
                 'available_amount' => 6000000.00,
-                'remarks' => 'বন্যা পরবর্তী সময়ে ক্ষতিগ্রস্ত পরিবারগুলোকে চাল, ডাল ও অন্যান্য খাদ্য সামগ্রী প্রদানের প্রকল্প। প্রতিটি পরিবারকে ৩০ কেজি চাল ও ৫ কেজি ডাল দেওয়া হবে।',
-                'created_by' => $adminUser->id,
-            ],
-
-            // Cyclone Relief Projects
-            [
-                'name' => 'ঘূর্ণিঝড় প্রস্তুতি ও পুনর্বাসন প্রকল্প',
-                'name_en' => 'Cyclone Preparedness and Rehabilitation Project',
-                'relief_type_id' => $shelterReliefType->id,
-                'allocated_amount' => 12000000.00,
-                'available_amount' => 10000000.00,
-                'remarks' => 'ঘূর্ণিঝড়ের পূর্বে প্রস্তুতি ও পরবর্তীতে পুনর্বাসনের জন্য আশ্রয় সামগ্রী প্রদানের প্রকল্প। ঢেউটিন, তাঁবু ও অন্যান্য আশ্রয় সামগ্রী বিতরণ করা হবে।',
+                'remarks' => 'দুঃস্থ ও দরিদ্র পরিবারগুলোর জন্য জরুরি খাদ্য সহায়তা প্রদানের প্রকল্প। প্রতিটি পরিবারকে ৩০ কেজি চাল ও ৫ কেজি ডাল দেওয়া হবে।',
                 'created_by' => $adminUser->id,
             ],
             [
-                'name' => 'ঘূর্ণিঝড় কবলিত পরিবারের নগদ সহায়তা',
-                'name_en' => 'Cash Assistance for Cyclone Affected Families',
-                'relief_type_id' => $cashReliefType->id,
-                'allocated_amount' => 10000000.00,
-                'available_amount' => 8000000.00,
-                'remarks' => 'ঘূর্ণিঝড়ে ক্ষতিগ্রস্ত পরিবারগুলোকে জরুরি নগদ সহায়তা প্রদানের প্রকল্প। প্রতিটি পরিবারকে ১০,০০০ থেকে ১৫,০০০ টাকা পর্যন্ত সহায়তা দেওয়া হবে।',
-                'created_by' => $adminUser->id,
-            ],
-
-            // Drought Relief Projects
-            [
-                'name' => 'খরা কবলিত কৃষক পরিবারের সহায়তা প্রকল্প',
-                'name_en' => 'Assistance Project for Drought Affected Farmer Families',
-                'relief_type_id' => $foodReliefType->id,
-                'allocated_amount' => 6000000.00,
-                'available_amount' => 4500000.00,
-                'remarks' => 'খরা কবলিত কৃষক পরিবারগুলোকে খাদ্য সহায়তা প্রদানের প্রকল্প। বিশেষ করে ধুনট ও গাবতলী উপজেলার কৃষক পরিবারগুলোকে অগ্রাধিকার দেওয়া হবে।',
-                'created_by' => $adminUser->id,
-            ],
-            [
-                'name' => 'খরা পরবর্তী বীজ সহায়তা প্রকল্প',
-                'name_en' => 'Post-Drought Seed Assistance Project',
-                'relief_type_id' => $cashReliefType->id,
-                'allocated_amount' => 5000000.00,
-                'available_amount' => 3500000.00,
-                'remarks' => 'খরা পরবর্তী সময়ে কৃষকদের বীজ ক্রয়ের জন্য নগদ সহায়তা প্রদানের প্রকল্প। প্রতিটি কৃষক পরিবারকে ৫,০০০ টাকা বীজ সহায়তা দেওয়া হবে।',
-                'created_by' => $adminUser->id,
-            ],
-
-            // Winter Relief Projects
-            [
-                'name' => 'শীতকালীন ত্রাণ সহায়তা প্রকল্প',
-                'name_en' => 'Winter Relief Assistance Project',
-                'relief_type_id' => $winterReliefType->id,
-                'allocated_amount' => 7000000.00,
-                'available_amount' => 5500000.00,
-                'remarks' => 'শীতকালে দরিদ্র পরিবারগুলোকে কম্বল, শীতবস্ত্র ও অন্যান্য শীতকালীন সামগ্রী প্রদানের প্রকল্প। বিশেষ করে শিশু ও বৃদ্ধদের অগ্রাধিকার দেওয়া হবে।',
-                'created_by' => $adminUser->id,
-            ],
-            [
-                'name' => 'শীতকালীন স্বাস্থ্য সুরক্ষা প্রকল্প',
-                'name_en' => 'Winter Health Protection Project',
-                'relief_type_id' => $medicalReliefType->id,
-                'allocated_amount' => 4000000.00,
-                'available_amount' => 3000000.00,
-                'remarks' => 'শীতকালীন রোগবালাই থেকে সুরক্ষার জন্য প্রয়োজনীয় ঔষধ ও স্বাস্থ্য সামগ্রী প্রদানের প্রকল্প।',
-                'created_by' => $adminUser->id,
-            ],
-
-            // Medical Relief Projects
-            [
-                'name' => 'জরুরি চিকিৎসা সহায়তা প্রকল্প',
-                'name_en' => 'Emergency Medical Assistance Project',
-                'relief_type_id' => $medicalReliefType->id,
-                'allocated_amount' => 9000000.00,
-                'available_amount' => 7500000.00,
-                'remarks' => 'দরিদ্র পরিবারগুলোর জরুরি চিকিৎসা ব্যয়ের জন্য নগদ সহায়তা প্রদানের প্রকল্প। প্রতিটি পরিবারকে সর্বোচ্চ ২০,০০০ টাকা পর্যন্ত সহায়তা দেওয়া হবে।',
-                'created_by' => $adminUser->id,
-            ],
-            [
-                'name' => 'প্রাথমিক স্বাস্থ্য সেবা প্রকল্প',
-                'name_en' => 'Primary Healthcare Project',
-                'relief_type_id' => $cashReliefType->id,
-                'allocated_amount' => 5500000.00,
-                'available_amount' => 4000000.00,
-                'remarks' => 'দরিদ্র পরিবারগুলোর প্রাথমিক স্বাস্থ্য সেবা নিশ্চিত করার জন্য ঔষধ ক্রয়ের নগদ সহায়তা প্রদানের প্রকল্প।',
-                'created_by' => $adminUser->id,
-            ],
-
-            // Educational Relief Projects
-            [
-                'name' => 'দরিদ্র শিক্ষার্থীদের শিক্ষা সহায়তা প্রকল্প',
-                'name_en' => 'Educational Assistance Project for Poor Students',
-                'relief_type_id' => $cashReliefType->id,
+                'name' => 'অসহায় পরিবারের খাদ্য নিরাপত্তা প্রকল্প',
+                'relief_type_id' => $foodAssistanceType->id,
                 'allocated_amount' => 6500000.00,
                 'available_amount' => 5000000.00,
-                'remarks' => 'দরিদ্র পরিবারের শিক্ষার্থীদের শিক্ষা ব্যয়ের জন্য নগদ সহায়তা প্রদানের প্রকল্প। স্কুল ফি, বই-খাতা ও অন্যান্য শিক্ষা সামগ্রী ক্রয়ের জন্য সহায়তা দেওয়া হবে।',
+                'remarks' => 'অসহায় পরিবারগুলোর খাদ্য নিরাপত্তা নিশ্চিত করার জন্য খাদ্য সামগ্রী প্রদানের প্রকল্প।',
                 'created_by' => $adminUser->id,
             ],
             [
-                'name' => 'স্কুল ছাত্রছাত্রীদের পোশাক সহায়তা প্রকল্প',
-                'name_en' => 'School Uniform Assistance Project for Students',
-                'relief_type_id' => $cashReliefType->id,
-                'allocated_amount' => 4500000.00,
-                'available_amount' => 3000000.00,
-                'remarks' => 'দরিদ্র পরিবারের স্কুল ছাত্রছাত্রীদের স্কুল ইউনিফর্ম ক্রয়ের জন্য নগদ সহায়তা প্রদানের প্রকল্প। প্রতিটি ছাত্রছাত্রীকে ১,৫০০ টাকা করে সহায়তা দেওয়া হবে।',
-                'created_by' => $adminUser->id,
-            ],
-
-            // Special Relief Projects
-            [
-                'name' => 'অসহায় মহিলাদের আয় বৃদ্ধি প্রকল্প',
-                'name_en' => 'Income Generation Project for Helpless Women',
-                'relief_type_id' => $cashReliefType->id,
-                'allocated_amount' => 8000000.00,
-                'available_amount' => 6000000.00,
-                'remarks' => 'অসহায় মহিলাদের আয় বৃদ্ধির জন্য ক্ষুদ্র ব্যবসা শুরু করার নগদ সহায়তা প্রদানের প্রকল্প। প্রতিটি মহিলাকে ১০,০০০ টাকা করে সহায়তা দেওয়া হবে।',
-                'created_by' => $adminUser->id,
-            ],
-            [
-                'name' => 'বৃদ্ধ ও প্রতিবন্ধীদের সামাজিক সহায়তা প্রকল্প',
-                'name_en' => 'Social Assistance Project for Elderly and Disabled',
-                'relief_type_id' => $cashReliefType->id,
+                'name' => 'দরিদ্র পরিবারের পুষ্টি সহায়তা প্রকল্প',
+                'relief_type_id' => $foodAssistanceType->id,
                 'allocated_amount' => 5500000.00,
                 'available_amount' => 4000000.00,
-                'remarks' => 'বৃদ্ধ ও প্রতিবন্ধী ব্যক্তিদের মাসিক সামাজিক সহায়তা প্রদানের প্রকল্প। প্রতিটি ব্যক্তিকে মাসিক ১,০০০ টাকা করে সহায়তা দেওয়া হবে।',
+                'remarks' => 'দরিদ্র পরিবারগুলোর পুষ্টি উন্নয়নের জন্য খাদ্য সহায়তা প্রদানের প্রকল্প।',
+                'created_by' => $adminUser->id,
+            ],
+            [
+                'name' => 'বেকার পরিবারের খাদ্য সহায়তা প্রকল্প',
+                'relief_type_id' => $foodAssistanceType->id,
+                'allocated_amount' => 7000000.00,
+                'available_amount' => 5500000.00,
+                'remarks' => 'বেকার পরিবারগুলোর জন্য খাদ্য সহায়তা প্রদানের প্রকল্প।',
                 'created_by' => $adminUser->id,
             ],
 
-            // Emergency Response Projects
+            // নগদ অর্থ সহায়তা (Cash Assistance) - 4 projects
             [
-                'name' => 'জরুরি সাড়া প্রদান তহবিল',
-                'name_en' => 'Emergency Response Fund',
-                'relief_type_id' => $cashReliefType->id,
-                'allocated_amount' => 20000000.00,
-                'available_amount' => 18000000.00,
-                'remarks' => 'যেকোনো জরুরি পরিস্থিতিতে দ্রুত সাড়া প্রদানের জন্য সাধারণ তহবিল। এই তহবিল থেকে প্রয়োজন অনুযায়ী বিভিন্ন ধরনের সহায়তা প্রদান করা হবে।',
+                'name' => 'দুঃস্থ পরিবারের জরুরি নগদ সহায়তা প্রকল্প',
+                'relief_type_id' => $cashAssistanceType->id,
+                'allocated_amount' => 10000000.00,
+                'available_amount' => 8000000.00,
+                'remarks' => 'দুঃস্থ পরিবারগুলোর জরুরি প্রয়োজনের জন্য নগদ সহায়তা প্রদানের প্রকল্প। প্রতিটি পরিবারকে ১০,০০০ থেকে ১৫,০০০ টাকা দেওয়া হবে।',
                 'created_by' => $adminUser->id,
             ],
             [
-                'name' => 'আবাসন সহায়তা প্রকল্প',
-                'name_en' => 'Housing Assistance Project',
-                'relief_type_id' => $shelterReliefType->id,
+                'name' => 'অসহায় মহিলাদের নগদ সহায়তা প্রকল্প',
+                'relief_type_id' => $cashAssistanceType->id,
+                'allocated_amount' => 8000000.00,
+                'available_amount' => 6000000.00,
+                'remarks' => 'অসহায় মহিলাদের আয় বৃদ্ধির জন্য নগদ সহায়তা প্রদানের প্রকল্প।',
+                'created_by' => $adminUser->id,
+            ],
+            [
+                'name' => 'বেকার যুবকদের নগদ সহায়তা প্রকল্প',
+                'relief_type_id' => $cashAssistanceType->id,
+                'allocated_amount' => 7500000.00,
+                'available_amount' => 5500000.00,
+                'remarks' => 'বেকার যুবকদের ক্ষুদ্র ব্যবসা শুরু করার জন্য নগদ সহায়তা প্রদানের প্রকল্প।',
+                'created_by' => $adminUser->id,
+            ],
+            [
+                'name' => 'প্রতিবন্ধীদের নগদ সহায়তা প্রকল্প',
+                'relief_type_id' => $cashAssistanceType->id,
+                'allocated_amount' => 6000000.00,
+                'available_amount' => 4500000.00,
+                'remarks' => 'প্রতিবন্ধী ব্যক্তিদের জন্য নগদ সহায়তা প্রদানের প্রকল্প।',
+                'created_by' => $adminUser->id,
+            ],
+
+            // খাদ্যশস্য সহায়তা (Grain Assistance) - 4 projects
+            [
+                'name' => 'কৃষক পরিবারের খাদ্যশস্য সহায়তা প্রকল্প',
+                'relief_type_id' => $grainAssistanceType->id,
+                'allocated_amount' => 7000000.00,
+                'available_amount' => 5500000.00,
+                'remarks' => 'কৃষক পরিবারগুলোর জন্য খাদ্যশস্য সহায়তা প্রদানের প্রকল্প। প্রতিটি পরিবারকে ৫০ কেজি চাল দেওয়া হবে।',
+                'created_by' => $adminUser->id,
+            ],
+            [
+                'name' => 'খরা কবলিত কৃষকদের খাদ্যশস্য সহায়তা',
+                'relief_type_id' => $grainAssistanceType->id,
+                'allocated_amount' => 6000000.00,
+                'available_amount' => 4500000.00,
+                'remarks' => 'খরা কবলিত কৃষক পরিবারগুলোর জন্য খাদ্যশস্য সহায়তা প্রদানের প্রকল্প।',
+                'created_by' => $adminUser->id,
+            ],
+            [
+                'name' => 'দরিদ্র কৃষকদের বীজ সহায়তা প্রকল্প',
+                'relief_type_id' => $grainAssistanceType->id,
+                'allocated_amount' => 5500000.00,
+                'available_amount' => 4000000.00,
+                'remarks' => 'দরিদ্র কৃষকদের বীজ ক্রয়ের জন্য খাদ্যশস্য সহায়তা প্রদানের প্রকল্প।',
+                'created_by' => $adminUser->id,
+            ],
+            [
+                'name' => 'নতুন কৃষকদের খাদ্যশস্য সহায়তা প্রকল্প',
+                'relief_type_id' => $grainAssistanceType->id,
+                'allocated_amount' => 6500000.00,
+                'available_amount' => 5000000.00,
+                'remarks' => 'নতুন কৃষকদের জন্য খাদ্যশস্য সহায়তা প্রদানের প্রকল্প।',
+                'created_by' => $adminUser->id,
+            ],
+
+            // শীতবস্ত্র সহায়তা (Winter Clothing Assistance) - 4 projects
+            [
+                'name' => 'দরিদ্র পরিবারের শীতকালীন সহায়তা প্রকল্প',
+                'relief_type_id' => $winterClothingType->id,
+                'allocated_amount' => 6000000.00,
+                'available_amount' => 4500000.00,
+                'remarks' => 'দরিদ্র পরিবারগুলোর জন্য শীতকালীন পোশাক ও কম্বল প্রদানের প্রকল্প। প্রতিটি পরিবারকে ২টি কম্বল দেওয়া হবে।',
+                'created_by' => $adminUser->id,
+            ],
+            [
+                'name' => 'বৃদ্ধদের শীতকালীন সহায়তা প্রকল্প',
+                'relief_type_id' => $winterClothingType->id,
+                'allocated_amount' => 4500000.00,
+                'available_amount' => 3500000.00,
+                'remarks' => 'বৃদ্ধদের জন্য শীতকালীন পোশাক ও গরম কাপড় প্রদানের প্রকল্প।',
+                'created_by' => $adminUser->id,
+            ],
+            [
+                'name' => 'শিশুদের শীতকালীন সহায়তা প্রকল্প',
+                'relief_type_id' => $winterClothingType->id,
+                'allocated_amount' => 5000000.00,
+                'available_amount' => 4000000.00,
+                'remarks' => 'শিশুদের জন্য শীতকালীন পোশাক ও কম্বল প্রদানের প্রকল্প।',
+                'created_by' => $adminUser->id,
+            ],
+            [
+                'name' => 'অসহায় পরিবারের শীতকালীন সহায়তা',
+                'relief_type_id' => $winterClothingType->id,
+                'allocated_amount' => 5500000.00,
+                'available_amount' => 4000000.00,
+                'remarks' => 'অসহায় পরিবারগুলোর জন্য শীতকালীন সহায়তা প্রদানের প্রকল্প।',
+                'created_by' => $adminUser->id,
+            ],
+
+            // ঢেউটিন সহায়তা (Corrugated Iron Sheet Assistance) - 4 projects
+            [
+                'name' => 'গৃহহীন পরিবারের ঢেউটিন সহায়তা প্রকল্প',
+                'relief_type_id' => $corrugatedIronType->id,
+                'allocated_amount' => 12000000.00,
+                'available_amount' => 10000000.00,
+                'remarks' => 'গৃহহীন পরিবারগুলোর আবাসনের জন্য ঢেউটিন প্রদানের প্রকল্প। প্রতিটি পরিবারকে ২০টি ঢেউটিন দেওয়া হবে।',
+                'created_by' => $adminUser->id,
+            ],
+            [
+                'name' => 'বন্যা কবলিত পরিবারের ঢেউটিন সহায়তা',
+                'relief_type_id' => $corrugatedIronType->id,
+                'allocated_amount' => 10000000.00,
+                'available_amount' => 8000000.00,
+                'remarks' => 'বন্যা কবলিত পরিবারগুলোর ঘর পুনর্নির্মাণের জন্য ঢেউটিন সহায়তা প্রদানের প্রকল্প।',
+                'created_by' => $adminUser->id,
+            ],
+            [
+                'name' => 'ঘূর্ণিঝড় কবলিত পরিবারের ঢেউটিন সহায়তা',
+                'relief_type_id' => $corrugatedIronType->id,
+                'allocated_amount' => 9500000.00,
+                'available_amount' => 7500000.00,
+                'remarks' => 'ঘূর্ণিঝড় কবলিত পরিবারগুলোর ঘর মেরামতের জন্য ঢেউটিন সহায়তা প্রদানের প্রকল্প।',
+                'created_by' => $adminUser->id,
+            ],
+            [
+                'name' => 'দরিদ্র পরিবারের ঢেউটিন সহায়তা প্রকল্প',
+                'relief_type_id' => $corrugatedIronType->id,
+                'allocated_amount' => 11000000.00,
+                'available_amount' => 9000000.00,
+                'remarks' => 'দরিদ্র পরিবারগুলোর ঘর নির্মাণের জন্য ঢেউটিন সহায়তা প্রদানের প্রকল্প।',
+                'created_by' => $adminUser->id,
+            ],
+
+            // গৃহবাবদ সহায়তা (Housing Assistance) - 4 projects
+            [
+                'name' => 'অসহায় পরিবারের আবাসন সহায়তা প্রকল্প',
+                'relief_type_id' => $housingAssistanceType->id,
                 'allocated_amount' => 15000000.00,
                 'available_amount' => 12000000.00,
-                'remarks' => 'বাড়িঘরহীন পরিবারদের আবাসনের জন্য ঘর নির্মাণ সামগ্রী প্রদানের প্রকল্প। ঢেউটিন, বালি, সিমেন্ট ও অন্যান্য নির্মাণ সামগ্রী প্রদান করা হবে।',
+                'remarks' => 'অসহায় পরিবারগুলোর আবাসনের জন্য ঘর নির্মাণ সামগ্রী প্রদানের প্রকল্প। সিমেন্ট, বালি, ইট সহায়তা দেওয়া হবে।',
+                'created_by' => $adminUser->id,
+            ],
+            [
+                'name' => 'দরিদ্র পরিবারের গৃহ নির্মাণ সহায়তা',
+                'relief_type_id' => $housingAssistanceType->id,
+                'allocated_amount' => 13000000.00,
+                'available_amount' => 10000000.00,
+                'remarks' => 'দরিদ্র পরিবারগুলোর গৃহ নির্মাণের জন্য নির্মাণ সামগ্রী সহায়তা প্রদানের প্রকল্প।',
+                'created_by' => $adminUser->id,
+            ],
+            [
+                'name' => 'বেকার পরিবারের আবাসন সহায়তা প্রকল্প',
+                'relief_type_id' => $housingAssistanceType->id,
+                'allocated_amount' => 14000000.00,
+                'available_amount' => 11000000.00,
+                'remarks' => 'বেকার পরিবারগুলোর আবাসনের জন্য সহায়তা প্রদানের প্রকল্প।',
+                'created_by' => $adminUser->id,
+            ],
+            [
+                'name' => 'প্রতিবন্ধী পরিবারের গৃহ সহায়তা প্রকল্প',
+                'relief_type_id' => $housingAssistanceType->id,
+                'allocated_amount' => 12000000.00,
+                'available_amount' => 9000000.00,
+                'remarks' => 'প্রতিবন্ধী পরিবারগুলোর গৃহ নির্মাণের জন্য সহায়তা প্রদানের প্রকল্প।',
+                'created_by' => $adminUser->id,
+            ],
+
+            // জেলা প্রশাসকের সাহায্য (District Commissioner Assistance) - 4 projects
+            [
+                'name' => 'জেলা প্রশাসকের বিশেষ সহায়তা প্রকল্প',
+                'relief_type_id' => $dcAssistanceType->id,
+                'allocated_amount' => 20000000.00,
+                'available_amount' => 18000000.00,
+                'remarks' => 'জেলা প্রশাসকের বিশেষ সহায়তা প্রকল্প। বিভিন্ন ধরনের জরুরি সহায়তা প্রদান করা হবে।',
+                'created_by' => $adminUser->id,
+            ],
+            [
+                'name' => 'জেলা প্রশাসকের জরুরি ত্রাণ তহবিল',
+                'relief_type_id' => $dcAssistanceType->id,
+                'allocated_amount' => 18000000.00,
+                'available_amount' => 15000000.00,
+                'remarks' => 'জরুরি পরিস্থিতিতে দ্রুত সাড়া প্রদানের জন্য জেলা প্রশাসকের ত্রাণ তহবিল।',
+                'created_by' => $adminUser->id,
+            ],
+            [
+                'name' => 'জেলা প্রশাসকের সামাজিক সহায়তা প্রকল্প',
+                'relief_type_id' => $dcAssistanceType->id,
+                'allocated_amount' => 16000000.00,
+                'available_amount' => 13000000.00,
+                'remarks' => 'সামাজিক কল্যাণের জন্য জেলা প্রশাসকের বিশেষ সহায়তা প্রকল্প।',
+                'created_by' => $adminUser->id,
+            ],
+            [
+                'name' => 'জেলা প্রশাসকের মানবিক সহায়তা প্রকল্প',
+                'relief_type_id' => $dcAssistanceType->id,
+                'allocated_amount' => 17000000.00,
+                'available_amount' => 14000000.00,
+                'remarks' => 'মানবিক সহায়তার জন্য জেলা প্রশাসকের বিশেষ প্রকল্প।',
                 'created_by' => $adminUser->id,
             ]
         ];
@@ -219,7 +299,7 @@ class BanglaProjectsSeeder extends Seeder
         }
 
         $this->command->info("Created {$createdCount} comprehensive Bangla relief projects.");
-        $this->command->info('Projects include flood relief, cyclone relief, drought relief, winter relief, medical relief, educational relief, and emergency response projects.');
+        $this->command->info('Projects include: দুঃস্থদের খাদ্য সহায়তা (৪টি), নগদ অর্থ সহায়তা (৪টি), খাদ্যশস্য সহায়তা (৪টি), শীতবস্ত্র সহায়তা (৪টি), ঢেউটিন সহায়তা (৪টি), গৃহবাবদ সহায়তা (৪টি), জেলা প্রশাসকের সাহায্য (৪টি)');
         $this->command->info('All projects are designed for the current economic year with realistic budget allocations.');
     }
 }

@@ -84,7 +84,7 @@
                     </a>
                     @endif
                     
-                    @if(auth()->user()->hasAnyPermission(['relief-applications.create-own', 'relief-applications.view-own']))
+                    @if(auth()->user()->hasAnyPermission(['relief-applications.create-own', 'relief-applications.view-own']) && !auth()->user()->hasAnyRole(['super-admin', 'district-admin']))
                     <a href="{{ route('relief-applications.index') }}" 
                        class="group flex items-center px-2 py-2 text-base font-medium rounded-md {{ request()->routeIs('relief-applications.index') || request()->routeIs('relief-applications.show') ? 'bg-blue-100 dark:bg-blue-900 text-blue-900 dark:text-blue-100' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white' }}">
                         <svg class="mr-3 h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">

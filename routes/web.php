@@ -76,9 +76,11 @@ Route::get('/locale/{lang}', function (string $lang) {
         })->name('relief-items.edit');
         
         // Relief Application management
-        Route::resource('relief-applications', App\Http\Controllers\Admin\ReliefApplicationController::class)->middleware(['permission:relief-applications.approve,relief-applications.reject']);
         Route::get('projects-by-relief-type', [App\Http\Controllers\Admin\ReliefApplicationController::class, 'getProjectsByReliefType'])->name('projects.by-relief-type');
         Route::get('project-budget', [App\Http\Controllers\Admin\ReliefApplicationController::class, 'getProjectBudget'])->name('project.budget');
+        Route::get('relief-applications/upazilas', [App\Http\Controllers\Admin\ReliefApplicationController::class, 'getUpazilasByZilla'])->name('relief-applications.upazilas');
+        Route::get('relief-applications/unions', [App\Http\Controllers\Admin\ReliefApplicationController::class, 'getUnionsByUpazila'])->name('relief-applications.unions');
+        Route::resource('relief-applications', App\Http\Controllers\Admin\ReliefApplicationController::class)->middleware(['permission:relief-applications.approve,relief-applications.reject']);
         
         // User management
         Route::resource('users', App\Http\Controllers\Admin\UserController::class)->middleware(['permission:users.manage']);

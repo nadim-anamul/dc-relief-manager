@@ -20,9 +20,15 @@ class ProjectController extends Controller
 	{
 		$query = Project::with(['economicYear', 'reliefType']);
 
-		// Filter by economic year if provided
+		// Filter by economic year if provided, otherwise default to current year
 		if ($request->filled('economic_year_id')) {
 			$query->where('economic_year_id', $request->economic_year_id);
+		} else {
+			// Default to current economic year
+			$currentYear = EconomicYear::where('is_current', true)->first();
+			if ($currentYear) {
+				$query->where('economic_year_id', $currentYear->id);
+			}
 		}
 
 		// Filter by relief type if provided
@@ -61,6 +67,12 @@ class ProjectController extends Controller
 		$reliefTypeStats = Project::query()
 			->when($request->filled('economic_year_id'), function($q) use ($request) {
 				$q->where('economic_year_id', $request->economic_year_id);
+			}, function($q) use ($request) {
+				// Default to current economic year if no year specified
+				$currentYear = EconomicYear::where('is_current', true)->first();
+				if ($currentYear) {
+					$q->where('economic_year_id', $currentYear->id);
+				}
 			})
 			->when($request->filled('relief_type_id'), function($q) use ($request) {
 				$q->where('relief_type_id', $request->relief_type_id);

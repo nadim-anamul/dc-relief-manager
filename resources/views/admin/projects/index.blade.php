@@ -76,7 +76,7 @@
 					<select name="economic_year_id" id="economic_year_id" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors duration-200">
                         <option value="">{{ __('All Economic Years') }}</option>
 						@foreach($economicYears as $economicYear)
-							<option value="{{ $economicYear->id }}" {{ request('economic_year_id') == $economicYear->id ? 'selected' : '' }}>
+							<option value="{{ $economicYear->id }}" {{ (request('economic_year_id') == $economicYear->id || (!request()->filled('economic_year_id') && $economicYear->is_current)) ? 'selected' : '' }}>
                                 {{ localized_attr($economicYear,'name') }}
 							</option>
 						@endforeach

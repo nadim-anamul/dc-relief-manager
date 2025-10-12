@@ -420,7 +420,19 @@
                                         @bn(number_format($row->total_amount, 2)) {{ $unit }}
                                     @endif
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">@bn($row->application_count)</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                                    @if($row->application_count > 0)
+                                        <a href="{{ route('admin.relief-applications.index', ['project_id' => $row->project_id, 'upazila_id' => $row->upazila_id]) }}" 
+                                           class="inline-flex items-center px-2 py-1 bg-blue-100 hover:bg-blue-200 dark:bg-blue-900 dark:hover:bg-blue-800 text-blue-700 dark:text-blue-300 text-sm font-medium rounded transition-colors duration-200">
+                                            @bn($row->application_count)
+                                            <svg class="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                                            </svg>
+                                        </a>
+                                    @else
+                                        @bn($row->application_count)
+                                    @endif
+                                </td>
 							</tr>
 						@empty
 							<tr>
@@ -514,7 +526,19 @@
                                         @bn(number_format($row->total_amount, 2)) {{ $unit }}
                                     @endif
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">@bn($row->application_count)</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                                    @if($row->application_count > 0)
+                                        <a href="{{ route('admin.relief-applications.index', ['project_id' => $row->project_id, 'upazila_id' => $row->upazila_id, 'union_id' => $row->union_id]) }}" 
+                                           class="inline-flex items-center px-2 py-1 bg-purple-100 hover:bg-purple-200 dark:bg-purple-900 dark:hover:bg-purple-800 text-purple-700 dark:text-purple-300 text-sm font-medium rounded transition-colors duration-200">
+                                            @bn($row->application_count)
+                                            <svg class="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                                            </svg>
+                                        </a>
+                                    @else
+                                        @bn($row->application_count)
+                                    @endif
+                                </td>
 							</tr>
 						@empty
 							<tr>
