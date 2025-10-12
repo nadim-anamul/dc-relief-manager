@@ -40,9 +40,9 @@ class BanglaProjectsSeeder extends Seeder
 
         $adminUser = $adminUsers->first();
 
-        // Create comprehensive relief projects for each relief type (4 projects per type)
+        // Create comprehensive relief projects (10 projects total - 2 projects per type for most types, 1 each for others)
         $projects = [
-            // দুঃস্থদের খাদ্য সহায়তা (Food Assistance for Destitute) - 4 projects
+            // দুঃস্থদের খাদ্য সহায়তা (Food Assistance for Destitute) - 2 projects
             [
                 'name' => 'দুঃস্থ পরিবারের জরুরি খাদ্য সহায়তা প্রকল্প',
                 'relief_type_id' => $foodAssistanceType->id,
@@ -59,24 +59,8 @@ class BanglaProjectsSeeder extends Seeder
                 'remarks' => 'অসহায় পরিবারগুলোর খাদ্য নিরাপত্তা নিশ্চিত করার জন্য খাদ্য সামগ্রী প্রদানের প্রকল্প।',
                 'created_by' => $adminUser->id,
             ],
-            [
-                'name' => 'দরিদ্র পরিবারের পুষ্টি সহায়তা প্রকল্প',
-                'relief_type_id' => $foodAssistanceType->id,
-                'allocated_amount' => 5500000.00,
-                'available_amount' => 4000000.00,
-                'remarks' => 'দরিদ্র পরিবারগুলোর পুষ্টি উন্নয়নের জন্য খাদ্য সহায়তা প্রদানের প্রকল্প।',
-                'created_by' => $adminUser->id,
-            ],
-            [
-                'name' => 'বেকার পরিবারের খাদ্য সহায়তা প্রকল্প',
-                'relief_type_id' => $foodAssistanceType->id,
-                'allocated_amount' => 7000000.00,
-                'available_amount' => 5500000.00,
-                'remarks' => 'বেকার পরিবারগুলোর জন্য খাদ্য সহায়তা প্রদানের প্রকল্প।',
-                'created_by' => $adminUser->id,
-            ],
 
-            // নগদ অর্থ সহায়তা (Cash Assistance) - 4 projects
+            // নগদ অর্থ সহায়তা (Cash Assistance) - 2 projects
             [
                 'name' => 'দুঃস্থ পরিবারের জরুরি নগদ সহায়তা প্রকল্প',
                 'relief_type_id' => $cashAssistanceType->id,
@@ -93,24 +77,8 @@ class BanglaProjectsSeeder extends Seeder
                 'remarks' => 'অসহায় মহিলাদের আয় বৃদ্ধির জন্য নগদ সহায়তা প্রদানের প্রকল্প।',
                 'created_by' => $adminUser->id,
             ],
-            [
-                'name' => 'বেকার যুবকদের নগদ সহায়তা প্রকল্প',
-                'relief_type_id' => $cashAssistanceType->id,
-                'allocated_amount' => 7500000.00,
-                'available_amount' => 5500000.00,
-                'remarks' => 'বেকার যুবকদের ক্ষুদ্র ব্যবসা শুরু করার জন্য নগদ সহায়তা প্রদানের প্রকল্প।',
-                'created_by' => $adminUser->id,
-            ],
-            [
-                'name' => 'প্রতিবন্ধীদের নগদ সহায়তা প্রকল্প',
-                'relief_type_id' => $cashAssistanceType->id,
-                'allocated_amount' => 6000000.00,
-                'available_amount' => 4500000.00,
-                'remarks' => 'প্রতিবন্ধী ব্যক্তিদের জন্য নগদ সহায়তা প্রদানের প্রকল্প।',
-                'created_by' => $adminUser->id,
-            ],
 
-            // খাদ্যশস্য সহায়তা (Grain Assistance) - 4 projects
+            // খাদ্যশস্য সহায়তা (Grain Assistance) - 1 project
             [
                 'name' => 'কৃষক পরিবারের খাদ্যশস্য সহায়তা প্রকল্প',
                 'relief_type_id' => $grainAssistanceType->id,
@@ -119,32 +87,8 @@ class BanglaProjectsSeeder extends Seeder
                 'remarks' => 'কৃষক পরিবারগুলোর জন্য খাদ্যশস্য সহায়তা প্রদানের প্রকল্প। প্রতিটি পরিবারকে ৫০ কেজি চাল দেওয়া হবে।',
                 'created_by' => $adminUser->id,
             ],
-            [
-                'name' => 'খরা কবলিত কৃষকদের খাদ্যশস্য সহায়তা',
-                'relief_type_id' => $grainAssistanceType->id,
-                'allocated_amount' => 6000000.00,
-                'available_amount' => 4500000.00,
-                'remarks' => 'খরা কবলিত কৃষক পরিবারগুলোর জন্য খাদ্যশস্য সহায়তা প্রদানের প্রকল্প।',
-                'created_by' => $adminUser->id,
-            ],
-            [
-                'name' => 'দরিদ্র কৃষকদের বীজ সহায়তা প্রকল্প',
-                'relief_type_id' => $grainAssistanceType->id,
-                'allocated_amount' => 5500000.00,
-                'available_amount' => 4000000.00,
-                'remarks' => 'দরিদ্র কৃষকদের বীজ ক্রয়ের জন্য খাদ্যশস্য সহায়তা প্রদানের প্রকল্প।',
-                'created_by' => $adminUser->id,
-            ],
-            [
-                'name' => 'নতুন কৃষকদের খাদ্যশস্য সহায়তা প্রকল্প',
-                'relief_type_id' => $grainAssistanceType->id,
-                'allocated_amount' => 6500000.00,
-                'available_amount' => 5000000.00,
-                'remarks' => 'নতুন কৃষকদের জন্য খাদ্যশস্য সহায়তা প্রদানের প্রকল্প।',
-                'created_by' => $adminUser->id,
-            ],
 
-            // শীতবস্ত্র সহায়তা (Winter Clothing Assistance) - 4 projects
+            // শীতবস্ত্র সহায়তা (Winter Clothing Assistance) - 1 project
             [
                 'name' => 'দরিদ্র পরিবারের শীতকালীন সহায়তা প্রকল্প',
                 'relief_type_id' => $winterClothingType->id,
@@ -153,32 +97,8 @@ class BanglaProjectsSeeder extends Seeder
                 'remarks' => 'দরিদ্র পরিবারগুলোর জন্য শীতকালীন পোশাক ও কম্বল প্রদানের প্রকল্প। প্রতিটি পরিবারকে ২টি কম্বল দেওয়া হবে।',
                 'created_by' => $adminUser->id,
             ],
-            [
-                'name' => 'বৃদ্ধদের শীতকালীন সহায়তা প্রকল্প',
-                'relief_type_id' => $winterClothingType->id,
-                'allocated_amount' => 4500000.00,
-                'available_amount' => 3500000.00,
-                'remarks' => 'বৃদ্ধদের জন্য শীতকালীন পোশাক ও গরম কাপড় প্রদানের প্রকল্প।',
-                'created_by' => $adminUser->id,
-            ],
-            [
-                'name' => 'শিশুদের শীতকালীন সহায়তা প্রকল্প',
-                'relief_type_id' => $winterClothingType->id,
-                'allocated_amount' => 5000000.00,
-                'available_amount' => 4000000.00,
-                'remarks' => 'শিশুদের জন্য শীতকালীন পোশাক ও কম্বল প্রদানের প্রকল্প।',
-                'created_by' => $adminUser->id,
-            ],
-            [
-                'name' => 'অসহায় পরিবারের শীতকালীন সহায়তা',
-                'relief_type_id' => $winterClothingType->id,
-                'allocated_amount' => 5500000.00,
-                'available_amount' => 4000000.00,
-                'remarks' => 'অসহায় পরিবারগুলোর জন্য শীতকালীন সহায়তা প্রদানের প্রকল্প।',
-                'created_by' => $adminUser->id,
-            ],
 
-            // ঢেউটিন সহায়তা (Corrugated Iron Sheet Assistance) - 4 projects
+            // ঢেউটিন সহায়তা (Corrugated Iron Sheet Assistance) - 2 projects
             [
                 'name' => 'গৃহহীন পরিবারের ঢেউটিন সহায়তা প্রকল্প',
                 'relief_type_id' => $corrugatedIronType->id,
@@ -195,24 +115,8 @@ class BanglaProjectsSeeder extends Seeder
                 'remarks' => 'বন্যা কবলিত পরিবারগুলোর ঘর পুনর্নির্মাণের জন্য ঢেউটিন সহায়তা প্রদানের প্রকল্প।',
                 'created_by' => $adminUser->id,
             ],
-            [
-                'name' => 'ঘূর্ণিঝড় কবলিত পরিবারের ঢেউটিন সহায়তা',
-                'relief_type_id' => $corrugatedIronType->id,
-                'allocated_amount' => 9500000.00,
-                'available_amount' => 7500000.00,
-                'remarks' => 'ঘূর্ণিঝড় কবলিত পরিবারগুলোর ঘর মেরামতের জন্য ঢেউটিন সহায়তা প্রদানের প্রকল্প।',
-                'created_by' => $adminUser->id,
-            ],
-            [
-                'name' => 'দরিদ্র পরিবারের ঢেউটিন সহায়তা প্রকল্প',
-                'relief_type_id' => $corrugatedIronType->id,
-                'allocated_amount' => 11000000.00,
-                'available_amount' => 9000000.00,
-                'remarks' => 'দরিদ্র পরিবারগুলোর ঘর নির্মাণের জন্য ঢেউটিন সহায়তা প্রদানের প্রকল্প।',
-                'created_by' => $adminUser->id,
-            ],
 
-            // গৃহবাবদ সহায়তা (Housing Assistance) - 4 projects
+            // গৃহবাবদ সহায়তা (Housing Assistance) - 1 project
             [
                 'name' => 'অসহায় পরিবারের আবাসন সহায়তা প্রকল্প',
                 'relief_type_id' => $housingAssistanceType->id,
@@ -221,62 +125,14 @@ class BanglaProjectsSeeder extends Seeder
                 'remarks' => 'অসহায় পরিবারগুলোর আবাসনের জন্য ঘর নির্মাণ সামগ্রী প্রদানের প্রকল্প। সিমেন্ট, বালি, ইট সহায়তা দেওয়া হবে।',
                 'created_by' => $adminUser->id,
             ],
-            [
-                'name' => 'দরিদ্র পরিবারের গৃহ নির্মাণ সহায়তা',
-                'relief_type_id' => $housingAssistanceType->id,
-                'allocated_amount' => 13000000.00,
-                'available_amount' => 10000000.00,
-                'remarks' => 'দরিদ্র পরিবারগুলোর গৃহ নির্মাণের জন্য নির্মাণ সামগ্রী সহায়তা প্রদানের প্রকল্প।',
-                'created_by' => $adminUser->id,
-            ],
-            [
-                'name' => 'বেকার পরিবারের আবাসন সহায়তা প্রকল্প',
-                'relief_type_id' => $housingAssistanceType->id,
-                'allocated_amount' => 14000000.00,
-                'available_amount' => 11000000.00,
-                'remarks' => 'বেকার পরিবারগুলোর আবাসনের জন্য সহায়তা প্রদানের প্রকল্প।',
-                'created_by' => $adminUser->id,
-            ],
-            [
-                'name' => 'প্রতিবন্ধী পরিবারের গৃহ সহায়তা প্রকল্প',
-                'relief_type_id' => $housingAssistanceType->id,
-                'allocated_amount' => 12000000.00,
-                'available_amount' => 9000000.00,
-                'remarks' => 'প্রতিবন্ধী পরিবারগুলোর গৃহ নির্মাণের জন্য সহায়তা প্রদানের প্রকল্প।',
-                'created_by' => $adminUser->id,
-            ],
 
-            // জেলা প্রশাসকের সাহায্য (District Commissioner Assistance) - 4 projects
+            // জেলা প্রশাসকের সাহায্য (District Commissioner Assistance) - 1 project
             [
                 'name' => 'জেলা প্রশাসকের বিশেষ সহায়তা প্রকল্প',
                 'relief_type_id' => $dcAssistanceType->id,
                 'allocated_amount' => 20000000.00,
                 'available_amount' => 18000000.00,
                 'remarks' => 'জেলা প্রশাসকের বিশেষ সহায়তা প্রকল্প। বিভিন্ন ধরনের জরুরি সহায়তা প্রদান করা হবে।',
-                'created_by' => $adminUser->id,
-            ],
-            [
-                'name' => 'জেলা প্রশাসকের জরুরি ত্রাণ তহবিল',
-                'relief_type_id' => $dcAssistanceType->id,
-                'allocated_amount' => 18000000.00,
-                'available_amount' => 15000000.00,
-                'remarks' => 'জরুরি পরিস্থিতিতে দ্রুত সাড়া প্রদানের জন্য জেলা প্রশাসকের ত্রাণ তহবিল।',
-                'created_by' => $adminUser->id,
-            ],
-            [
-                'name' => 'জেলা প্রশাসকের সামাজিক সহায়তা প্রকল্প',
-                'relief_type_id' => $dcAssistanceType->id,
-                'allocated_amount' => 16000000.00,
-                'available_amount' => 13000000.00,
-                'remarks' => 'সামাজিক কল্যাণের জন্য জেলা প্রশাসকের বিশেষ সহায়তা প্রকল্প।',
-                'created_by' => $adminUser->id,
-            ],
-            [
-                'name' => 'জেলা প্রশাসকের মানবিক সহায়তা প্রকল্প',
-                'relief_type_id' => $dcAssistanceType->id,
-                'allocated_amount' => 17000000.00,
-                'available_amount' => 14000000.00,
-                'remarks' => 'মানবিক সহায়তার জন্য জেলা প্রশাসকের বিশেষ প্রকল্প।',
                 'created_by' => $adminUser->id,
             ]
         ];
@@ -299,7 +155,7 @@ class BanglaProjectsSeeder extends Seeder
         }
 
         $this->command->info("Created {$createdCount} comprehensive Bangla relief projects.");
-        $this->command->info('Projects include: দুঃস্থদের খাদ্য সহায়তা (৪টি), নগদ অর্থ সহায়তা (৪টি), খাদ্যশস্য সহায়তা (৪টি), শীতবস্ত্র সহায়তা (৪টি), ঢেউটিন সহায়তা (৪টি), গৃহবাবদ সহায়তা (৪টি), জেলা প্রশাসকের সাহায্য (৪টি)');
+        $this->command->info('Projects include: দুঃস্থদের খাদ্য সহায়তা (২টি), নগদ অর্থ সহায়তা (২টি), খাদ্যশস্য সহায়তা (১টি), শীতবস্ত্র সহায়তা (১টি), ঢেউটিন সহায়তা (২টি), গৃহবাবদ সহায়তা (১টি), জেলা প্রশাসকের সাহায্য (১টি)');
         $this->command->info('All projects are designed for the current economic year with realistic budget allocations.');
     }
 }

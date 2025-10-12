@@ -814,4 +814,312 @@ class DistributionController extends Controller
 
         return $chartData;
     }
+
+    /**
+     * Display detailed distribution page with filters and search.
+     */
+    public function detailed(Request $request, string $type): View
+    {
+        $years = EconomicYear::orderByDesc('start_date')->get();
+        $selectedYear = $this->resolveSelectedYear($request, $years);
+        
+        $zillas = Zilla::orderBy('name')->get(['id', 'name', 'name_bn']);
+        $selectedZillaId = $this->resolveSelectedZilla($request, $zillas);
+        
+        $selectedUpazilaId = $request->integer('upazila_id');
+        $selectedUnionId = $request->integer('union_id');
+        $selectedProjectId = $request->integer('project_id');
+        $search = $request->get('search', '');
+        $pageSize = $request->integer('per_page', 25);
+        $currentPage = $request->integer('page', 1);
+
+        // Get the data based on type
+        if ($type === 'upazila') {
+            $data = $this->getUpazilaDistributionData($selectedYear, $selectedZillaId, $selectedUpazilaId, $search, $pageSize, $currentPage);
+            $title = __('Project × Upazila Distribution');
+            $description = __('Detailed distribution of relief across upazilas');
+        } elseif ($type === 'union') {
+            $data = $this->getUnionDistributionData($selectedYear, $selectedZillaId, $selectedUpazilaId, $selectedUnionId, $search, $pageSize, $currentPage);
+            $title = __('Project × Upazila × Union Distribution');
+            $description = __('Detailed distribution of relief across unions');
+        } elseif ($type === 'duplicates') {
+            $data = $this->getDuplicateAllocationsData($selectedYear, $search, $pageSize, $currentPage);
+            $title = __('Duplicate Allocations');
+            $description = __('Organizations with multiple allocations in the same year');
+        } elseif ($type === 'projects') {
+            $data = $this->getProjectAllocationsData($selectedYear, $search, $pageSize, $currentPage);
+            $title = __('Active Project Allocations');
+            $description = __('Current year project allocations with applications');
+        } else {
+            abort(404);
+        }
+
+        $upazilas = $selectedZillaId ? Upazila::where('zilla_id', $selectedZillaId)->orderBy('name')->get(['id', 'name', 'name_bn']) : collect();
+        $unions = $selectedUpazilaId ? Union::where('upazila_id', $selectedUpazilaId)->orderBy('name')->get(['id', 'name', 'name_bn']) : collect();
+        $projects = Project::forEconomicYear($selectedYear?->id)->orderBy('name')->get(['id', 'name']);
+
+        return view('admin.distributions.detailed', compact(
+            'type',
+            'title',
+            'description',
+            'years',
+            'selectedYear',
+            'zillas',
+            'selectedZillaId',
+            'upazilas',
+            'selectedUpazilaId',
+            'unions',
+            'selectedUnionId',
+            'projects',
+            'selectedProjectId',
+            'search',
+            'pageSize',
+            'data'
+        ));
+    }
+
+    /**
+     * Get upazila distribution data with pagination and search.
+     */
+    private function getUpazilaDistributionData($selectedYear, $selectedZillaId, $selectedUpazilaId, $search, $pageSize, $currentPage)
+    {
+        $query = DB::table('relief_applications as ra')
+            ->join('projects as p', 'ra.project_id', '=', 'p.id')
+            ->join('upazilas as u', 'ra.upazila_id', '=', 'u.id')
+            ->join('zillas as z', 'u.zilla_id', '=', 'z.id')
+            ->where('ra.status', 'approved');
+
+        if ($selectedYear) {
+            $query->where('p.economic_year_id', $selectedYear->id);
+        }
+
+        if ($selectedZillaId) {
+            $query->where('ra.zilla_id', $selectedZillaId);
+        }
+
+        if ($selectedUpazilaId) {
+            $query->where('ra.upazila_id', $selectedUpazilaId);
+        }
+
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('p.name', 'LIKE', "%{$search}%")
+                  ->orWhere('u.name', 'LIKE', "%{$search}%")
+                  ->orWhere('u.name_bn', 'LIKE', "%{$search}%")
+                  ->orWhere('z.name', 'LIKE', "%{$search}%")
+                  ->orWhere('z.name_bn', 'LIKE', "%{$search}%");
+            });
+        }
+
+        $totalItems = $query->count();
+        $totalPages = ceil($totalItems / $pageSize);
+        $offset = ($currentPage - 1) * $pageSize;
+
+        $results = $query->select([
+                'ra.project_id',
+                'ra.upazila_id',
+                'ra.zilla_id',
+                DB::raw('SUM(ra.approved_amount) as total_amount'),
+                DB::raw('COUNT(*) as application_count')
+            ])
+            ->groupBy('ra.project_id', 'ra.upazila_id', 'ra.zilla_id')
+            ->orderByDesc('total_amount')
+            ->offset($offset)
+            ->limit($pageSize)
+            ->get();
+
+        // Get names for display
+        $projectNames = Project::whereIn('id', $results->pluck('project_id'))->pluck('name', 'id');
+        $upazilaNames = Upazila::whereIn('id', $results->pluck('upazila_id'))->pluck('name', 'id');
+        $zillaNames = Zilla::whereIn('id', $results->pluck('zilla_id'))->pluck('name', 'id');
+
+        return [
+            'results' => $results,
+            'projectNames' => $projectNames,
+            'upazilaNames' => $upazilaNames,
+            'zillaNames' => $zillaNames,
+            'pagination' => [
+                'current_page' => $currentPage,
+                'total_pages' => $totalPages,
+                'total_items' => $totalItems,
+                'per_page' => $pageSize,
+            ]
+        ];
+    }
+
+    /**
+     * Get union distribution data with pagination and search.
+     */
+    private function getUnionDistributionData($selectedYear, $selectedZillaId, $selectedUpazilaId, $selectedUnionId, $search, $pageSize, $currentPage)
+    {
+        $query = DB::table('relief_applications as ra')
+            ->join('projects as p', 'ra.project_id', '=', 'p.id')
+            ->join('unions as un', 'ra.union_id', '=', 'un.id')
+            ->join('upazilas as u', 'un.upazila_id', '=', 'u.id')
+            ->join('zillas as z', 'u.zilla_id', '=', 'z.id')
+            ->where('ra.status', 'approved');
+
+        if ($selectedYear) {
+            $query->where('p.economic_year_id', $selectedYear->id);
+        }
+
+        if ($selectedZillaId) {
+            $query->where('ra.zilla_id', $selectedZillaId);
+        }
+
+        if ($selectedUpazilaId) {
+            $query->where('ra.upazila_id', $selectedUpazilaId);
+        }
+
+        if ($selectedUnionId) {
+            $query->where('ra.union_id', $selectedUnionId);
+        }
+
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('p.name', 'LIKE', "%{$search}%")
+                  ->orWhere('un.name', 'LIKE', "%{$search}%")
+                  ->orWhere('un.name_bn', 'LIKE', "%{$search}%")
+                  ->orWhere('u.name', 'LIKE', "%{$search}%")
+                  ->orWhere('u.name_bn', 'LIKE', "%{$search}%")
+                  ->orWhere('z.name', 'LIKE', "%{$search}%")
+                  ->orWhere('z.name_bn', 'LIKE', "%{$search}%");
+            });
+        }
+
+        $totalItems = $query->count();
+        $totalPages = ceil($totalItems / $pageSize);
+        $offset = ($currentPage - 1) * $pageSize;
+
+        $results = $query->select([
+                'ra.project_id',
+                'ra.union_id',
+                'ra.upazila_id',
+                'ra.zilla_id',
+                DB::raw('SUM(ra.approved_amount) as total_amount'),
+                DB::raw('COUNT(*) as application_count')
+            ])
+            ->groupBy('ra.project_id', 'ra.union_id', 'ra.upazila_id', 'ra.zilla_id')
+            ->orderByDesc('total_amount')
+            ->offset($offset)
+            ->limit($pageSize)
+            ->get();
+
+        // Get names for display
+        $projectNames = Project::whereIn('id', $results->pluck('project_id'))->pluck('name', 'id');
+        $unionNames = Union::whereIn('id', $results->pluck('union_id'))->pluck('name', 'id');
+        $upazilaNames = Upazila::whereIn('id', $results->pluck('upazila_id'))->pluck('name', 'id');
+        $zillaNames = Zilla::whereIn('id', $results->pluck('zilla_id'))->pluck('name', 'id');
+
+        return [
+            'results' => $results,
+            'projectNames' => $projectNames,
+            'unionNames' => $unionNames,
+            'upazilaNames' => $upazilaNames,
+            'zillaNames' => $zillaNames,
+            'pagination' => [
+                'current_page' => $currentPage,
+                'total_pages' => $totalPages,
+                'total_items' => $totalItems,
+                'per_page' => $pageSize,
+            ]
+        ];
+    }
+
+    /**
+     * Get duplicate allocations data with pagination and search.
+     */
+    private function getDuplicateAllocationsData($selectedYear, $search, $pageSize, $currentPage)
+    {
+        $start = $selectedYear?->start_date;
+        $end = $selectedYear?->end_date;
+        
+        $applyDateRange = function ($query, $column = 'created_at') use ($start, $end) {
+            if ($start && $end) {
+                $s = $start instanceof \Carbon\Carbon ? $start->copy()->startOfDay() : \Carbon\Carbon::parse((string) $start)->startOfDay();
+                $e = $end instanceof \Carbon\Carbon ? $end->copy()->endOfDay() : \Carbon\Carbon::parse((string) $end)->endOfDay();
+                $query->whereBetween($column, [$s, $e]);
+            }
+            return $query;
+        };
+
+        $query = $applyDateRange(ReliefApplication::where('status', 'approved'), 'approved_at')
+            ->selectRaw('organization_name, COUNT(*) as allocations, SUM(approved_amount) as total_approved')
+            ->groupBy('organization_name')
+            ->havingRaw('COUNT(*) > 1')
+            ->orderByDesc('allocations');
+
+        if ($search) {
+            $query->where('organization_name', 'LIKE', "%{$search}%");
+        }
+
+        $totalItems = $query->count();
+        $totalPages = ceil($totalItems / $pageSize);
+        $offset = ($currentPage - 1) * $pageSize;
+
+        $results = $query->offset($offset)->limit($pageSize)->get();
+
+        return [
+            'results' => $results,
+            'pagination' => [
+                'current_page' => $currentPage,
+                'total_pages' => $totalPages,
+                'total_items' => $totalItems,
+                'per_page' => $pageSize,
+            ]
+        ];
+    }
+
+    /**
+     * Get project allocations data with pagination and search.
+     */
+    private function getProjectAllocationsData($selectedYear, $search, $pageSize, $currentPage)
+    {
+        $query = Project::with(['reliefType', 'economicYear'])
+            ->when($selectedYear, function ($q) use ($selectedYear) {
+                return $q->where('economic_year_id', $selectedYear->id);
+            })
+            ->where('allocated_amount', '>', 0)
+            ->orderByDesc('allocated_amount');
+
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'LIKE', "%{$search}%")
+                  ->orWhereHas('reliefType', function ($reliefQuery) use ($search) {
+                      $reliefQuery->where('name', 'LIKE', "%{$search}%")
+                                  ->orWhere('name_bn', 'LIKE', "%{$search}%");
+                  });
+            });
+        }
+
+        $totalItems = $query->count();
+        $totalPages = ceil($totalItems / $pageSize);
+        $offset = ($currentPage - 1) * $pageSize;
+
+        $results = $query->offset($offset)->limit($pageSize)->get();
+
+        // Get application counts for each project
+        $projectIds = $results->pluck('id');
+        $applicationCounts = ReliefApplication::whereIn('project_id', $projectIds)
+            ->where('status', 'approved')
+            ->selectRaw('project_id, COUNT(*) as application_count')
+            ->groupBy('project_id')
+            ->pluck('application_count', 'project_id');
+
+        // Add application count to each project
+        $results = $results->map(function ($project) use ($applicationCounts) {
+            $project->application_count = $applicationCounts[$project->id] ?? 0;
+            return $project;
+        });
+
+        return [
+            'results' => $results,
+            'pagination' => [
+                'current_page' => $currentPage,
+                'total_pages' => $totalPages,
+                'total_items' => $totalItems,
+                'per_page' => $pageSize,
+            ]
+        ];
+    }
 }

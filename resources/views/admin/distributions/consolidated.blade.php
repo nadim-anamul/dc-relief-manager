@@ -24,11 +24,42 @@
     </x-slot>
 
     <div class="space-y-8">
-        <!-- Advanced Filter Panel -->
-        <div>
-            <form method="GET" action="{{ route('admin.distributions.consolidated') }}" class="w-full relative overflow-hidden rounded-2xl shadow-xl">
-                <div class="absolute inset-0 bg-gradient-to-r from-indigo-500/10 via-purple-500/10 to-cyan-500/10 pointer-events-none"></div>
-                <div class="relative w-full bg-white/70 dark:bg-gray-900/60 backdrop-blur-xl border border-white/40 dark:border-gray-700/60 p-6">
+        <!-- Advanced Filter Panel with Collapsible Design -->
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden" 
+             x-data="{ filtersExpanded: false }">
+            <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between cursor-pointer" 
+                 @click="filtersExpanded = !filtersExpanded">
+                <div class="flex items-center gap-3">
+                    <div class="p-2 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-lg">
+                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.707A1 1 0 013 7V4z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ __('Advanced Filters') }}</h3>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">{{ __('Filter data by economic year, location, and project') }}</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200">
+                        {{ __('Active Filters') }}
+                    </span>
+                    <svg class="w-5 h-5 text-gray-400 transition-transform duration-200" :class="{ 'rotate-180': filtersExpanded }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </div>
+            </div>
+            <!-- Collapsible Filter Content -->
+            <div x-show="filtersExpanded" 
+                 x-transition:enter="transition ease-out duration-200"
+                 x-transition:enter-start="opacity-0 transform -translate-y-4"
+                 x-transition:enter-end="opacity-100 transform translate-y-0"
+                 x-transition:leave="transition ease-in duration-150"
+                 x-transition:leave-start="opacity-100 transform translate-y-0"
+                 x-transition:leave-end="opacity-0 transform -translate-y-4">
+                <form method="GET" action="{{ route('admin.distributions.consolidated') }}" class="w-full relative overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-r from-indigo-500/5 via-purple-500/5 to-cyan-500/5 pointer-events-none"></div>
+                    <div class="relative w-full bg-white dark:bg-gray-800 p-6">
                     <!-- Filter Fields -->
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 items-end mb-4">
                         <!-- Economic Year -->
@@ -111,23 +142,56 @@
                         </div>
                     </div>
 
-                    <!-- Action Buttons -->
-                    <div class="flex gap-3 justify-center">
-                        <button type="submit" class="inline-flex items-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-full shadow-md">
-                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h8M8 11h8m-7 4h6"/></svg>
-                            {{ __('Apply') }}
-                        </button>
-                        <a href="{{ route('admin.distributions.consolidated') }}" class="inline-flex items-center px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white text-sm font-medium rounded-full shadow-md">
-                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
-                            {{ __('Reset') }}
-                        </a>
+                        <!-- Action Buttons -->
+                        <div class="flex gap-3 justify-center">
+                            <button type="submit" class="inline-flex items-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-full shadow-md">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h8M8 11h8m-7 4h6"/></svg>
+                                {{ __('Apply Filters') }}
+                            </button>
+                            <a href="{{ route('admin.distributions.consolidated') }}" class="inline-flex items-center px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white text-sm font-medium rounded-full shadow-md">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                                {{ __('Reset') }}
+                            </a>
+                        </div>
                     </div>
-                </div>
-            </form>
+                </form>
+            </div>
         </div>
 
-        <!-- Summary Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <!-- Summary Cards with Enhanced Design -->
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden" 
+             x-data="{ summaryExpanded: true }">
+            <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between cursor-pointer" 
+                 @click="summaryExpanded = !summaryExpanded">
+                <div class="flex items-center gap-3">
+                    <div class="p-2 bg-gradient-to-r from-green-500 to-emerald-600 rounded-lg">
+                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ __('Distribution Summary') }}</h3>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">{{ __('Key metrics and statistics for filtered data') }}</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                        @bn($data['pagination']['total_items']) {{ __('applications') }}
+                    </span>
+                    <svg class="w-5 h-5 text-gray-400 transition-transform duration-200" :class="{ 'rotate-180': !summaryExpanded }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </div>
+            </div>
+            <div x-show="summaryExpanded" 
+                 x-transition:enter="transition ease-out duration-200"
+                 x-transition:enter-start="opacity-0 transform -translate-y-4"
+                 x-transition:enter-end="opacity-100 transform translate-y-0"
+                 x-transition:leave="transition ease-in duration-150"
+                 x-transition:leave-start="opacity-100 transform translate-y-0"
+                 x-transition:leave-end="opacity-0 transform -translate-y-4"
+                 class="p-6">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
             <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl p-6 border border-blue-200 dark:border-blue-800">
                 <div class="flex items-center justify-between">
                     <div>
@@ -190,22 +254,40 @@
                 </div>
             </div>
         </div>
+        </div>
 
-        <!-- Project Budget Breakdown -->
+        <!-- Project Budget Breakdown with Enhanced Design -->
         @if(count($projectBudgetBreakdown) > 0 && $data['distribution']->count() > 0)
-        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
-            <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden" 
+             x-data="{ budgetExpanded: true }">
+            <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between cursor-pointer" 
+                 @click="budgetExpanded = !budgetExpanded">
                 <div class="flex items-center gap-3">
                     <div class="p-2 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-lg">
                         <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
                     </div>
                     <div>
                         <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ __('Project Budget Overview') }}</h3>
-                        <p class="text-sm text-gray-500 dark:text-gray-400">{{ __('Budget allocation and utilization') }}</p>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">{{ __('Budget allocation and utilization by project') }}</p>
                     </div>
                 </div>
+                <div class="flex items-center gap-2">
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200">
+                        @bn(count($projectBudgetBreakdown)) {{ __('projects') }}
+                    </span>
+                    <svg class="w-5 h-5 text-gray-400 transition-transform duration-200" :class="{ 'rotate-180': !budgetExpanded }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </div>
             </div>
-            <div class="p-6">
+            <div x-show="budgetExpanded" 
+                 x-transition:enter="transition ease-out duration-200"
+                 x-transition:enter-start="opacity-0 transform -translate-y-4"
+                 x-transition:enter-end="opacity-100 transform translate-y-0"
+                 x-transition:leave="transition ease-in duration-150"
+                 x-transition:leave-start="opacity-100 transform translate-y-0"
+                 x-transition:leave-end="opacity-0 transform -translate-y-4"
+                 class="p-6">
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                     @foreach($projectBudgetBreakdown as $project)
                     <div class="rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700 p-4">
@@ -233,8 +315,49 @@
         </div>
         @endif
 
-        <!-- Dynamic Charts Section -->
-        <div class="grid grid-cols-1 xl:grid-cols-2 gap-8">
+        <!-- Dynamic Charts Section with Enhanced Design -->
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden" 
+             x-data="{ chartsExpanded: true }">
+            <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between cursor-pointer" 
+                 @click="chartsExpanded = !chartsExpanded">
+                <div class="flex items-center gap-3">
+                    <div class="p-2 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg">
+                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ __('Data Visualizations') }}</h3>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">{{ __('Interactive charts and graphs for data analysis') }}</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    @php
+                        $chartCount = 0;
+                        if(isset($chartData['projectData']) && count($chartData['projectData']['labels']) > 0) $chartCount++;
+                        if(isset($chartData['zillaData']) && count($chartData['zillaData']['labels']) > 0) $chartCount++;
+                        if(isset($chartData['upazilaData']) && count($chartData['upazilaData']['labels']) > 0) $chartCount++;
+                        if(isset($chartData['unionData']) && count($chartData['unionData']['labels']) > 0) $chartCount++;
+                        if(isset($chartData['orgTypeData']) && count($chartData['orgTypeData']['labels']) > 0) $chartCount++;
+                    @endphp
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                        @bn($chartCount) {{ __('charts') }}
+                    </span>
+                    <svg class="w-5 h-5 text-gray-400 transition-transform duration-200" :class="{ 'rotate-180': !chartsExpanded }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </div>
+            </div>
+            <div x-show="chartsExpanded" 
+                 x-transition:enter="transition ease-out duration-200"
+                 x-transition:enter-start="opacity-0 transform -translate-y-4"
+                 x-transition:enter-end="opacity-100 transform translate-y-0"
+                 x-transition:leave="transition ease-in duration-150"
+                 x-transition:leave-start="opacity-100 transform translate-y-0"
+                 x-transition:leave-end="opacity-0 transform -translate-y-4"
+                 class="p-6">
+                <div class="grid grid-cols-1 xl:grid-cols-2 gap-8">
             <!-- Project Distribution Chart -->
             @if(isset($chartData['projectData']) && count($chartData['projectData']['labels']) > 0)
             <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
@@ -355,16 +478,42 @@
                 </div>
             </div>
             @endif
+                </div>
+            </div>
         </div>
 
-        <!-- Detailed Distribution Table -->
-        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
-            <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
-                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ __('Detailed Distribution') }}</h3>
-                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200">
-                    @bn($data['pagination']['total_items']) {{ __('applications') }}
-                </span>
+        <!-- Detailed Distribution Table with Enhanced Design -->
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden" 
+             x-data="{ tableExpanded: true }">
+            <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between cursor-pointer" 
+                 @click="tableExpanded = !tableExpanded">
+                <div class="flex items-center gap-3">
+                    <div class="p-2 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-lg">
+                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ __('Detailed Distribution Data') }}</h3>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">{{ __('Complete application details with export options') }}</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200">
+                        @bn($data['pagination']['total_items']) {{ __('applications') }}
+                    </span>
+                    <svg class="w-5 h-5 text-gray-400 transition-transform duration-200" :class="{ 'rotate-180': !tableExpanded }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </div>
             </div>
+            <div x-show="tableExpanded" 
+                 x-transition:enter="transition ease-out duration-200"
+                 x-transition:enter-start="opacity-0 transform -translate-y-4"
+                 x-transition:enter-end="opacity-100 transform translate-y-0"
+                 x-transition:leave="transition ease-in duration-150"
+                 x-transition:leave-start="opacity-100 transform translate-y-0"
+                 x-transition:leave-end="opacity-0 transform -translate-y-4">
             <div class="overflow-x-auto">
                 <table id="detailedTable" class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                     <thead class="bg-gray-50 dark:bg-gray-800">
@@ -452,6 +601,7 @@
                         </tr>
                     </tfoot>
                 </table>
+            </div>
             </div>
         </div>
     </div>

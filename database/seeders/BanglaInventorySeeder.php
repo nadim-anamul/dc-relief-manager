@@ -19,11 +19,17 @@ class BanglaInventorySeeder extends Seeder
 
         // Get existing data
         $currentYear = EconomicYear::where('is_current', true)->first();
+        
+        if (!$currentYear) {
+            $this->command->warn('No current economic year found. Please run BanglaEconomicYearsSeeder first.');
+            return;
+        }
+        
         $reliefItems = ReliefItem::all();
         $projects = Project::where('economic_year_id', $currentYear->id)->get();
 
-        if (!$currentYear || $reliefItems->isEmpty() || $projects->isEmpty()) {
-            $this->command->warn('Required data not found. Please run other seeders first.');
+        if ($reliefItems->isEmpty() || $projects->isEmpty()) {
+            $this->command->warn('Required data not found. Relief items: ' . $reliefItems->count() . ', Projects: ' . $projects->count() . '. Please run other seeders first.');
             return;
         }
 

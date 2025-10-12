@@ -152,6 +152,48 @@
 							</a>
 							
 						</div>
+						
+						<!-- Analytics & Reports Group -->
+						<div class="space-y-1">
+							<div class="px-2 py-1 text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
+                                {{ __('Analytics & Reports') }}
+							</div>
+							
+							<a href="{{ route('admin.distributions.consolidated') }}" class="group flex items-center px-2 py-2 text-sm font-medium rounded-md {{ request()->routeIs('admin.distributions.consolidated') ? 'bg-blue-100 dark:bg-blue-900 text-blue-900 dark:text-blue-100' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white' }}">
+								<svg class="mr-3 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+								</svg>
+                                <span class="{{ app()->isLocale('bn') ? 'font-sans' : '' }}">{{ __('Consolidated Analysis') }}</span>
+							</a>
+							
+							<a href="{{ route('admin.distributions.detailed', ['type' => 'upazila']) }}" class="group flex items-center px-2 py-2 text-sm font-medium rounded-md {{ request()->routeIs('admin.distributions.detailed') && request('type') === 'upazila' ? 'bg-blue-100 dark:bg-blue-900 text-blue-900 dark:text-blue-100' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white' }}">
+								<svg class="mr-3 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+								</svg>
+                                <span class="{{ app()->isLocale('bn') ? 'font-sans' : '' }}">{{ __('Upazila Distribution') }}</span>
+							</a>
+							
+							<a href="{{ route('admin.distributions.detailed', ['type' => 'union']) }}" class="group flex items-center px-2 py-2 text-sm font-medium rounded-md {{ request()->routeIs('admin.distributions.detailed') && request('type') === 'union' ? 'bg-blue-100 dark:bg-blue-900 text-blue-900 dark:text-blue-100' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white' }}">
+								<svg class="mr-3 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+								</svg>
+                                <span class="{{ app()->isLocale('bn') ? 'font-sans' : '' }}">{{ __('Union Distribution') }}</span>
+							</a>
+							
+							<a href="{{ route('admin.distributions.detailed', ['type' => 'duplicates']) }}" class="group flex items-center px-2 py-2 text-sm font-medium rounded-md {{ request()->routeIs('admin.distributions.detailed') && request('type') === 'duplicates' ? 'bg-blue-100 dark:bg-blue-900 text-blue-900 dark:text-blue-100' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white' }}">
+								<svg class="mr-3 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+								</svg>
+                                <span class="{{ app()->isLocale('bn') ? 'font-sans' : '' }}">{{ __('Duplicate Allocations') }}</span>
+							</a>
+							
+							<a href="{{ route('admin.distributions.detailed', ['type' => 'projects']) }}" class="group flex items-center px-2 py-2 text-sm font-medium rounded-md {{ request()->routeIs('admin.distributions.detailed') && request('type') === 'projects' ? 'bg-blue-100 dark:bg-blue-900 text-blue-900 dark:text-blue-100' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white' }}">
+								<svg class="mr-3 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+								</svg>
+                                <span class="{{ app()->isLocale('bn') ? 'font-sans' : '' }}">{{ __('Project Allocations') }}</span>
+							</a>
+						</div>
 					@endif
 						
 						<!-- User Management Group -->
@@ -244,13 +286,59 @@
 				<div class="flex-1 px-4 flex justify-between">
 					<div class="flex-1 flex">
 						<div class="w-full flex md:ml-0">
-							<div class="relative w-full text-gray-400 focus-within:text-gray-600 dark:focus-within:text-gray-300">
+							<div class="relative w-full text-gray-400 focus-within:text-gray-600 dark:focus-within:text-gray-300" 
+								 x-data="searchComponent()">
 								<div class="absolute inset-y-0 left-0 flex items-center pointer-events-none">
 									<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
 									</svg>
 								</div>
-								<input class="block w-full h-full pl-8 pr-3 py-2 border-transparent text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:placeholder-gray-400 dark:focus:placeholder-gray-500 focus:ring-0 focus:border-transparent bg-transparent" placeholder="Search..." type="search">
+								<input 
+									id="globalSearch"
+									x-model="searchTerm" 
+									@input.debounce.300ms="search()" 
+									@focus="showResultsOnFocus()"
+									@blur="setTimeout(() => showResults = false, 200)"
+									class="block w-full h-full pl-8 pr-3 py-2 border-transparent text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:placeholder-gray-400 dark:focus:placeholder-gray-500 focus:ring-0 focus:border-transparent bg-transparent" 
+									placeholder="{{ __('Search applications, projects, areas...') }}" 
+									type="search">
+								
+								<!-- Search Results Dropdown -->
+								<div x-show="showResults" 
+									 x-transition:enter="transition ease-out duration-100"
+									 x-transition:enter-start="transform opacity-0 scale-95"
+									 x-transition:enter-end="transform opacity-100 scale-100"
+									 x-transition:leave="transition ease-in duration-75"
+									 x-transition:leave-start="transform opacity-100 scale-100"
+									 x-transition:leave-end="transform opacity-0 scale-95"
+									 class="absolute z-50 mt-1 w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg max-h-96 overflow-y-auto"
+									 style="display: none;">
+									<div x-show="isLoading" class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400">
+										{{ __('Searching...') }}
+									</div>
+									<div x-show="!isLoading && searchResults.length === 0 && searchTerm.length >= 2" 
+										 class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400">
+										{{ __('No results found') }}
+									</div>
+									<template x-for="result in searchResults" :key="result.id">
+										<a :href="result.url" 
+										   class="block px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700 border-b border-gray-100 dark:border-gray-700 last:border-b-0">
+											<div class="flex items-start space-x-3">
+												<div class="flex-shrink-0">
+													<div class="w-8 h-8 rounded-full flex items-center justify-center" :class="result.icon_bg">
+														<svg class="w-4 h-4" :class="result.icon_color" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+															<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" :d="result.icon_path"></path>
+														</svg>
+													</div>
+												</div>
+												<div class="flex-1 min-w-0">
+													<p class="text-sm font-medium text-gray-900 dark:text-white truncate" x-text="result.title"></p>
+													<p class="text-sm text-gray-500 dark:text-gray-400 truncate" x-text="result.subtitle"></p>
+												</div>
+											</div>
+										</a>
+									</template>
+								</div>
 							</div>
 						</div>
 					</div>
@@ -379,5 +467,65 @@
 		
 		<div class="flex-shrink-0 w-14"></div>
 	</div>
+
+	<!-- Global Search Component and Keyboard Shortcuts -->
+	<script>
+		function searchComponent() {
+			return {
+				searchTerm: '',
+				showResults: false,
+				searchResults: [],
+				isLoading: false,
+				init() {
+					// Ensure searchResults is always an array
+					this.searchResults = this.searchResults || [];
+				},
+				async search() {
+					if (this.searchTerm.length < 2) {
+						this.showResults = false;
+						return;
+					}
+					this.isLoading = true;
+					try {
+						const response = await fetch('/search?q=' + encodeURIComponent(this.searchTerm), {
+							headers: {
+								'X-Requested-With': 'XMLHttpRequest',
+								'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+							},
+							credentials: 'same-origin'
+						});
+						if (!response.ok) {
+							throw new Error('HTTP error! status: ' + response.status);
+						}
+						this.searchResults = await response.json();
+						this.showResults = true;
+					} catch (error) {
+						console.error('Search error:', error);
+						this.searchResults = [];
+					} finally {
+						this.isLoading = false;
+					}
+				},
+				showResultsOnFocus() {
+					// Safe check for searchResults length
+					this.showResults = this.searchResults && this.searchResults.length > 0;
+				}
+			}
+		}
+
+		document.addEventListener('DOMContentLoaded', function() {
+			// Add keyboard shortcuts
+			document.addEventListener('keydown', function(e) {
+				// Ctrl/Cmd + K for search focus
+				if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+					e.preventDefault();
+					const searchInput = document.getElementById('globalSearch');
+					if (searchInput) {
+						searchInput.focus();
+					}
+				}
+			});
+		});
+	</script>
 </body>
 </html>

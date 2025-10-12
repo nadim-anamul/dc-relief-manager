@@ -117,8 +117,13 @@ class DashboardController extends Controller
 		// Relief type statistics
 		$reliefTypeStats = $applyDateRange(ReliefApplication::where('status', 'approved'), 'approved_at')
 			->join('relief_types', 'relief_applications.relief_type_id', '=', 'relief_types.id')
-			->select('relief_types.name as relief_type_name', 'relief_types.color_code', DB::raw('SUM(relief_applications.approved_amount) as total_amount'), DB::raw('COUNT(*) as application_count'))
-			->groupBy('relief_types.id', 'relief_types.name', 'relief_types.color_code')
+			->select(
+				DB::raw(app()->isLocale('bn') ? 'COALESCE(relief_types.name_bn, relief_types.name) as relief_type_name' : 'COALESCE(relief_types.name, relief_types.name_bn) as relief_type_name'),
+				'relief_types.color_code', 
+				DB::raw('SUM(relief_applications.approved_amount) as total_amount'), 
+				DB::raw('COUNT(*) as application_count')
+			)
+			->groupBy('relief_types.id', 'relief_types.name', 'relief_types.name_bn', 'relief_types.color_code')
 			->orderBy('total_amount', 'desc')
 			->get();
 		
@@ -279,6 +284,11 @@ class DashboardController extends Controller
             $upazilaNames = Upazila::selectRaw('id, COALESCE(name, name_bn) as disp')->pluck('disp', 'id');
             $unionNames = Union::selectRaw('id, COALESCE(name, name_bn) as disp')->pluck('disp', 'id');
         }
+
+        // Get all upazilas for the chart (filtered by selected zilla if applicable)
+        $allUpazilas = Upazila::when($selectedZillaId, function ($query) use ($selectedZillaId) {
+            return $query->where('zilla_id', $selectedZillaId);
+        })->select('id', 'name', 'name_bn')->orderBy('name')->get();
         $projectNames = Project::pluck('name', 'id');
 
         // Project units (for formatting amounts based on project relief type)
@@ -349,10 +359,12 @@ class DashboardController extends Controller
 			'projectNames' => $projectNames,
 			'upazilaNames' => $upazilaNames,
 			'unionNames' => $unionNames,
+			'allUpazilas' => $allUpazilas,
             'projectUnits' => $projectUnits,
             'unionUpazilaId' => $unionUpazilaId,
             'upazilaSummary' => $upazilaSummaryPaginated['data'],
             'unionSummary' => $unionSummaryPaginated['data'],
+            'upazilaUnionSummary' => $unionSummaryPaginated['data'], // Alias for dashboard compatibility
             // Pagination data
             'upazilaPagination' => $upazilaPaginated['pagination'],
             'upazilaUnionPagination' => $upazilaUnionPaginated['pagination'],
@@ -409,8 +421,12 @@ class DashboardController extends Controller
 		// Relief type distribution
 		$reliefTypeData = $applyDateRange(ReliefApplication::where('status', 'approved'), 'approved_at')
 			->join('relief_types', 'relief_applications.relief_type_id', '=', 'relief_types.id')
-			->select('relief_types.name as relief_type_name', 'relief_types.color_code', DB::raw('SUM(relief_applications.approved_amount) as total_amount'))
-			->groupBy('relief_types.id', 'relief_types.name', 'relief_types.color_code')
+			->select(
+				DB::raw(app()->isLocale('bn') ? 'COALESCE(relief_types.name_bn, relief_types.name) as relief_type_name' : 'COALESCE(relief_types.name, relief_types.name_bn) as relief_type_name'),
+				'relief_types.color_code', 
+				DB::raw('SUM(relief_applications.approved_amount) as total_amount')
+			)
+			->groupBy('relief_types.id', 'relief_types.name', 'relief_types.name_bn', 'relief_types.color_code')
 			->orderBy('total_amount', 'desc')
 			->get();
 

@@ -22,6 +22,10 @@ Route::get('/locale/{lang}', function (string $lang) {
     Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
         Route::get('/dashboard/data', [DashboardController::class, 'getDashboardData'])->name('dashboard.data');
+        
+        // Global search routes (returns JSON)
+        Route::get('/search', [App\Http\Controllers\Api\SearchController::class, 'search'])->name('search');
+        Route::get('/search/suggestions', [App\Http\Controllers\Api\SearchController::class, 'suggestions'])->name('search.suggestions');
     
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -106,6 +110,7 @@ Route::get('/locale/{lang}', function (string $lang) {
             Route::get('project-upazila', [App\Http\Controllers\Admin\DistributionController::class, 'projectUpazila'])->name('project-upazila');
             Route::get('union-summary', [App\Http\Controllers\Admin\DistributionController::class, 'unionSummary'])->name('union-summary');
             Route::get('area-summary', [App\Http\Controllers\Admin\DistributionController::class, 'areaSummary'])->name('area-summary');
+            Route::get('detailed/{type}', [App\Http\Controllers\Admin\DistributionController::class, 'detailed'])->name('detailed');
         });
 
         // Export functionality
