@@ -1,4 +1,4 @@
-# Use PHP 8.3 with Apache
+# Development Dockerfile - optimized for live code changes
 FROM php:8.3-apache
 
 # Set working directory
@@ -53,13 +53,16 @@ RUN echo 'ServerName localhost' >> /etc/apache2/apache2.conf && \
 # Copy application files
 COPY . .
 
-# Clean up any problematic packages and install dependencies
-RUN rm -f composer.lock && composer install --optimize-autoloader --no-interaction
+# Install dependencies for development
+RUN composer install --optimize-autoloader --no-interaction
+
+# Install Node.js dependencies
+RUN npm install
 
 # Build frontend assets
-RUN npm ci && npm run build
+RUN npm run build
 
-# Create required directories
+# Create required directories (will be mounted from host)
 RUN mkdir -p storage/app/public \
 	storage/framework/cache \
 	storage/framework/sessions \
@@ -72,11 +75,10 @@ RUN chown -R www-data:www-data /var/www/html && \
 	chmod -R 755 /var/www/html/storage && \
 	chmod -R 755 /var/www/html/bootstrap/cache
 
-# Create startup script
-COPY docker-entrypoint.sh /usr/local/bin/
-RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+# Create development startup script
+COPY docker-entrypoint.dev.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/docker-entrypoint.dev.sh
 
 EXPOSE 8182
 
-ENTRYPOINT ["docker-entrypoint.sh"]
-
+ENTRYPOINT ["docker-entrypoint.dev.sh"]

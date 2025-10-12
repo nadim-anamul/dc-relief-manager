@@ -29,7 +29,17 @@ class AppServiceProvider extends ServiceProvider
         });
 
         Blade::directive('moneybn', function ($expression) {
-            return "<?= '৳'.strtr(number_format((float)($expression), 2), ['0'=>'০','1'=>'১','2'=>'২','3'=>'৩','4'=>'৪','5'=>'৫','6'=>'৬','7'=>'৭','8'=>'৮','9'=>'৯']); ?>";
+            return "<?php
+                \$amount = (float)({$expression});
+                if (\$amount >= 10000000) {
+                    \$formatted = number_format(\$amount / 10000000, 2) . ' ' . 'কোটি';
+                } elseif (\$amount >= 100000) {
+                    \$formatted = number_format(\$amount / 100000, 2) . ' ' . 'লক্ষ';
+                } else {
+                    \$formatted = number_format(\$amount, 2);
+                }
+                echo '৳ ' . strtr(\$formatted, ['0'=>'০','1'=>'১','2'=>'২','3'=>'৩','4'=>'৪','5'=>'৫','6'=>'৬','7'=>'৭','8'=>'৮','9'=>'৯']);
+            ?>";
         });
     }
 }

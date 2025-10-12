@@ -99,6 +99,7 @@ Route::get('/locale/{lang}', function (string $lang) {
         
         // Distribution Analysis Pages
         Route::prefix('distributions')->name('distributions.')->group(function () {
+            Route::get('consolidated', [App\Http\Controllers\Admin\DistributionController::class, 'consolidated'])->name('consolidated');
             Route::get('project-upazila-union', [App\Http\Controllers\Admin\DistributionController::class, 'projectUpazilaUnion'])->name('project-upazila-union');
             Route::get('project-upazila', [App\Http\Controllers\Admin\DistributionController::class, 'projectUpazila'])->name('project-upazila');
             Route::get('union-summary', [App\Http\Controllers\Admin\DistributionController::class, 'unionSummary'])->name('union-summary');

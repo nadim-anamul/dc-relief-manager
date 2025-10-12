@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-echo "Starting DC Relief Manager..."
+echo "Starting DC Relief Manager (Development Mode)..."
 
 cd /var/www/html
 
@@ -53,15 +53,29 @@ fi
 # CRITICAL: Always ensure APP_KEY is set before anything else
 if ! grep -q "^APP_KEY=base64:" .env 2>/dev/null; then
 	echo "Generating application key..."
-	# Clear any problematic service providers first
-	php artisan config:clear 2>/dev/null || true
-	php artisan cache:clear 2>/dev/null || true
-	# Try to generate key, if it fails due to missing providers, continue anyway
-	php artisan key:generate --force 2>/dev/null || echo "Warning: Could not generate key due to missing providers, will try later"
+	php artisan key:generate --force
 fi
 
 # Set proper permissions for .env
 chmod 644 .env
+
+# Install/update dependencies if needed (for development)
+echo "Checking dependencies..."
+if [ ! -d "vendor" ] || [ ! -f "vendor/autoload.php" ]; then
+	echo "Installing PHP dependencies..."
+	composer install --no-interaction
+fi
+
+if [ ! -d "node_modules" ]; then
+	echo "Installing Node.js dependencies..."
+	npm install
+fi
+
+# Check if Vite manifest exists, if not build assets
+if [ ! -f "public/build/manifest.json" ]; then
+	echo "Building frontend assets..."
+	npm run build
+fi
 
 # Now wait for database to be ready
 echo "Waiting for database..."
@@ -94,20 +108,12 @@ chmod -R 775 storage bootstrap/cache
 # Link storage (safe to run multiple times)
 php artisan storage:link || true
 
-# Note: Migrations are handled by deploy.sh
-# Clear and optimize only if not in initial setup
-if php artisan migrate:status &>/dev/null; then
-	echo "Optimizing application..."
-	php artisan config:cache
-	php artisan route:cache
-	php artisan view:cache
-else
-	echo "Database not ready or migrations not run. Clearing caches to prevent errors..."
-	php artisan config:clear 2>/dev/null || true
-	php artisan cache:clear 2>/dev/null || true
-	php artisan route:clear 2>/dev/null || true
-	php artisan view:clear 2>/dev/null || true
-fi
+# For development, always clear caches to ensure changes are reflected
+echo "Clearing caches for development..."
+php artisan config:clear 2>/dev/null || true
+php artisan cache:clear 2>/dev/null || true
+php artisan route:clear 2>/dev/null || true
+php artisan view:clear 2>/dev/null || true
 
 # Ensure APP_KEY is set
 if ! grep -q "^APP_KEY=base64:" .env 2>/dev/null; then
@@ -115,6 +121,6 @@ if ! grep -q "^APP_KEY=base64:" .env 2>/dev/null; then
 	php artisan key:generate --force
 fi
 
-echo "Starting Apache..."
+echo "Starting Apache (Development Mode)..."
+echo "Code changes will be reflected immediately!"
 exec apache2-foreground
-

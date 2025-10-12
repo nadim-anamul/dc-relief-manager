@@ -10,6 +10,61 @@ This guide will help you deploy the DC Relief Manager application on a server us
 - Port 8182 available for the application
 - Port 3306 available for MySQL (or you can change it)
 
+## Minimal Development Setup (Recommended)
+
+For development with live code changes, use the minimal setup:
+
+### 1. Quick Development Setup
+
+```bash
+# Clone or upload the project
+git clone <your-repository-url> dc-relief-manager
+cd dc-relief-manager
+
+# Make deployment script executable
+chmod +x deploy-dev.sh
+
+# Run minimal development setup
+./deploy-dev.sh
+```
+
+This setup provides:
+- **Live code changes**: Edit code directly - changes are reflected immediately
+- **No rebuilding**: Code changes don't require container rebuilds
+- **Development optimizations**: Debug mode, cache clearing, hot reloading
+- **Minimal resources**: Faster startup and lower resource usage
+
+### 2. Development Features
+
+- Code changes are reflected immediately without rebuilding containers
+- Debug mode enabled by default
+- Automatic cache clearing for development
+- Volume mounts for live code synchronization
+- Optimized for development workflow
+
+### 3. Development Commands
+
+```bash
+# Start development environment
+docker compose -f docker-compose.dev.yml up -d
+
+# View logs
+docker compose -f docker-compose.dev.yml logs -f app
+
+# Stop development environment
+docker compose -f docker-compose.dev.yml down
+
+# Access app shell
+docker compose -f docker-compose.dev.yml exec app bash
+
+# Clear caches
+docker compose -f docker-compose.dev.yml exec app php artisan cache:clear
+```
+
+## Production Deployment
+
+For production deployment, use the standard setup:
+
 ## Quick Start
 
 ### 1. Install Docker (if not already installed)
@@ -117,6 +172,22 @@ docker compose exec app php artisan config:cache
 docker compose exec app php artisan route:cache
 docker compose exec app php artisan view:cache
 ```
+
+## Development vs Production
+
+### Development Setup (`docker-compose.dev.yml`)
+- **Volume mounts**: Entire application directory mounted for live code changes
+- **Debug mode**: Enabled by default
+- **Cache clearing**: Automatic cache clearing for development
+- **Dependencies**: Installed on container startup
+- **Optimizations**: Disabled for faster development
+
+### Production Setup (`docker-compose.yml`)
+- **Optimized builds**: Pre-built containers with optimized assets
+- **Security**: Debug mode disabled
+- **Performance**: Caching enabled for production
+- **Dependencies**: Pre-installed in container image
+- **Stability**: Optimized for production workloads
 
 ## Configuration
 
@@ -328,6 +399,45 @@ For issues or questions:
 - Check logs: `docker compose logs -f`
 - Review Laravel logs: `docker compose exec app tail -f storage/logs/laravel.log`
 - Check application health: Access `/` endpoint
+
+---
+
+## Quick Reference
+
+### Development (Live Code Changes)
+```bash
+# Setup
+./deploy-dev.sh
+
+# Daily development
+docker compose -f docker-compose.dev.yml up -d
+# Edit code in your editor - changes appear immediately!
+
+# Stop
+docker compose -f docker-compose.dev.yml down
+```
+
+### Production (Optimized)
+```bash
+# Setup
+./deploy.sh
+
+# Daily production
+docker compose up -d
+
+# Stop
+docker compose down
+```
+
+### Key Differences
+| Feature | Development | Production |
+|---------|-------------|------------|
+| Code Changes | Immediate (no rebuild) | Requires rebuild |
+| Debug Mode | Enabled | Disabled |
+| Caching | Disabled | Enabled |
+| Build Time | Fast | Slower (optimized) |
+| Resource Usage | Lower | Higher |
+| Security | Development | Production |
 
 ---
 

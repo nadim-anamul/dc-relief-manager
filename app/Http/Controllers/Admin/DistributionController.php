@@ -16,6 +16,61 @@ use Illuminate\Support\Facades\DB;
 class DistributionController extends Controller
 {
     /**
+     * Display consolidated distribution page with all filters.
+     */
+    public function consolidated(Request $request): View
+    {
+        $years = EconomicYear::orderByDesc('start_date')->get();
+        $selectedYear = $this->resolveSelectedYear($request, $years);
+        
+        $zillas = Zilla::orderBy('name')->get(['id', 'name', 'name_bn']);
+        $selectedZillaId = $this->resolveSelectedZilla($request, $zillas);
+        
+        $selectedUpazilaId = $request->integer('upazila_id');
+        $selectedUnionId = $request->integer('union_id');
+        $selectedProjectId = $request->integer('project_id');
+        $pageSize = 25;
+        $currentPage = $request->integer('page', 1);
+
+        $data = $this->getConsolidatedData($selectedYear, $selectedZillaId, $selectedUpazilaId, $selectedUnionId, $selectedProjectId);
+        $chartData = $this->getConsolidatedChartData($data['distribution'], $selectedZillaId, $selectedUpazilaId, $selectedUnionId);
+        $projectBudgetBreakdown = $this->getProjectBudgetBreakdown($selectedYear, $selectedZillaId, $selectedUpazilaId, $selectedProjectId);
+
+        $upazilas = $selectedZillaId ? Upazila::where('zilla_id', $selectedZillaId)->orderBy('name')->get(['id', 'name', 'name_bn']) : collect();
+        $unions = $selectedUpazilaId ? Union::where('upazila_id', $selectedUpazilaId)->orderBy('name')->get(['id', 'name', 'name_bn']) : collect();
+        $projects = Project::forEconomicYear($selectedYear?->id)->orderBy('name')->get(['id', 'name']);
+
+        $projectUnits = Project::with('reliefType')->get()->mapWithKeys(function ($p) {
+            $unit = $p->reliefType?->unit_bn ?? $p->reliefType?->unit ?? '';
+            $isMoney = in_array($unit, ['টাকা', 'Taka']);
+            return [
+                $p->id => [
+                    'unit' => $unit,
+                    'is_money' => $isMoney,
+                ]
+            ];
+        });
+
+        return view('admin.distributions.consolidated', [
+            'years' => $years,
+            'selectedYearId' => $selectedYear?->id,
+            'zillas' => $zillas,
+            'selectedZillaId' => $selectedZillaId,
+            'upazilas' => $upazilas,
+            'selectedUpazilaId' => $selectedUpazilaId,
+            'unions' => $unions,
+            'selectedUnionId' => $selectedUnionId,
+            'projects' => $projects,
+            'selectedProjectId' => $selectedProjectId,
+            'data' => $data,
+            'chartData' => $chartData,
+            'projectBudgetBreakdown' => $projectBudgetBreakdown,
+            'projectUnits' => $projectUnits,
+            'pageSize' => $pageSize,
+        ]);
+    }
+
+    /**
      * Display Project × Upazila × Union Distribution page.
      */
     public function projectUpazilaUnion(Request $request): View
@@ -650,11 +705,113 @@ class DistributionController extends Controller
             return $zillaId;
         }
         
-        // If only one zilla exists, set it as default
         if ($zillas->count() === 1) {
             return $zillas->first()->id;
         }
         
         return null;
+    }
+
+    /**
+     * Get consolidated distribution data with all filters.
+     */
+    private function getConsolidatedData(?EconomicYear $year, ?int $zillaId, ?int $upazilaId, ?int $unionId, ?int $projectId): array
+    {
+        $start = $year?->start_date;
+        $end = $year?->end_date;
+
+        $query = ReliefApplication::where('status', 'approved')
+            ->with(['project.reliefType', 'zilla', 'upazila', 'union', 'organizationType'])
+            ->when($start && $end, function ($q) use ($start, $end) {
+                $s = $start instanceof \Carbon\Carbon ? $start->copy()->startOfDay() : \Carbon\Carbon::parse((string) $start)->startOfDay();
+                $e = $end instanceof \Carbon\Carbon ? $end->copy()->endOfDay() : \Carbon\Carbon::parse((string) $end)->endOfDay();
+                return $q->whereBetween('approved_at', [$s, $e]);
+            })
+            ->when($zillaId, fn($q) => $q->where('zilla_id', $zillaId))
+            ->when($upazilaId, fn($q) => $q->where('upazila_id', $upazilaId))
+            ->when($unionId, fn($q) => $q->where('union_id', $unionId))
+            ->when($projectId, fn($q) => $q->where('project_id', $projectId));
+
+        $distribution = $query->orderByDesc('approved_amount')->get();
+        $totalItems = $distribution->count();
+
+        return [
+            'distribution' => $distribution,
+            'pagination' => [
+                'current_page' => 1,
+                'total_pages' => 1,
+                'total_items' => $totalItems,
+                'has_previous' => false,
+                'has_next' => false,
+                'previous_page' => null,
+                'next_page' => null,
+            ],
+        ];
+    }
+
+    /**
+     * Get consolidated chart data based on active filters.
+     */
+    private function getConsolidatedChartData($distribution, ?int $zillaId, ?int $upazilaId, ?int $unionId): array
+    {
+        $chartData = [];
+
+        $projectData = $distribution->groupBy(function ($item) {
+            return $item->project?->name ?? 'Unknown Project';
+        })->map(function ($items) {
+            return $items->sum('approved_amount');
+        });
+        $chartData['projectData'] = [
+            'labels' => $projectData->keys()->toArray(),
+            'data' => $projectData->values()->toArray(),
+        ];
+
+        if (!$zillaId) {
+            $zillaData = $distribution->groupBy(function ($item) {
+                return $item->zilla?->name ?? 'Unknown Zilla';
+            })->map(function ($items) {
+                return $items->sum('approved_amount');
+            });
+            $chartData['zillaData'] = [
+                'labels' => $zillaData->keys()->toArray(),
+                'data' => $zillaData->values()->toArray(),
+            ];
+        }
+
+        if (!$upazilaId) {
+            $upazilaData = $distribution->groupBy(function ($item) {
+                return $item->upazila?->name ?? 'Unknown Upazila';
+            })->map(function ($items) {
+                return $items->sum('approved_amount');
+            });
+            $chartData['upazilaData'] = [
+                'labels' => $upazilaData->keys()->toArray(),
+                'data' => $upazilaData->values()->toArray(),
+            ];
+        }
+
+        if (!$unionId && $upazilaId) {
+            $unionData = $distribution->groupBy(function ($item) {
+                return $item->union?->name ?? 'Unknown Union';
+            })->map(function ($items) {
+                return $items->sum('approved_amount');
+            });
+            $chartData['unionData'] = [
+                'labels' => $unionData->keys()->toArray(),
+                'data' => $unionData->values()->toArray(),
+            ];
+        }
+
+        $orgTypeData = $distribution->groupBy(function ($item) {
+            return $item->organizationType?->name ?? 'Unknown Organization Type';
+        })->map(function ($items) {
+            return $items->sum('approved_amount');
+        });
+        $chartData['orgTypeData'] = [
+            'labels' => $orgTypeData->keys()->toArray(),
+            'data' => $orgTypeData->values()->toArray(),
+        ];
+
+        return $chartData;
     }
 }

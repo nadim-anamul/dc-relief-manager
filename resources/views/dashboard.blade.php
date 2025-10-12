@@ -117,7 +117,7 @@
 			<div class="p-6">
 				<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
 					@forelse($stats['reliefTypeAllocationStats'] as $allocation)
-					<div class="rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700 p-4">
+					<a href="{{ route('admin.projects.index', ['economic_year_id' => $selectedYearId, 'relief_type_id' => $allocation->relief_type_id]) }}" class="block rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700 p-4 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors duration-200">
 						<div class="flex items-center justify-between">
 							<div class="flex items-center gap-2">
 								@if($allocation->reliefType?->color_code)
@@ -136,7 +136,7 @@
 							</div>
                             <div class="text-xs text-gray-500 dark:text-gray-400">@bn((int)round(($allocation->used_ratio ?? 0) * 100))% {{ __('used') }}</div>
 						</div>
-					</div>
+					</a>
 					@empty
                     <div class="col-span-full text-center text-sm text-gray-500 dark:text-gray-400">{{ __('No allocations found for the selected year.') }}</div>
 					@endforelse
@@ -145,7 +145,7 @@
 		</div>
 
 		<!-- Relief Type Allocation Overview -->
-		@if($stats['reliefTypeAllocationStats'] && $stats['reliefTypeAllocationStats']->count() > 0)
+		<!-- @if($stats['reliefTypeAllocationStats'] && $stats['reliefTypeAllocationStats']->count() > 0)
 		<div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
 			<div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
 				<div class="flex items-center justify-between">
@@ -184,7 +184,7 @@
 				</div>
 			</div>
 		</div>
-		@endif
+		@endif -->
 
 			<!-- Inventory Overview removed -->
 
@@ -211,7 +211,7 @@
 			<div class="p-6">
 				<div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
 					<!-- Pending Applications -->
-					<div class="bg-gradient-to-br from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20 rounded-xl p-6 border border-yellow-200 dark:border-yellow-800">
+					<a href="{{ route('admin.relief-applications.index', ['status' => 'pending', 'economic_year_id' => $selectedYearId]) }}" class="block bg-gradient-to-br from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20 rounded-xl p-6 border border-yellow-200 dark:border-yellow-800 hover:from-yellow-100 hover:to-orange-100 dark:hover:from-yellow-900/30 dark:hover:to-orange-900/30 transition-all duration-200">
 						<div class="flex items-center justify-between">
 							<div>
                                 <p class="text-sm font-medium text-yellow-700 dark:text-yellow-300">{{ __('Pending Review') }}</p>
@@ -224,10 +224,10 @@
 								</svg>
 							</div>
 						</div>
-					</div>
+					</a>
 
 					<!-- Approved Applications -->
-					<div class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-xl p-6 border border-green-200 dark:border-green-800">
+					<a href="{{ route('admin.relief-applications.index', ['status' => 'approved', 'economic_year_id' => $selectedYearId]) }}" class="block bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-xl p-6 border border-green-200 dark:border-green-800 hover:from-green-100 hover:to-emerald-100 dark:hover:from-green-900/30 dark:hover:to-emerald-900/30 transition-all duration-200">
 						<div class="flex items-center justify-between">
 							<div>
                                 <p class="text-sm font-medium text-green-700 dark:text-green-300">{{ __('Approved') }}</p>
@@ -240,10 +240,10 @@
 								</svg>
 							</div>
 						</div>
-					</div>
+					</a>
 
 					<!-- Rejected Applications -->
-					<div class="bg-gradient-to-br from-red-50 to-pink-50 dark:from-red-900/20 dark:to-pink-900/20 rounded-xl p-6 border border-red-200 dark:border-red-800">
+					<a href="{{ route('admin.relief-applications.index', ['status' => 'rejected', 'economic_year_id' => $selectedYearId]) }}" class="block bg-gradient-to-br from-red-50 to-pink-50 dark:from-red-900/20 dark:to-pink-900/20 rounded-xl p-6 border border-red-200 dark:border-red-800 hover:from-red-100 hover:to-pink-100 dark:hover:from-red-900/30 dark:hover:to-pink-900/30 transition-all duration-200">
 						<div class="flex items-center justify-between">
 							<div>
                                 <p class="text-sm font-medium text-red-700 dark:text-red-300">{{ __('Rejected') }}</p>
@@ -256,15 +256,15 @@
 								</svg>
 							</div>
 						</div>
-					</div>
+					</a>
 				</div>
 			</div>
 		</div>
 
 		<!-- Analytics Dashboard -->
-		<div class="grid grid-cols-1 xl:grid-cols-2 gap-8">
+		<!-- <div class="grid grid-cols-1 xl:grid-cols-2 gap-8"> -->
 			<!-- Application Status Distribution -->
-			<div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+			<!-- <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
 				<div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
 					<div class="flex items-center justify-between">
 						<div class="flex items-center space-x-3">
@@ -293,11 +293,11 @@
 					<div class="h-80">
 						<canvas id="statusChart"></canvas>
 					</div>
-				</div>
-			</div>
+				</div> -->
+			<!-- </div> -->
 
 			<!-- Area-wise Relief Distribution -->
-			<div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+			<!-- <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
 				<div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
 					<div class="flex items-center justify-between">
 						<div class="flex items-center space-x-3">
@@ -332,11 +332,11 @@
 						<canvas id="areaChart"></canvas>
 					</div>
 				</div>
-			</div>
+			</div> -->
 		</div>
 
 		<!-- Project × Zilla Distribution -->
-		<div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden mt-8">
+		<!-- <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden mt-8">
 			<div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
                 <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ __('Project × Zilla Distribution') }}</h3>
                 <a href="{{ route('admin.distributions.project-upazila', ['economic_year_id' => $selectedYearId, 'zilla_id' => $selectedZillaId]) }}" class="inline-flex items-center px-3 py-1.5 bg-blue-100 hover:bg-blue-200 dark:bg-blue-900 dark:hover:bg-blue-800 text-blue-700 dark:text-blue-300 text-sm font-medium rounded-lg transition-colors duration-200">
@@ -369,7 +369,7 @@
 					</tbody>
 				</table>
 			</div>
-		</div>
+		</div> -->
 
 		<!-- Project × Upazila Distribution (filtered by Zilla if selected) -->
 		<div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden mt-8">
@@ -625,9 +625,9 @@
 		</div>
 
 		<!-- Quick Actions & Recent Activity -->
-		<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+		<!-- <div class="grid grid-cols-1 lg:grid-cols-3 gap-8"> -->
 			<!-- Quick Actions Panel -->
-			<div class="lg:col-span-1">
+			<!-- <div class="lg:col-span-1">
 				<div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
 					<div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
 						<div class="flex items-center space-x-3">
@@ -692,18 +692,18 @@
 						</a>
 					</div>
 				</div>
-			</div>
+			</div> -->
 
 			<!-- Right column reserved (Monthly Trends removed) -->
-			<div class="lg:col-span-2"></div>
-		</div>
+			<!-- <div class="lg:col-span-2"></div> -->
+		<!-- </div> -->
 
 		<!-- Monthly Relief Distribution removed -->
 
 		<!-- Relief Items Distribution Table removed -->
 
 		<!-- Detailed Statistics Tables -->
-		<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+		<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-8">
             <!-- Area-wise Summary -->
             <div class="card">
 				<div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
@@ -866,7 +866,7 @@
 		</div>
 
 		<!-- Project Budget Remaining -->
-		<div class="card">
+		<div class="card mt-8">
 			<div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
                 <h3 class="text-lg font-medium text-gray-900 dark:text-white">{{ __('Active Project Allocations (Current Year)') }}</h3>
 			</div>
@@ -914,8 +914,10 @@
 		const chartData = @json($chartData);
 		
 		// Application Status Pie Chart
-		const statusCtx = document.getElementById('statusChart').getContext('2d');
-		new Chart(statusCtx, {
+		const statusCanvas = document.getElementById('statusChart');
+		if (statusCanvas) {
+			const statusCtx = statusCanvas.getContext('2d');
+			new Chart(statusCtx, {
 			type: 'pie',
 			data: {
 				labels: chartData.statusData.labels,
@@ -938,11 +940,14 @@
 					}
 				}
 			}
-		});
+			});
+		}
 
 		// Area-wise Relief Distribution Bar Chart
-		const areaCtx = document.getElementById('areaChart').getContext('2d');
-		new Chart(areaCtx, {
+		const areaCanvas = document.getElementById('areaChart');
+		if (areaCanvas) {
+			const areaCtx = areaCanvas.getContext('2d');
+			new Chart(areaCtx, {
 			type: 'bar',
 			data: {
 				labels: chartData.areaData.map(item => item.zilla_name),
@@ -987,141 +992,151 @@
 					}
 				}
 			}
-		});
+			});
+		}
 
-		// Organization Type Distribution Doughnut Chart
-		const orgTypeCtx = document.getElementById('orgTypeChart').getContext('2d');
-		new Chart(orgTypeCtx, {
-			type: 'doughnut',
-			data: {
-				labels: chartData.orgTypeData.map(item => item.org_type_name || 'Not Specified'),
-				datasets: [{
-					data: chartData.orgTypeData.map(item => item.total_amount),
-					backgroundColor: [
-						'#ef4444', '#f97316', '#eab308', '#22c55e', '#06b6d4', '#8b5cf6', '#ec4899'
-					],
-					borderWidth: 2,
-					borderColor: '#fff'
-				}]
-			},
-			options: {
-				responsive: true,
-				maintainAspectRatio: false,
-				plugins: {
-					legend: {
-						position: 'bottom',
-						labels: {
-							color: document.documentElement.classList.contains('dark') ? '#d1d5db' : '#374151'
+		// Organization Type Distribution Doughnut Chart (only if canvas exists)
+		const orgTypeCanvas = document.getElementById('orgTypeChart');
+		if (orgTypeCanvas) {
+			const orgTypeCtx = orgTypeCanvas.getContext('2d');
+			new Chart(orgTypeCtx, {
+				type: 'doughnut',
+				data: {
+					labels: chartData.orgTypeData.map(item => item.org_type_name || 'Not Specified'),
+					datasets: [{
+						data: chartData.orgTypeData.map(item => item.total_amount),
+						backgroundColor: [
+							'#ef4444', '#f97316', '#eab308', '#22c55e', '#06b6d4', '#8b5cf6', '#ec4899'
+						],
+						borderWidth: 2,
+						borderColor: '#fff'
+					}]
+				},
+				options: {
+					responsive: true,
+					maintainAspectRatio: false,
+					plugins: {
+						legend: {
+							position: 'bottom',
+							labels: {
+								color: document.documentElement.classList.contains('dark') ? '#d1d5db' : '#374151'
+							}
 						}
 					}
 				}
-			}
-		});
+			});
+		}
 
-		// Relief Type Distribution Bar Chart
-		const reliefTypeCtx = document.getElementById('reliefTypeChart').getContext('2d');
-		new Chart(reliefTypeCtx, {
-			type: 'bar',
-			data: {
-				labels: chartData.reliefTypeData.map(item => item.relief_type_name),
-				datasets: [{
-					label: 'Relief Amount (৳)',
-					data: chartData.reliefTypeData.map(item => item.total_amount),
-					backgroundColor: chartData.reliefTypeData.map(item => item.color_code || '#6b7280'),
-					borderColor: chartData.reliefTypeData.map(item => item.color_code || '#6b7280'),
-					borderWidth: 1
-				}]
-			},
-			options: {
-				responsive: true,
-				maintainAspectRatio: false,
-				scales: {
-					y: {
-						beginAtZero: true,
-						ticks: {
-							color: document.documentElement.classList.contains('dark') ? '#d1d5db' : '#374151',
-							callback: function(value) {
-								return '৳' + value.toLocaleString();
+		// Relief Type Distribution Bar Chart (only if canvas exists)
+		const reliefTypeCanvas = document.getElementById('reliefTypeChart');
+		if (reliefTypeCanvas) {
+			const reliefTypeCtx = reliefTypeCanvas.getContext('2d');
+			new Chart(reliefTypeCtx, {
+				type: 'bar',
+				data: {
+					labels: chartData.reliefTypeData.map(item => item.relief_type_name),
+					datasets: [{
+						label: 'Relief Amount (৳)',
+						data: chartData.reliefTypeData.map(item => item.total_amount),
+						backgroundColor: chartData.reliefTypeData.map(item => item.color_code || '#6b7280'),
+						borderColor: chartData.reliefTypeData.map(item => item.color_code || '#6b7280'),
+						borderWidth: 1
+					}]
+				},
+				options: {
+					responsive: true,
+					maintainAspectRatio: false,
+					scales: {
+						y: {
+							beginAtZero: true,
+							ticks: {
+								color: document.documentElement.classList.contains('dark') ? '#d1d5db' : '#374151',
+								callback: function(value) {
+									return '৳' + value.toLocaleString();
+								}
+							},
+							grid: {
+								color: document.documentElement.classList.contains('dark') ? '#374151' : '#e5e7eb'
 							}
 						},
-						grid: {
-							color: document.documentElement.classList.contains('dark') ? '#374151' : '#e5e7eb'
+						x: {
+							ticks: {
+								color: document.documentElement.classList.contains('dark') ? '#d1d5db' : '#374151'
+							},
+							grid: {
+								color: document.documentElement.classList.contains('dark') ? '#374151' : '#e5e7eb'
+							}
 						}
 					},
-					x: {
-						ticks: {
-							color: document.documentElement.classList.contains('dark') ? '#d1d5db' : '#374151'
-						},
-						grid: {
-							color: document.documentElement.classList.contains('dark') ? '#374151' : '#e5e7eb'
-						}
-					}
-				},
-				plugins: {
-					legend: {
-						labels: {
-							color: document.documentElement.classList.contains('dark') ? '#d1d5db' : '#374151'
+					plugins: {
+						legend: {
+							labels: {
+								color: document.documentElement.classList.contains('dark') ? '#d1d5db' : '#374151'
+							}
 						}
 					}
 				}
-			}
-		});
+			});
+		}
 
 		// Trends removed
 
-		// Monthly Relief Distribution Line Chart
-		const monthlyCtx = document.getElementById('monthlyChart').getContext('2d');
-		new Chart(monthlyCtx, {
-			type: 'line',
-			data: {
-				labels: chartData.monthlyData.map(item => {
-					const date = new Date(item.month + '-01');
-					return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short' });
-				}),
-				datasets: [{
-					label: 'Relief Amount (৳)',
-					data: chartData.monthlyData.map(item => item.total_amount),
-					borderColor: 'rgba(16, 185, 129, 1)',
-					backgroundColor: 'rgba(16, 185, 129, 0.1)',
-					borderWidth: 2,
-					fill: true,
-					tension: 0.4
-				}]
-			},
-			options: {
-				responsive: true,
-				maintainAspectRatio: false,
-				scales: {
-					y: {
-						beginAtZero: true,
-						ticks: {
-							color: document.documentElement.classList.contains('dark') ? '#d1d5db' : '#374151',
-							callback: function(value) {
-								return '৳' + value.toLocaleString();
+		// Monthly Relief Distribution Line Chart (only if canvas exists)
+		const monthlyCanvas = document.getElementById('monthlyChart');
+		if (monthlyCanvas) {
+			const monthlyCtx = monthlyCanvas.getContext('2d');
+			new Chart(monthlyCtx, {
+				type: 'line',
+				data: {
+					labels: chartData.monthlyData.map(item => {
+						const date = new Date(item.month + '-01');
+						return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short' });
+					}),
+					datasets: [{
+						label: 'Relief Amount (৳)',
+						data: chartData.monthlyData.map(item => item.total_amount),
+						borderColor: 'rgba(16, 185, 129, 1)',
+						backgroundColor: 'rgba(16, 185, 129, 0.1)',
+						borderWidth: 2,
+						fill: true,
+						tension: 0.4
+					}]
+				},
+				options: {
+					responsive: true,
+					maintainAspectRatio: false,
+					scales: {
+						y: {
+							beginAtZero: true,
+							ticks: {
+								color: document.documentElement.classList.contains('dark') ? '#d1d5db' : '#374151',
+								callback: function(value) {
+									return '৳' + value.toLocaleString();
+								}
+							},
+							grid: {
+								color: document.documentElement.classList.contains('dark') ? '#374151' : '#e5e7eb'
 							}
 						},
-						grid: {
-							color: document.documentElement.classList.contains('dark') ? '#374151' : '#e5e7eb'
+						x: {
+							ticks: {
+								color: document.documentElement.classList.contains('dark') ? '#d1d5db' : '#374151'
+							},
+							grid: {
+								color: document.documentElement.classList.contains('dark') ? '#374151' : '#e5e7eb'
+							}
 						}
 					},
-					x: {
-						ticks: {
-							color: document.documentElement.classList.contains('dark') ? '#d1d5db' : '#374151'
-						},
-						grid: {
-							color: document.documentElement.classList.contains('dark') ? '#374151' : '#e5e7eb'
-						}
-					}
-				},
-				plugins: {
-					legend: {
-						labels: {
-							color: document.documentElement.classList.contains('dark') ? '#d1d5db' : '#374151'
+					plugins: {
+						legend: {
+							labels: {
+								color: document.documentElement.classList.contains('dark') ? '#d1d5db' : '#374151'
+							}
 						}
 					}
 				}
-			}
-		});
+			});
+		}
 
 		// Refresh dashboard function
 		function refreshDashboard() {
