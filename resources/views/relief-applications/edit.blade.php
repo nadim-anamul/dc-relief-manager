@@ -6,7 +6,7 @@
 					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
 				</svg>
 			</a>
-			<h1 class="text-2xl font-bold text-gray-900 dark:text-white">Edit Relief Application</h1>
+			<h1 class="text-2xl font-bold text-gray-900 dark:text-white {{ app()->isLocale('bn') ? 'font-sans' : '' }}">{{ __('Edit Relief Application') }}</h1>
 		</div>
 	</x-slot>
 
@@ -16,23 +16,23 @@
 			<div class="flex items-center justify-between text-sm font-medium text-gray-600 dark:text-gray-400 mb-4">
 				<span class="flex items-center">
 					<span class="w-8 h-8 bg-green-500 text-white rounded-full flex items-center justify-center text-xs mr-3">✓</span>
-					Organization
+					{{ __('Organization') }}
 				</span>
 				<span class="flex items-center">
 					<span class="w-8 h-8 bg-green-500 text-white rounded-full flex items-center justify-center text-xs mr-3">✓</span>
-					Location
+					{{ __('Location') }}
 				</span>
 				<span class="flex items-center">
 					<span class="w-8 h-8 bg-green-500 text-white rounded-full flex items-center justify-center text-xs mr-3">✓</span>
-					Relief Info
+					{{ __('Relief Info') }}
 				</span>
 				<span class="flex items-center">
 					<span class="w-8 h-8 bg-green-500 text-white rounded-full flex items-center justify-center text-xs mr-3">✓</span>
-					Applicant
+					{{ __('Applicant') }}
 				</span>
 				<span class="flex items-center">
 					<span class="w-8 h-8 bg-orange-500 text-white rounded-full flex items-center justify-center text-xs mr-3">!</span>
-					Edit Mode
+					{{ __('Edit Mode') }}
 				</span>
 			</div>
 			<div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
@@ -52,8 +52,8 @@
 						</div>
 					</div>
 					<div class="ml-4">
-						<h3 class="text-xl font-bold text-gray-900 dark:text-white">Edit Relief Application</h3>
-						<p class="text-sm text-gray-600 dark:text-gray-400">Update your relief application details below</p>
+						<h3 class="text-xl font-bold text-gray-900 dark:text-white {{ app()->isLocale('bn') ? 'font-sans' : '' }}">{{ __('Edit Relief Application') }}</h3>
+						<p class="text-sm text-gray-600 dark:text-gray-400 {{ app()->isLocale('bn') ? 'font-sans' : '' }}">{{ __('Update your relief application details below') }}</p>
 					</div>
 				</div>
 			</div>
@@ -73,23 +73,23 @@
 								</div>
 							</div>
 							<div class="ml-3">
-								<h4 class="text-lg font-semibold text-gray-900 dark:text-white">Organization Information</h4>
-								<p class="text-sm text-gray-500 dark:text-gray-400">Update your organization details</p>
+								<h4 class="text-lg font-semibold text-gray-900 dark:text-white {{ app()->isLocale('bn') ? 'font-sans' : '' }}">{{ __('Organization Information') }}</h4>
+								<p class="text-sm text-gray-500 dark:text-gray-400 {{ app()->isLocale('bn') ? 'font-sans' : '' }}">{{ __('Update your organization details') }}</p>
 							</div>
 						</div>
 						
 						<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 							<!-- Organization Name -->
 							<div class="md:col-span-2">
-								<label for="organization_name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-									Organization Name <span class="text-red-500">*</span>
+								<label for="organization_name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 {{ app()->isLocale('bn') ? 'font-sans' : '' }}">
+									{{ __('Organization Name') }} <span class="text-red-500">*</span>
 								</label>
 								<input type="text" 
 									name="organization_name" 
 									id="organization_name" 
 									value="{{ old('organization_name', $reliefApplication->organization_name) }}"
 									class="input-field @error('organization_name') border-red-500 dark:border-red-400 @enderror"
-									placeholder="Enter organization name"
+									placeholder="{{ __('Enter organization name') }}"
 									required>
 								@error('organization_name')
 									<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
@@ -98,16 +98,16 @@
 
 							<!-- Organization Type -->
 							<div>
-								<label for="organization_type_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-									Organization Type
+								<label for="organization_type_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 {{ app()->isLocale('bn') ? 'font-sans' : '' }}">
+									{{ __('Organization Type') }}
 								</label>
 								<select name="organization_type_id" 
 									id="organization_type_id" 
 									class="input-field @error('organization_type_id') border-red-500 dark:border-red-400 @enderror">
-									<option value="">Select Organization Type</option>
+									<option value="">{{ __('Select Organization Type') }}</option>
 									@foreach($organizationTypes as $organizationType)
 										<option value="{{ $organizationType->id }}" {{ old('organization_type_id', $reliefApplication->organization_type_id) == $organizationType->id ? 'selected' : '' }}>
-											{{ $organizationType->name }}
+											{{ localized_attr($organizationType, 'name') }}
 										</option>
 									@endforeach
 								</select>
@@ -169,7 +169,7 @@
 									<option value="">Select a Zilla</option>
 									@foreach($zillas as $zilla)
 										<option value="{{ $zilla->id }}" {{ old('zilla_id', $reliefApplication->zilla_id) == $zilla->id ? 'selected' : '' }}>
-											{{ $zilla->name }} ({{ $zilla->name_bn }})
+											{{ localized_attr($zilla, 'name') }}
 										</option>
 									@endforeach
 								</select>
@@ -192,7 +192,7 @@
 									required>
 									<option value="">Select a Upazila</option>
 									<template x-for="upazila in upazilas" :key="upazila.id">
-										<option :value="upazila.id" :selected="upazila.id == selectedUpazila" x-text="upazila.name + ' (' + upazila.name_bn + ')'"></option>
+										<option :value="upazila.id" :selected="upazila.id == selectedUpazila" x-text="upazila.name_bn || upazila.name"></option>
 									</template>
 								</select>
 								@error('upazila_id')
@@ -214,7 +214,7 @@
 									required>
 									<option value="">Select a Union</option>
 									<template x-for="union in unions" :key="union.id">
-										<option :value="union.id" :selected="union.id == selectedUnion" x-text="union.name + ' (' + union.name_bn + ')'"></option>
+										<option :value="union.id" :selected="union.id == selectedUnion" x-text="union.name_bn || union.name"></option>
 									</template>
 								</select>
 								@error('union_id')
@@ -234,7 +234,7 @@
 									:disabled="!selectedUnion">
 									<option value="">Select a Ward</option>
 									<template x-for="ward in wards" :key="ward.id">
-										<option :value="ward.id" :selected="ward.id == selectedWard" x-text="ward.name + ' (' + ward.name_bn + ')'"></option>
+										<option :value="ward.id" :selected="ward.id == selectedWard" x-text="ward.name_bn || ward.name"></option>
 									</template>
 								</select>
 								@error('ward_id')
@@ -265,9 +265,9 @@
 									<template x-for="project in projects" :key="project.id">
 										<option :value="project.id" 
 											:data-unit="project.relief_type_unit_bn || project.relief_type_unit"
-											:data-relief-type="project.relief_type_name"
+											:data-relief-type="project.relief_type_name_bn || project.relief_type_name"
 											:selected="project.id == {{ old('project_id', $reliefApplication->project_id) ?? 'null' }}"
-											x-text="project.name + ' (' + project.economic_year + ') - ' + project.relief_type_name"></option>
+											x-text="project.name + ' (' + project.economic_year + ') - ' + (project.relief_type_name_bn || project.relief_type_name)"></option>
 									</template>
 								</select>
 								<p class="mt-1 text-xs text-gray-500 dark:text-gray-400">

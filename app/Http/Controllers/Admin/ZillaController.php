@@ -47,7 +47,7 @@ class ZillaController extends Controller
 		Zilla::create($validated);
 
 		return redirect()->route('admin.zillas.index')
-			->with('success', 'Zilla created successfully.');
+			->with('success', __('জেলা সফলভাবে তৈরি হয়েছে।'));
 	}
 
 	/**
@@ -85,7 +85,7 @@ class ZillaController extends Controller
 		$zilla->update($validated);
 
 		return redirect()->route('admin.zillas.index')
-			->with('success', 'Zilla updated successfully.');
+			->with('success', __('জেলা সফলভাবে হালনাগাদ হয়েছে।'));
 	}
 
 	/**
@@ -96,6 +96,6 @@ class ZillaController extends Controller
 		$zilla->delete();
 
 		return redirect()->route('admin.zillas.index')
-			->with('success', 'Zilla deleted successfully.');
+			->with('success', __('জেলা সফলভাবে মুছে ফেলা হয়েছে।'));
 	}
 }

@@ -8,8 +8,8 @@
                     </svg>
                 </div>
                 <div>
-                    <h1 class="text-2xl font-bold text-gray-900 dark:text-white">{{ __('Consolidated Distribution Analysis') }}</h1>
-                    <p class="text-sm text-gray-500 dark:text-gray-400">{{ __('Comprehensive distribution analysis with advanced filtering') }}</p>
+                    <h1 class="text-2xl font-bold text-gray-900 dark:text-white {{ app()->isLocale('bn') ? 'font-sans' : '' }}">{{ __('Consolidated Distribution Analysis') }}</h1>
+                    <p class="text-sm text-gray-500 dark:text-gray-400 {{ app()->isLocale('bn') ? 'font-sans' : '' }}">{{ __('Comprehensive distribution analysis with advanced filtering') }}</p>
                 </div>
             </div>
             <div class="flex flex-wrap gap-3">
@@ -70,7 +70,7 @@
                                 <select name="economic_year_id" class="w-full appearance-none pl-9 pr-8 py-2.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white/90 dark:bg-gray-800/90 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm text-sm">
                                     @foreach($years as $y)
                                         <option value="{{ $y->id }}" {{ $selectedYearId == $y->id ? 'selected' : '' }}>
-                                            {{ $y->name_display ?? ($y->name ?? ($y->start_date?->format('Y') .' - '. $y->end_date?->format('Y'))) }}
+                                            {{ $y->name_display ?? ($y->name ?? (bn_number($y->start_date?->format('Y')) .' - '. bn_number($y->end_date?->format('Y')))) }}
                                         </option>
                                     @endforeach
                                 </select>
@@ -170,8 +170,8 @@
                         </svg>
                     </div>
                     <div>
-                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ __('Distribution Summary') }}</h3>
-                        <p class="text-sm text-gray-500 dark:text-gray-400">{{ __('Key metrics and statistics for filtered data') }}</p>
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white {{ app()->isLocale('bn') ? 'font-sans' : '' }}">{{ __('Distribution Summary') }}</h3>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 {{ app()->isLocale('bn') ? 'font-sans' : '' }}">{{ __('Key metrics and statistics for filtered data') }}</p>
                     </div>
                 </div>
                 <div class="flex items-center gap-2">
@@ -267,8 +267,8 @@
                         <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
                     </div>
                     <div>
-                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ __('Project Budget Overview') }}</h3>
-                        <p class="text-sm text-gray-500 dark:text-gray-400">{{ __('Budget allocation and utilization by project') }}</p>
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white {{ app()->isLocale('bn') ? 'font-sans' : '' }}">{{ __('Project Budget Overview') }}</h3>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 {{ app()->isLocale('bn') ? 'font-sans' : '' }}">{{ __('Budget allocation and utilization by project') }}</p>
                     </div>
                 </div>
                 <div class="flex items-center gap-2">
@@ -328,8 +328,8 @@
                         </svg>
                     </div>
                     <div>
-                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ __('Data Visualizations') }}</h3>
-                        <p class="text-sm text-gray-500 dark:text-gray-400">{{ __('Interactive charts and graphs for data analysis') }}</p>
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white {{ app()->isLocale('bn') ? 'font-sans' : '' }}">{{ __('Data Visualizations') }}</h3>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 {{ app()->isLocale('bn') ? 'font-sans' : '' }}">{{ __('Interactive charts and graphs for data analysis') }}</p>
                     </div>
                 </div>
                 <div class="flex items-center gap-2">
@@ -494,8 +494,8 @@
                         </svg>
                     </div>
                     <div>
-                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ __('Detailed Distribution Data') }}</h3>
-                        <p class="text-sm text-gray-500 dark:text-gray-400">{{ __('Complete application details with export options') }}</p>
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white {{ app()->isLocale('bn') ? 'font-sans' : '' }}">{{ __('Detailed Distribution Data') }}</h3>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 {{ app()->isLocale('bn') ? 'font-sans' : '' }}">{{ __('Complete application details with export options') }}</p>
                     </div>
                 </div>
                 <div class="flex items-center gap-2">
@@ -563,7 +563,7 @@
                                         @endif
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                                        {{ locale_is_bn() ? $application->approved_at?->translatedFormat('j F, Y') : ($application->approved_at?->format('M d, Y')) ?? '—' }}
+                                        {{ $application->approved_at ? bn_date($application->approved_at, 'd M Y') : '—' }}
                                     </td>
                                 </tr>
                             @endforeach

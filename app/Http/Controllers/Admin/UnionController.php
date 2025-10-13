@@ -69,7 +69,7 @@ class UnionController extends Controller
 		Union::create($validated);
 
 		return redirect()->route('admin.unions.index')
-			->with('success', 'Union created successfully.');
+			->with('success', __('ইউনিয়ন সফলভাবে তৈরি হয়েছে।'));
 	}
 
 	/**
@@ -114,7 +114,7 @@ class UnionController extends Controller
 		$union->update($validated);
 
 		return redirect()->route('admin.unions.index')
-			->with('success', 'Union updated successfully.');
+			->with('success', __('ইউনিয়ন সফলভাবে হালনাগাদ হয়েছে।'));
 	}
 
 	/**
@@ -125,7 +125,7 @@ class UnionController extends Controller
 		$union->delete();
 
 		return redirect()->route('admin.unions.index')
-			->with('success', 'Union deleted successfully.');
+			->with('success', __('ইউনিয়ন সফলভাবে মুছে ফেলা হয়েছে।'));
 	}
 
 	/**

@@ -2,11 +2,11 @@
     <x-slot name="header">
         <div class="flex justify-between items-center">
             <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-                {{ __('Create New User') }}
+                {{ __('নতুন ব্যবহারকারী তৈরি করুন') }}
             </h2>
             <a href="{{ route('admin.users.index') }}" 
                class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
-                Back to Users
+                {{ __('ব্যবহারকারীদের তালিকায় ফিরে যান') }}
             </a>
         </div>
     </x-slot>
@@ -33,7 +33,7 @@
                             <!-- Name -->
                             <div>
                                 <label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Full Name *
+                                    {{ __('পূর্ণ নাম') }} *
                                 </label>
                                 <input type="text" 
                                        name="name" 
@@ -46,7 +46,7 @@
                             <!-- Email -->
                             <div>
                                 <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Email Address *
+                                    {{ __('ইমেইল ঠিকানা') }} *
                                 </label>
                                 <input type="email" 
                                        name="email" 
@@ -59,24 +59,24 @@
                             <!-- Phone -->
                             <div>
                                 <label for="phone" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Phone Number *
+                                    {{ __('ফোন নম্বর') }} *
                                 </label>
                                 <input type="text" 
                                        name="phone" 
                                        id="phone" 
                                        value="{{ old('phone') }}"
-                                       placeholder="01XXXXXXXXX"
+                                       placeholder="{{ __('০১XXXXXXXXX') }}"
                                        class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                                        required>
                                 <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                                    Bangladeshi mobile number (e.g., 01712345678)
+                                    {{ __('বাংলাদেশি মোবাইল নম্বর (যেমন, ০১৭১২৩৪৫৬৭৮)') }}
                                 </p>
                             </div>
 
                             <!-- Password -->
                             <div>
                                 <label for="password" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Password *
+                                    {{ __('পাসওয়ার্ড') }} *
                                 </label>
                                 <input type="password" 
                                        name="password" 
@@ -88,7 +88,7 @@
                             <!-- Password Confirmation -->
                             <div>
                                 <label for="password_confirmation" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Confirm Password *
+                                    {{ __('পাসওয়ার্ড নিশ্চিত করুন') }} *
                                 </label>
                                 <input type="password" 
                                        name="password_confirmation" 
@@ -100,12 +100,12 @@
                             <!-- Organization Type -->
                             <div>
                                 <label for="organization_type_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Organization Type
+                                    {{ __('সংস্থার ধরন') }}
                                 </label>
                                 <select name="organization_type_id" 
                                         id="organization_type_id"
                                         class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                                    <option value="">Select Organization Type</option>
+                                    <option value="">{{ __('সংস্থার ধরন নির্বাচন করুন') }}</option>
                                     @foreach($organizationTypes as $orgType)
                                         <option value="{{ $orgType->id }}" {{ old('organization_type_id') == $orgType->id ? 'selected' : '' }}>
                                             {{ $orgType->name }}
@@ -117,7 +117,7 @@
                             <!-- Approval Status -->
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                    Approval Status
+                                    {{ __('অনুমোদনের অবস্থা') }}
                                 </label>
                                 <div class="flex items-center">
                                     <input type="checkbox" 
@@ -127,7 +127,7 @@
                                            {{ old('is_approved', true) ? 'checked' : '' }}
                                            class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
                                     <label for="is_approved" class="ml-2 text-sm text-gray-700 dark:text-gray-300">
-                                        User is approved (can login immediately)
+                                        {{ __('ব্যবহারকারী অনুমোদিত (তৎক্ষণাৎ লগইন করতে পারবে)') }}
                                     </label>
                                 </div>
                             </div>
@@ -136,7 +136,7 @@
                         <!-- Roles -->
                         <div class="mt-6">
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
-                                Roles *
+                                {{ __('ভূমিকা') }} *
                             </label>
                             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                                 @foreach($roles as $role)
@@ -162,7 +162,7 @@
                         <div class="mt-6 flex justify-end">
                             <button type="submit" 
                                     class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                                Create User
+                                {{ __('ব্যবহারকারী তৈরি করুন') }}
                             </button>
                         </div>
                     </form>

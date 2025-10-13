@@ -65,7 +65,7 @@ class UserController extends Controller
         $user->assignRole($request->roles);
 
         return redirect()->route('admin.users.index')
-            ->with('success', 'User created successfully.');
+            ->with('success', __('ব্যবহারকারী সফলভাবে তৈরি হয়েছে।'));
     }
 
     /**
@@ -126,7 +126,7 @@ class UserController extends Controller
         $user->syncRoles($request->roles);
 
         return redirect()->route('admin.users.index')
-            ->with('success', 'User updated successfully.');
+            ->with('success', __('ব্যবহারকারী সফলভাবে হালনাগাদ হয়েছে।'));
     }
 
     /**
@@ -137,19 +137,19 @@ class UserController extends Controller
         // Prevent deletion of super admin users
         if ($user->hasRole('super-admin')) {
             return redirect()->route('admin.users.index')
-                ->with('error', 'Cannot delete super admin users.');
+                ->with('error', __('সুপার অ্যাডমিন ব্যবহারকারী মুছে ফেলা যাবে না।'));
         }
 
         // Prevent self-deletion
         if ($user->id === auth()->id()) {
             return redirect()->route('admin.users.index')
-                ->with('error', 'Cannot delete your own account.');
+                ->with('error', __('আপনার নিজের অ্যাকাউন্ট মুছে ফেলা যাবে না।'));
         }
 
         $user->delete();
 
         return redirect()->route('admin.users.index')
-            ->with('success', 'User deleted successfully.');
+            ->with('success', __('ব্যবহারকারী সফলভাবে মুছে ফেলা হয়েছে।'));
     }
 
     /**
@@ -160,7 +160,7 @@ class UserController extends Controller
         $user->update(['is_approved' => true]);
 
         return redirect()->route('admin.users.index')
-            ->with('success', 'User approved successfully.');
+            ->with('success', __('ব্যবহারকারী সফলভাবে অনুমোদিত হয়েছে।'));
     }
 
     /**
@@ -171,7 +171,7 @@ class UserController extends Controller
         $user->update(['is_approved' => false]);
 
         return redirect()->route('admin.users.index')
-            ->with('success', 'User rejected successfully.');
+            ->with('success', __('ব্যবহারকারী সফলভাবে প্রত্যাখ্যাত হয়েছে।'));
     }
 
     /**
@@ -183,7 +183,7 @@ class UserController extends Controller
         $user->setTempPassword($tempPassword, 24); // 24 hours expiry
 
         return redirect()->route('admin.users.show', $user)
-            ->with('success', "Temporary password generated: {$tempPassword}. This password will expire in 24 hours.");
+            ->with('success', __('অস্থায়ী পাসওয়ার্ড তৈরি হয়েছে: :password। এই পাসওয়ার্ড ২৪ ঘন্টার মধ্যে মেয়াদ শেষ হবে।', ['password' => $tempPassword]));
     }
 
     /**
@@ -194,6 +194,6 @@ class UserController extends Controller
         $user->clearTempPassword();
 
         return redirect()->route('admin.users.show', $user)
-            ->with('success', 'Temporary password cleared successfully.');
+            ->with('success', __('অস্থায়ী পাসওয়ার্ড সফলভাবে মুছে ফেলা হয়েছে।'));
     }
 }

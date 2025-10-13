@@ -6,14 +6,14 @@
 					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
 				</svg>
 			</a>
-			<h1 class="text-2xl font-bold text-gray-900 dark:text-white">Create New Organization Type</h1>
+			<h1 class="text-2xl font-bold text-gray-900 dark:text-white">{{ __('নতুন সংস্থার ধরন তৈরি করুন') }}</h1>
 		</div>
 	</x-slot>
 
 	<div class="max-w-2xl mx-auto">
 		<div class="card">
 			<div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-				<h3 class="text-lg font-medium text-gray-900 dark:text-white">Organization Type Information</h3>
+				<h3 class="text-lg font-medium text-gray-900 dark:text-white">{{ __('সংস্থার ধরন তথ্য') }}</h3>
 			</div>
 			<div class="p-6">
 				<form action="{{ route('admin.organization-types.store') }}" method="POST" class="space-y-6">
@@ -22,14 +22,14 @@
 					<!-- Organization Type Name -->
 					<div>
 						<label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-							Name <span class="text-red-500">*</span>
+							{{ __('নাম') }} <span class="text-red-500">*</span>
 						</label>
 						<input type="text" 
 							name="name" 
 							id="name" 
 							value="{{ old('name') }}"
 							class="input-field @error('name') border-red-500 dark:border-red-400 @enderror"
-							placeholder="Enter organization type name (e.g., NGO, Government, Private)"
+							placeholder="{{ __('সংস্থার ধরনের নাম লিখুন (যেমন, এনজিও, সরকারি, বেসরকারি)') }}"
 							required>
 						@error('name')
 							<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
@@ -39,13 +39,13 @@
 					<!-- Description -->
 					<div>
 						<label for="description" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-							Description
+							{{ __('বর্ণনা') }}
 						</label>
 						<textarea name="description" 
 							id="description" 
 							rows="4"
 							class="input-field @error('description') border-red-500 dark:border-red-400 @enderror"
-							placeholder="Enter description of the organization type">{{ old('description') }}</textarea>
+							placeholder="{{ __('সংস্থার ধরনের বর্ণনা লিখুন') }}">{{ old('description') }}</textarea>
 						@error('description')
 							<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
 						@enderror
@@ -54,10 +54,10 @@
 					<!-- Submit Buttons -->
 					<div class="flex justify-end space-x-3">
 						<a href="{{ route('admin.organization-types.index') }}" class="btn-secondary">
-							Cancel
+							{{ __('বাতিল') }}
 						</a>
 						<button type="submit" class="btn-primary">
-							Create Organization Type
+							{{ __('সংস্থার ধরন তৈরি করুন') }}
 						</button>
 					</div>
 				</form>

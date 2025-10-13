@@ -8,8 +8,8 @@
 					</svg>
 				</div>
 				<div>
-                    <h1 class="text-2xl font-bold text-gray-900 dark:text-white">{{ __('Relief Applications') }}</h1>
-                    <p class="text-sm text-gray-500 dark:text-gray-400">{{ __('Manage and review relief applications') }}</p>
+                    <h1 class="text-2xl font-bold text-gray-900 dark:text-white {{ app()->isLocale('bn') ? 'font-sans' : '' }}">{{ __('Relief Applications') }}</h1>
+                    <p class="text-sm text-gray-500 dark:text-gray-400 {{ app()->isLocale('bn') ? 'font-sans' : '' }}">{{ __('Manage and review relief applications') }}</p>
 				</div>
 			</div>
 			<div class="flex flex-wrap gap-3">
@@ -47,7 +47,7 @@
 		<!-- Filter Section -->
 		<div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
             <div class="flex items-center justify-between mb-4">
-                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ __('Filter Applications') }}</h3>
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white {{ app()->isLocale('bn') ? 'font-sans' : '' }}">{{ __('Filter Applications') }}</h3>
 				@if(request('search') || request('status') || request('relief_type_id') || request('organization_type_id') || request('zilla_id') || request('economic_year_id') || request('upazila_id') || request('union_id') || request('project_id'))
 					<a href="{{ route('admin.relief-applications.index') }}" 
 						class="inline-flex items-center px-3 py-1.5 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 text-sm font-medium rounded-md transition-colors duration-200">
@@ -61,7 +61,7 @@
 			<form method="GET" action="{{ route('admin.relief-applications.index') }}" class="space-y-4">
 				<!-- Search Field -->
 				<div class="mb-6">
-					<label for="search" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+					<label for="search" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 {{ app()->isLocale('bn') ? 'font-sans' : '' }}">
 						<svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
 						</svg>
@@ -261,13 +261,13 @@
 			<div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
 				<div class="flex items-center justify-between">
 					<div class="flex items-center space-x-3">
-                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ __('Applications') }}</h3>
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white {{ app()->isLocale('bn') ? 'font-sans' : '' }}">{{ __('Applications') }}</h3>
 						<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
                             @bn($reliefApplications->total()) {{ __('total') }}
 						</span>
 					</div>
 					<div class="flex items-center space-x-2">
-                        <span class="text-sm text-gray-500 dark:text-gray-400">{{ __('Showing') }} @bn($reliefApplications->firstItem() ?? 0) {{ __('to') }} @bn($reliefApplications->lastItem() ?? 0) {{ __('of') }} @bn($reliefApplications->total())</span>
+                        <span class="text-sm text-gray-500 dark:text-gray-400 {{ app()->isLocale('bn') ? 'font-sans' : '' }}">{{ __('Showing') }} @bn($reliefApplications->firstItem() ?? 0) {{ __('to') }} @bn($reliefApplications->lastItem() ?? 0) {{ __('of') }} @bn($reliefApplications->total())</span>
 					</div>
 				</div>
 			</div>
@@ -275,14 +275,14 @@
 				<table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
 					<thead class="bg-gray-50 dark:bg-gray-800">
 						<tr>
-                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">{{ __('Organization') }}</th>
-                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">{{ __('Subject') }}</th>
-                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">{{ __('Relief Type') }}</th>
-                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">{{ __('Amount') }}</th>
-                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">{{ __('Approved') }}</th>
-                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">{{ __('Status') }}</th>
-                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">{{ __('Date') }}</th>
-                            <th class="px-6 py-4 text-right text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">{{ __('Actions') }}</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider {{ app()->isLocale('bn') ? 'font-sans' : '' }}">{{ __('Organization') }}</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider {{ app()->isLocale('bn') ? 'font-sans' : '' }}">{{ __('Subject') }}</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider {{ app()->isLocale('bn') ? 'font-sans' : '' }}">{{ __('Relief Type') }}</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider {{ app()->isLocale('bn') ? 'font-sans' : '' }}">{{ __('Amount') }}</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider {{ app()->isLocale('bn') ? 'font-sans' : '' }}">{{ __('Approved') }}</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider {{ app()->isLocale('bn') ? 'font-sans' : '' }}">{{ __('Status') }}</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider {{ app()->isLocale('bn') ? 'font-sans' : '' }}">{{ __('Date') }}</th>
+                            <th class="px-6 py-4 text-right text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider {{ app()->isLocale('bn') ? 'font-sans' : '' }}">{{ __('Actions') }}</th>
 						</tr>
 					</thead>
 					<tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
@@ -347,8 +347,8 @@
 									@endif
 								</td>
 								<td class="px-6 py-5 whitespace-nowrap">
-                                    <div class="text-sm font-medium text-gray-900 dark:text-white">{{ $application->date->translatedFormat('j F, Y') }}</div>
-                                    <div class="text-xs text-gray-500 dark:text-gray-400">{{ $application->created_at->translatedFormat('j F, Y') }}</div>
+                                    <div class="text-sm font-medium text-gray-900 dark:text-white">{{ bn_date($application->date, 'd M Y') }}</div>
+                                    <div class="text-xs text-gray-500 dark:text-gray-400">{{ bn_date($application->created_at, 'd M Y') }}</div>
 								</td>
 								<td class="px-6 py-5 whitespace-nowrap text-right text-sm font-medium">
 									<div class="flex justify-end space-x-2">
@@ -388,8 +388,8 @@
 										<svg class="w-12 h-12 text-gray-400 dark:text-gray-500 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 											<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
 										</svg>
-                                        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">{{ __('No applications found') }}</h3>
-                                        <p class="text-gray-500 dark:text-gray-400">{{ __('Try adjusting your filters or check back later.') }}</p>
+                                        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2 {{ app()->isLocale('bn') ? 'font-sans' : '' }}">{{ __('No applications found') }}</h3>
+                                        <p class="text-gray-500 dark:text-gray-400 {{ app()->isLocale('bn') ? 'font-sans' : '' }}">{{ __('Try adjusting your filters or check back later.') }}</p>
 									</div>
 								</td>
 							</tr>

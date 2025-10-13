@@ -6,15 +6,15 @@
 					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
 				</svg>
 			</a>
-            <h1 class="text-2xl font-bold text-gray-900 dark:text-white">{{ __('Review Application') }}: {{ $reliefApplication->subject }}</h1>
+            <h1 class="text-2xl font-bold text-gray-900 dark:text-white {{ app()->isLocale('bn') ? 'font-sans' : '' }}">{{ __('Review Application') }}: {{ $reliefApplication->subject }}</h1>
 		</div>
 	</x-slot>
 
 	<div class="max-w-4xl mx-auto">
 		<div class="card">
 			<div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-                <h3 class="text-lg font-medium text-gray-900 dark:text-white">{{ __('Application Review & Decision') }}</h3>
-                <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">{{ __('Review the application details and make your decision.') }}</p>
+                <h3 class="text-lg font-medium text-gray-900 dark:text-white {{ app()->isLocale('bn') ? 'font-sans' : '' }}">{{ __('Application Review & Decision') }}</h3>
+                <p class="mt-1 text-sm text-gray-600 dark:text-gray-400 {{ app()->isLocale('bn') ? 'font-sans' : '' }}">{{ __('Review the application details and make your decision.') }}</p>
 			</div>
 			<div class="p-6">
 				<form action="{{ route('admin.relief-applications.update', $reliefApplication) }}" method="POST" class="space-y-8" x-data="approvalForm()">
@@ -23,27 +23,27 @@
 
 					<!-- Application Summary -->
 					<div class="border-b border-gray-200 dark:border-gray-700 pb-8">
-                        <h4 class="text-lg font-medium text-gray-900 dark:text-white mb-6">{{ __('Application Summary') }}</h4>
+                        <h4 class="text-lg font-medium text-gray-900 dark:text-white mb-6 {{ app()->isLocale('bn') ? 'font-sans' : '' }}">{{ __('Application Summary') }}</h4>
 						
 						<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 							<div>
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{{ __('Organization') }}</label>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 {{ app()->isLocale('bn') ? 'font-sans' : '' }}">{{ __('Organization') }}</label>
 								<div class="p-3 bg-gray-50 dark:bg-gray-700 rounded-md">
 									<p class="text-sm text-gray-900 dark:text-white">{{ $reliefApplication->organization_name }}</p>
 									@if($reliefApplication->organizationType)
-										<p class="text-xs text-gray-500 dark:text-gray-400">{{ $reliefApplication->organizationType->name }}</p>
+										<p class="text-xs text-gray-500 dark:text-gray-400 {{ app()->isLocale('bn') ? 'font-sans' : '' }}">{{ localized_attr($reliefApplication->organizationType, 'name') }}</p>
 									@endif
 								</div>
 							</div>
 							<div>
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{{ __('Relief Type') }}</label>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 {{ app()->isLocale('bn') ? 'font-sans' : '' }}">{{ __('Relief Type') }}</label>
 								<div class="p-3 bg-gray-50 dark:bg-gray-700 rounded-md">
 									@if($reliefApplication->reliefType)
 										<div class="flex items-center">
 											@if($reliefApplication->reliefType->color_code)
 												<div class="w-3 h-3 rounded-full mr-2" style="background-color: {{ $reliefApplication->reliefType->color_code }}"></div>
 											@endif
-											<p class="text-sm text-gray-900 dark:text-white">{{ $reliefApplication->reliefType->name }}</p>
+											<p class="text-sm text-gray-900 dark:text-white {{ app()->isLocale('bn') ? 'font-sans' : '' }}">{{ localized_attr($reliefApplication->reliefType, 'name') }}</p>
 										</div>
 									@else
                                         <p class="text-sm text-gray-500 dark:text-gray-400">{{ __('Not specified') }}</p>
@@ -51,25 +51,42 @@
 								</div>
 							</div>
 							<div>
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{{ __('Amount Requested') }}</label>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 {{ app()->isLocale('bn') ? 'font-sans' : '' }}">{{ __('Amount Requested') }}</label>
 								<div class="p-3 bg-blue-50 dark:bg-blue-900 rounded-lg border border-blue-200 dark:border-blue-700">
-									<p class="text-lg font-semibold text-blue-900 dark:text-blue-100">{{ $reliefApplication->formatted_amount }}</p>
-                                    <p class="text-xs text-blue-700 dark:text-blue-300 mt-1">{{ __('Total amount requested by applicant') }}</p>
+									<p class="text-lg font-semibold text-blue-900 dark:text-blue-100">
+										@if($reliefApplication->reliefType)
+											@php
+												$unit = localized_attr($reliefApplication->reliefType, 'unit') ?? '';
+											@endphp
+											{{ amount_format_bn($reliefApplication->amount_requested, $unit) }}
+										@else
+											{{ money_format_bn($reliefApplication->amount_requested) }}
+										@endif
+									</p>
+                                    <p class="text-xs text-blue-700 dark:text-blue-300 mt-1 {{ app()->isLocale('bn') ? 'font-sans' : '' }}">{{ __('Total amount requested by applicant') }}</p>
 								</div>
 							</div>
 							<div>
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{{ __('Location') }}</label>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 {{ app()->isLocale('bn') ? 'font-sans' : '' }}">{{ __('Location') }}</label>
 								<div class="p-3 bg-gray-50 dark:bg-gray-700 rounded-md">
-                                    <p class="text-sm text-gray-900 dark:text-white">{{ $reliefApplication->zilla?->name ?? __('Not specified') }}, {{ $reliefApplication->upazila?->name ?? __('Not specified') }}</p>
+                                    <p class="text-sm text-gray-900 dark:text-white {{ app()->isLocale('bn') ? 'font-sans' : '' }}">{{ localized_attr($reliefApplication->zilla, 'name') ?? __('Not specified') }}, {{ localized_attr($reliefApplication->upazila, 'name') ?? __('Not specified') }}</p>
 								</div>
 							</div>
 							<div>
-                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{{ __('Project') }}</label>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 {{ app()->isLocale('bn') ? 'font-sans' : '' }}">{{ __('Project') }}</label>
 								<div class="p-3 bg-gray-50 dark:bg-gray-700 rounded-md">
 									@if($reliefApplication->project)
-										<p class="text-sm font-medium text-gray-900 dark:text-white">{{ $reliefApplication->project->name }}</p>
-                                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                                            {{ __('Available') }}: {{ $reliefApplication->project->formatted_available_amount }}
+										<p class="text-sm font-medium text-gray-900 dark:text-white {{ app()->isLocale('bn') ? 'font-sans' : '' }}">{{ localized_attr($reliefApplication->project, 'name') }}</p>
+                                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1 {{ app()->isLocale('bn') ? 'font-sans' : '' }}">
+                                            {{ __('Available') }}: 
+                                            @if($reliefApplication->project->reliefType)
+                                                @php
+                                                    $unit = localized_attr($reliefApplication->project->reliefType, 'unit') ?? '';
+                                                @endphp
+                                                {{ amount_format_bn($reliefApplication->project->available_amount, $unit) }}
+                                            @else
+                                                {{ money_format_bn($reliefApplication->project->available_amount) }}
+                                            @endif
                                         </p>
 									@else
                                         <p class="text-sm text-gray-500 dark:text-gray-400">{{ __('No project assigned') }}</p>
@@ -82,10 +99,10 @@
 					<!-- Decision Section -->
 					<div class="border-b border-gray-200 dark:border-gray-700 pb-8">
 						<div class="flex items-center justify-between mb-6">
-                            <h4 class="text-lg font-medium text-gray-900 dark:text-white">{{ __('Review Decision') }}</h4>
+                            <h4 class="text-lg font-medium text-gray-900 dark:text-white {{ app()->isLocale('bn') ? 'font-sans' : '' }}">{{ __('Review Decision') }}</h4>
 							<div class="flex items-center space-x-2">
-								<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $reliefApplication->status === 'pending' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200' : ($reliefApplication->status === 'approved' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200') }}">
-									{{ ucfirst($reliefApplication->status) }}
+								<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $reliefApplication->status === 'pending' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200' : ($reliefApplication->status === 'approved' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200') }} {{ app()->isLocale('bn') ? 'font-sans' : '' }}">
+									{{ $reliefApplication->status === 'pending' ? __('Pending') : ($reliefApplication->status === 'approved' ? __('Approved') : __('Rejected')) }}
 								</span>
 							</div>
 						</div>
@@ -193,25 +210,25 @@
 											id="approved_amount"
 											value="{{ old('approved_amount', $reliefApplication->approved_amount) }}"
 											class="input-field @error('approved_amount') border-red-500 dark:border-red-400 @enderror"
-                                            placeholder="0.00"
+                                            placeholder="০.০০"
 											min="0"
 											max="{{ $reliefApplication->project ? $reliefApplication->project->available_amount : 0 }}"
 											step="0.01"
 											@input="validateApprovalAmount()"
 											required>
 										<div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-											<span class="text-gray-500 dark:text-gray-400 text-sm">
+											<span class="text-gray-500 dark:text-gray-400 text-sm {{ app()->isLocale('bn') ? 'font-sans' : '' }}">
 												@if($reliefApplication->project && $reliefApplication->project->reliefType)
 													@php
-														$unit = $reliefApplication->project->reliefType->unit_bn ?? $reliefApplication->project->reliefType->unit ?? '';
+														$unit = localized_attr($reliefApplication->project->reliefType, 'unit') ?? '';
 													@endphp
-													@if(in_array($unit, ['টাকা', 'Taka']))
+													@if(in_array($unit, ['টাকা', 'Taka', '৳']))
 														৳
 													@else
 														{{ $unit }}
 													@endif
 												@else
-													৳
+													{{ localized_attr($reliefApplication->reliefType, 'unit') ?? '৳' }}
 												@endif
 											</span>
 										</div>
@@ -239,9 +256,16 @@
 													<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
 												</svg>
 												<div>
-                                                    <p class="text-sm font-medium text-blue-800 dark:text-blue-200">{{ __('Project') }}: {{ $reliefApplication->project->name }}</p>
+                                                    <p class="text-sm font-medium text-blue-800 dark:text-blue-200 {{ app()->isLocale('bn') ? 'font-sans' : '' }}">{{ __('Project') }}: {{ localized_attr($reliefApplication->project, 'name') }}</p>
 													<p class="text-lg font-semibold text-blue-900 dark:text-blue-100">
-														{{ $reliefApplication->project->formatted_available_amount }}
+														@if($reliefApplication->project->reliefType)
+															@php
+																$unit = localized_attr($reliefApplication->project->reliefType, 'unit') ?? '';
+															@endphp
+															{{ amount_format_bn($reliefApplication->project->available_amount, $unit) }}
+														@else
+															{{ money_format_bn($reliefApplication->project->available_amount) }}
+														@endif
 													</p>
 												</div>
 											</div>
@@ -274,15 +298,15 @@
 
 							<!-- Rejection Fields (shown when status is 'rejected') -->
 							<div x-show="status === 'rejected'" class="p-4 bg-red-50 dark:bg-red-900 rounded-lg">
-								<h5 class="text-sm font-medium text-red-800 dark:text-red-200 mb-3">Rejection Details</h5>
-								<p class="text-sm text-red-700 dark:text-red-300">Please provide a reason for rejection in the admin remarks section below.</p>
+								<h5 class="text-sm font-medium text-red-800 dark:text-red-200 mb-3 {{ app()->isLocale('bn') ? 'font-sans' : '' }}">{{ __('Rejection Details') }}</h5>
+								<p class="text-sm text-red-700 dark:text-red-300 {{ app()->isLocale('bn') ? 'font-sans' : '' }}">{{ __('Please provide a reason for rejection in the admin remarks section below.') }}</p>
 							</div>
 						</div>
 					</div>
 
 					<!-- Admin Remarks -->
 					<div class="pb-8">
-                        <h4 class="text-lg font-medium text-gray-900 dark:text-white mb-6">{{ __('Admin Remarks') }}</h4>
+                        <h4 class="text-lg font-medium text-gray-900 dark:text-white mb-6 {{ app()->isLocale('bn') ? 'font-sans' : '' }}">{{ __('Admin Remarks') }}</h4>
 						
 						<div>
 							<label for="admin_remarks" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -334,11 +358,26 @@
 				validateApprovalAmount() {
 					const approvalAmountInput = document.getElementById('approved_amount');
 					if (approvalAmountInput && this.availableBudget > 0) {
-						const approvalAmount = parseFloat(approvalAmountInput.value) || 0;
+						let value = approvalAmountInput.value;
+						
+						// Convert Bengali numbers to English for validation
+						value = this.convertBengaliToEnglish(value);
+						const approvalAmount = parseFloat(value) || 0;
 						this.insufficientFunds = approvalAmount > this.availableBudget;
 					} else {
 						this.insufficientFunds = false;
 					}
+				},
+				
+				convertBengaliToEnglish(text) {
+					const bengaliToEnglish = {
+						'০': '0', '১': '1', '২': '2', '৩': '3', '৪': '4',
+						'৫': '5', '৬': '6', '৭': '7', '৮': '8', '৯': '9'
+					};
+					
+					return text.replace(/[০-৯]/g, function(match) {
+						return bengaliToEnglish[match] || match;
+					});
 				},
 				
 				init() {
@@ -346,6 +385,11 @@
 					const approvalAmountInput = document.getElementById('approved_amount');
 					if (approvalAmountInput) {
 						approvalAmountInput.addEventListener('input', () => this.validateApprovalAmount());
+						
+						// Convert Bengali input to English before form submission
+						approvalAmountInput.addEventListener('blur', (e) => {
+							e.target.value = this.convertBengaliToEnglish(e.target.value);
+						});
 					}
 					
 					// Initial validation

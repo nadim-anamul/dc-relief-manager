@@ -69,7 +69,7 @@
 											class="relative appearance-none w-full pl-5 pr-14 py-4 bg-gradient-to-r from-white/90 to-white/80 dark:from-gray-800/90 dark:to-gray-700/80 border-2 border-transparent rounded-2xl text-gray-900 dark:text-gray-100 font-semibold shadow-lg hover:shadow-xl focus:ring-4 focus:ring-indigo-500/30 focus:border-indigo-400 transition-all duration-300 cursor-pointer backdrop-blur-sm z-10 min-w-[280px]">
 											@foreach($years as $y)
 												<option value="{{ $y->id }}" {{ $selectedYearId == $y->id ? 'selected' : '' }}>
-													{{ $y->name ?? ($y->start_date?->format('Y') . ' - ' . $y->end_date?->format('Y')) }}
+													{{ localized_attr($y, 'name') ?? (bn_number($y->start_date?->format('Y')) . ' - ' . bn_number($y->end_date?->format('Y'))) }}
 												</option>
 											@endforeach
 										</select>
@@ -145,7 +145,7 @@
 										class="w-full appearance-none pl-9 pr-8 py-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-white/90 dark:bg-gray-800/90 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm text-base">
 										@foreach($years as $y)
 											<option value="{{ $y->id }}" {{ $selectedYearId == $y->id ? 'selected' : '' }}>
-												{{ $y->name ?? ($y->start_date?->format('Y') . ' - ' . $y->end_date?->format('Y')) }}
+												{{ localized_attr($y, 'name') ?? (bn_number($y->start_date?->format('Y')) . ' - ' . bn_number($y->end_date?->format('Y'))) }}
 											</option>
 										@endforeach
 									</select>

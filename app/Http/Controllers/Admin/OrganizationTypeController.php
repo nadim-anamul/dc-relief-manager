@@ -41,7 +41,7 @@ class OrganizationTypeController extends Controller
 		OrganizationType::create($validated);
 
 		return redirect()->route('admin.organization-types.index')
-			->with('success', 'Organization Type created successfully.');
+			->with('success', __('সংস্থার ধরন সফলভাবে তৈরি হয়েছে।'));
 	}
 
 	/**
@@ -73,7 +73,7 @@ class OrganizationTypeController extends Controller
 		$organizationType->update($validated);
 
 		return redirect()->route('admin.organization-types.index')
-			->with('success', 'Organization Type updated successfully.');
+			->with('success', __('সংস্থার ধরন সফলভাবে হালনাগাদ হয়েছে।'));
 	}
 
 	/**
@@ -84,6 +84,6 @@ class OrganizationTypeController extends Controller
 		$organizationType->delete();
 
 		return redirect()->route('admin.organization-types.index')
-			->with('success', 'Organization Type deleted successfully.');
+			->with('success', __('সংস্থার ধরন সফলভাবে মুছে ফেলা হয়েছে।'));
 	}
 }

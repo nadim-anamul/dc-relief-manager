@@ -80,7 +80,7 @@ class WardController extends Controller
 		Ward::create($validated);
 
 		return redirect()->route('admin.wards.index')
-			->with('success', 'Ward created successfully.');
+			->with('success', __('ওয়ার্ড সফলভাবে তৈরি হয়েছে।'));
 	}
 
 	/**
@@ -129,7 +129,7 @@ class WardController extends Controller
 		$ward->update($validated);
 
 		return redirect()->route('admin.wards.index')
-			->with('success', 'Ward updated successfully.');
+			->with('success', __('ওয়ার্ড সফলভাবে হালনাগাদ হয়েছে।'));
 	}
 
 	/**
@@ -140,7 +140,7 @@ class WardController extends Controller
 		$ward->delete();
 
 		return redirect()->route('admin.wards.index')
-			->with('success', 'Ward deleted successfully.');
+			->with('success', __('ওয়ার্ড সফলভাবে মুছে ফেলা হয়েছে।'));
 	}
 
 	/**

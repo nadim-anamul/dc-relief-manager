@@ -2,10 +2,10 @@
     <x-slot name="header">
         <div class="flex items-center justify-between">
             <div>
-                <h2 class="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">
+                <h2 class="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200 {{ app()->isLocale('bn') ? 'font-sans' : '' }}">
                     {{ $title }}
                 </h2>
-                <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
+                <p class="mt-1 text-sm text-gray-600 dark:text-gray-400 {{ app()->isLocale('bn') ? 'font-sans' : '' }}">
                     {{ $description }}
                 </p>
             </div>
@@ -41,7 +41,7 @@
                                 <option value="">{{ __('All Years') }}</option>
                                 @foreach($years as $year)
                                     <option value="{{ $year->id }}" {{ ($selectedYear?->id ?? null) == $year->id ? 'selected' : '' }}>
-                                        {{ $year->name }} ({{ $year->start_date->format('Y') }} - {{ $year->end_date->format('Y') }})
+                                        {{ $year->name }} ({{ bn_number($year->start_date->format('Y')) }} - {{ bn_number($year->end_date->format('Y')) }})
                                     </option>
                                 @endforeach
                             </select>

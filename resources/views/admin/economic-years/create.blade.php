@@ -6,14 +6,14 @@
 					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
 				</svg>
 			</a>
-			<h1 class="text-2xl font-bold text-gray-900 dark:text-white">Create New Economic Year</h1>
+			<h1 class="text-2xl font-bold text-gray-900 dark:text-white">{{ __('নতুন অর্থবছর তৈরি করুন') }}</h1>
 		</div>
 	</x-slot>
 
 	<div class="max-w-2xl mx-auto">
 		<div class="card">
 			<div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-				<h3 class="text-lg font-medium text-gray-900 dark:text-white">Economic Year Information</h3>
+				<h3 class="text-lg font-medium text-gray-900 dark:text-white">{{ __('অর্থবছর তথ্য') }}</h3>
 			</div>
 			<div class="p-6">
 				<form action="{{ route('admin.economic-years.store') }}" method="POST" class="space-y-6">
@@ -22,14 +22,14 @@
 					<!-- Name -->
 					<div>
 						<label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-							Name <span class="text-red-500">*</span>
+							{{ __('নাম') }} <span class="text-red-500">*</span>
 						</label>
 						<input type="text" 
 							name="name" 
 							id="name" 
 							value="{{ old('name') }}"
 							class="input-field @error('name') border-red-500 dark:border-red-400 @enderror"
-							placeholder="e.g., 2024-2025"
+							placeholder="{{ __('যেমন, ২০২৪-২০২৫') }}"
 							required>
 						@error('name')
 							<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
@@ -39,14 +39,14 @@
 					<!-- Bengali Name -->
 					<div>
 						<label for="name_bn" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-							Bengali Name
+							{{ __('বাংলা নাম') }}
 						</label>
 						<input type="text" 
 							name="name_bn" 
 							id="name_bn" 
 							value="{{ old('name_bn') }}"
 							class="input-field @error('name_bn') border-red-500 dark:border-red-400 @enderror"
-							placeholder="e.g., ২০২৪-২০২৫">
+							placeholder="{{ __('যেমন, ২০২৪-২০২৫') }}">
 						@error('name_bn')
 							<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
 						@enderror
@@ -55,7 +55,7 @@
 					<!-- Start Date -->
 					<div>
 						<label for="start_date" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-							Start Date <span class="text-red-500">*</span>
+							{{ __('শুরু তারিখ') }} <span class="text-red-500">*</span>
 						</label>
 						<input type="date" 
 							name="start_date" 
@@ -71,7 +71,7 @@
 					<!-- End Date -->
 					<div>
 						<label for="end_date" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-							End Date <span class="text-red-500">*</span>
+							{{ __('শেষ তারিখ') }} <span class="text-red-500">*</span>
 						</label>
 						<input type="date" 
 							name="end_date" 
@@ -92,7 +92,7 @@
 								value="1"
 								{{ old('is_active', true) ? 'checked' : '' }}
 								class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 dark:border-gray-600 rounded dark:bg-gray-700">
-							<span class="ml-2 text-sm text-gray-700 dark:text-gray-300">Active</span>
+							<span class="ml-2 text-sm text-gray-700 dark:text-gray-300">{{ __('সক্রিয়') }}</span>
 						</label>
 
 						<label class="flex items-center">
@@ -101,18 +101,18 @@
 								value="1"
 								{{ old('is_current') ? 'checked' : '' }}
 								class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 dark:border-gray-600 rounded dark:bg-gray-700">
-							<span class="ml-2 text-sm text-gray-700 dark:text-gray-300">Set as Current Year</span>
+							<span class="ml-2 text-sm text-gray-700 dark:text-gray-300">{{ __('বর্তমান বছর হিসেবে সেট করুন') }}</span>
 						</label>
-						<p class="text-xs text-gray-500 dark:text-gray-400 ml-6">Setting this as current will unset any other current year</p>
+						<p class="text-xs text-gray-500 dark:text-gray-400 ml-6">{{ __('এটিকে বর্তমান হিসেবে সেট করলে অন্য কোনো বর্তমান বছর আনসেট হয়ে যাবে') }}</p>
 					</div>
 
 					<!-- Submit Buttons -->
 					<div class="flex justify-end space-x-3">
 						<a href="{{ route('admin.economic-years.index') }}" class="btn-secondary">
-							Cancel
+							{{ __('বাতিল') }}
 						</a>
 						<button type="submit" class="btn-primary">
-							Create Economic Year
+							{{ __('অর্থবছর তৈরি করুন') }}
 						</button>
 					</div>
 				</form>

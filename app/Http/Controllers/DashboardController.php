@@ -138,9 +138,9 @@ class DashboardController extends Controller
                 // Build a display string for the economic year with Bangla digits if locale is bn
                 if ($p->economicYear) {
                     $display = $p->economicYear->name
-                        ?: ($p->economicYear->start_date?->format('Y') . ' - ' . $p->economicYear->end_date?->format('Y'));
+                        ?: (bn_number($p->economicYear->start_date?->format('Y')) . ' - ' . bn_number($p->economicYear->end_date?->format('Y')));
                 } elseif ($year) {
-                    $display = $year->name ?: ($year->start_date?->format('Y') . ' - ' . $year->end_date?->format('Y'));
+                    $display = $year->name ?: (bn_number($year->start_date?->format('Y')) . ' - ' . bn_number($year->end_date?->format('Y')));
                 } else {
                     $display = null;
                 }

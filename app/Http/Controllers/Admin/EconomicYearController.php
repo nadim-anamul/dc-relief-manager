@@ -54,7 +54,7 @@ class EconomicYearController extends Controller
 		EconomicYear::create($validated);
 
 		return redirect()->route('admin.economic-years.index')
-			->with('success', 'Economic Year created successfully.');
+			->with('success', __('অর্থবছর সফলভাবে তৈরি হয়েছে।'));
 	}
 
 	/**
@@ -102,7 +102,7 @@ class EconomicYearController extends Controller
 		$economicYear->update($validated);
 
 		return redirect()->route('admin.economic-years.index')
-			->with('success', 'Economic Year updated successfully.');
+			->with('success', __('অর্থবছর সফলভাবে হালনাগাদ হয়েছে।'));
 	}
 
 	/**
@@ -112,13 +112,13 @@ class EconomicYearController extends Controller
 	{
 		// Prevent deletion if it's the current year
 		if ($economicYear->is_current) {
-			return redirect()->route('admin.economic-years.index')
-				->with('error', 'Cannot delete the current economic year.');
+		return redirect()->route('admin.economic-years.index')
+			->with('error', __('বর্তমান অর্থবছর মুছে ফেলা যাবে না।'));
 		}
 
 		$economicYear->delete();
 
 		return redirect()->route('admin.economic-years.index')
-			->with('success', 'Economic Year deleted successfully.');
+			->with('success', __('অর্থবছর সফলভাবে মুছে ফেলা হয়েছে।'));
 	}
 }

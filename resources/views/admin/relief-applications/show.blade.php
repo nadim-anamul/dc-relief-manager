@@ -25,15 +25,15 @@
 				<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
 					<div>
                         <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('Application Date') }}</dt>
-						<dd class="mt-1 text-sm text-gray-900 dark:text-white">{{ $reliefApplication->date->format('F d, Y') }}</dd>
+						<dd class="mt-1 text-sm text-gray-900 dark:text-white">{{ bn_date($reliefApplication->date, 'd M Y') }}</dd>
 					</div>
 					<div>
                         <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('Submitted') }}</dt>
-						<dd class="mt-1 text-sm text-gray-900 dark:text-white">{{ $reliefApplication->created_at->format('F d, Y g:i A') }}</dd>
+						<dd class="mt-1 text-sm text-gray-900 dark:text-white">{{ bn_datetime($reliefApplication->created_at, 'd M Y, h:i A') }}</dd>
 					</div>
 					<div>
                         <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('Last Updated') }}</dt>
-						<dd class="mt-1 text-sm text-gray-900 dark:text-white">{{ $reliefApplication->updated_at->format('F d, Y g:i A') }}</dd>
+						<dd class="mt-1 text-sm text-gray-900 dark:text-white">{{ bn_datetime($reliefApplication->updated_at, 'd M Y, h:i A') }}</dd>
 					</div>
 				</div>
 				@if($reliefApplication->approved_at)
@@ -45,7 +45,7 @@
 							</div>
 							<div>
                                 <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('Approved At') }}</dt>
-								<dd class="mt-1 text-sm text-gray-900 dark:text-white">{{ $reliefApplication->approved_at->format('F d, Y g:i A') }}</dd>
+								<dd class="mt-1 text-sm text-gray-900 dark:text-white">{{ bn_datetime($reliefApplication->approved_at, 'd M Y, h:i A') }}</dd>
 							</div>
 						</div>
 					</div>
@@ -59,7 +59,7 @@
 							</div>
 							<div>
                                 <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('Rejected At') }}</dt>
-								<dd class="mt-1 text-sm text-gray-900 dark:text-white">{{ $reliefApplication->rejected_at->format('F d, Y g:i A') }}</dd>
+								<dd class="mt-1 text-sm text-gray-900 dark:text-white">{{ bn_datetime($reliefApplication->rejected_at, 'd M Y, h:i A') }}</dd>
 							</div>
 						</div>
 					</div>

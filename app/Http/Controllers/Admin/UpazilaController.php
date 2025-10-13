@@ -58,7 +58,7 @@ class UpazilaController extends Controller
 		Upazila::create($validated);
 
 		return redirect()->route('admin.upazilas.index')
-			->with('success', 'Upazila created successfully.');
+			->with('success', __('উপজেলা সফলভাবে তৈরি হয়েছে।'));
 	}
 
 	/**
@@ -99,7 +99,7 @@ class UpazilaController extends Controller
 		$upazila->update($validated);
 
 		return redirect()->route('admin.upazilas.index')
-			->with('success', 'Upazila updated successfully.');
+			->with('success', __('উপজেলা সফলভাবে হালনাগাদ হয়েছে।'));
 	}
 
 	/**
@@ -110,7 +110,7 @@ class UpazilaController extends Controller
 		$upazila->delete();
 
 		return redirect()->route('admin.upazilas.index')
-			->with('success', 'Upazila deleted successfully.');
+			->with('success', __('উপজেলা সফলভাবে মুছে ফেলা হয়েছে।'));
 	}
 
 	/**

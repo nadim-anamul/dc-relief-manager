@@ -18,6 +18,9 @@ return Application::configure(basePath: dirname(__DIR__))
 
         // Apply locale after session is started (web group)
         $middleware->appendToGroup('web', \App\Http\Middleware\SetLocale::class);
+        
+        // Convert Bengali numbers to English numbers for form processing
+        $middleware->appendToGroup('web', \App\Http\Middleware\ConvertBengaliNumbers::class);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

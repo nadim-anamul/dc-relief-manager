@@ -8,8 +8,8 @@
 					</svg>
 				</div>
 				<div>
-					<h1 class="text-2xl font-bold text-gray-900 dark:text-white">Economic Years</h1>
-					<p class="text-sm text-gray-500 dark:text-gray-400">Manage fiscal periods and budget cycles</p>
+					<h1 class="text-2xl font-bold text-gray-900 dark:text-white {{ app()->isLocale('bn') ? 'font-sans' : '' }}">{{ __('Economic Years') }}</h1>
+					<p class="text-sm text-gray-500 dark:text-gray-400 {{ app()->isLocale('bn') ? 'font-sans' : '' }}">{{ __('Manage fiscal periods and budget cycles') }}</p>
 				</div>
 			</div>
 			<div class="flex flex-wrap gap-3">
@@ -18,7 +18,7 @@
 					<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
 					</svg>
-					Add New Economic Year
+					{{ __('Add New Economic Year') }}
 				</a>
 			</div>
 		</div>
@@ -27,7 +27,7 @@
 	<div class="space-y-6">
 		<!-- Stats Cards -->
 		<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-			<!-- Total Economic Years -->
+			<!-- {{ __("Total") }} Economic Years -->
 			<div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 hover:shadow-md transition-shadow duration-200">
 				<div class="flex items-center justify-between">
 					<div class="flex items-center space-x-3">
@@ -37,14 +37,14 @@
 							</svg>
 						</div>
 						<div>
-							<p class="text-sm font-medium text-gray-500 dark:text-gray-400">Total</p>
+							<p class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __("Total") }}</p>
 							<p class="text-2xl font-bold text-gray-900 dark:text-white">{{ $economicYears->total() }}</p>
 						</div>
 					</div>
 				</div>
 			</div>
 
-			<!-- Active Economic Years -->
+			<!-- {{ __("Active") }} Economic Years -->
 			<div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 hover:shadow-md transition-shadow duration-200">
 				<div class="flex items-center justify-between">
 					<div class="flex items-center space-x-3">
@@ -54,14 +54,14 @@
 							</svg>
 						</div>
 						<div>
-							<p class="text-sm font-medium text-gray-500 dark:text-gray-400">Active</p>
+							<p class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __("Active") }}</p>
 							<p class="text-2xl font-bold text-gray-900 dark:text-white">{{ $economicYears->where('is_active', true)->count() }}</p>
 						</div>
 					</div>
 				</div>
 			</div>
 
-			<!-- Current Year -->
+			<!-- {{ __("Current") }} Year -->
 			<div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 hover:shadow-md transition-shadow duration-200">
 				<div class="flex items-center justify-between">
 					<div class="flex items-center space-x-3">
@@ -71,7 +71,7 @@
 							</svg>
 						</div>
 						<div>
-							<p class="text-sm font-medium text-gray-500 dark:text-gray-400">Current</p>
+							<p class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __("Current") }}</p>
 							<p class="text-2xl font-bold text-gray-900 dark:text-white">{{ $economicYears->where('is_current', true)->count() }}</p>
 						</div>
 					</div>
@@ -88,8 +88,8 @@
 							</svg>
 						</div>
 						<div>
-							<p class="text-sm font-medium text-gray-500 dark:text-gray-400">Avg Duration</p>
-							<p class="text-2xl font-bold text-gray-900 dark:text-white">{{ $economicYears->avg('duration_in_months') ? round($economicYears->avg('duration_in_months')) : 0 }}m</p>
+							<p class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __("Avg Duration") }}</p>
+							<p class="text-2xl font-bold text-gray-900 dark:text-white">{{ $economicYears->avg('duration_in_months') ? bn_number(round($economicYears->avg('duration_in_months'))) : bn_number(0) }}m</p>
 						</div>
 					</div>
 				</div>
@@ -101,9 +101,9 @@
 			<div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
 				<div class="flex items-center justify-between">
 					<div class="flex items-center space-x-3">
-						<h3 class="text-lg font-semibold text-gray-900 dark:text-white">Economic Years</h3>
+						<h3 class="text-lg font-semibold text-gray-900 dark:text-white {{ app()->isLocale('bn') ? 'font-sans' : '' }}">{{ __('Economic Years') }}</h3>
 						<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200">
-							{{ $economicYears->total() }} total
+							@bn($economicYears->total()) {{ __('total') }}
 						</span>
 					</div>
 					<div class="flex items-center space-x-2">
@@ -138,7 +138,7 @@
 										<div class="text-sm font-semibold text-gray-900 dark:text-white">{{ $economicYear->name }}</div>
 										@if($economicYear->is_current)
 											<span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200">
-												Current
+												{{ __("Current") }}
 											</span>
 										@endif
 									</div>
@@ -149,16 +149,16 @@
 							</td>
 							<td class="px-6 py-5 whitespace-nowrap">
 								<div class="text-sm font-medium text-gray-900 dark:text-white">
-									{{ $economicYear->start_date->format('M Y') }} - {{ $economicYear->end_date->format('M Y') }}
+									{{ bn_date($economicYear->start_date, 'M Y') }} - {{ bn_date($economicYear->end_date, 'M Y') }}
 								</div>
 								<div class="text-xs text-gray-500 dark:text-gray-400">
-									{{ $economicYear->duration_in_months }} months
+									{{ bn_number($economicYear->duration_in_months) }} {{ __('months') }}
 								</div>
 							</td>
 							<td class="px-6 py-5 whitespace-nowrap">
 								@if($economicYear->is_active)
 									<span class="inline-flex items-center px-3 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
-										Active
+										{{ __("Active") }}
 									</span>
 								@else
 									<span class="inline-flex items-center px-3 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200">
