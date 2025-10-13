@@ -27,14 +27,6 @@
 						<dd class="mt-1 text-sm text-gray-900 dark:text-white">{{ $ward->name_bn ?? '-' }}</dd>
 					</div>
 					<div>
-						<dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Code</dt>
-						<dd class="mt-1 text-sm text-gray-900 dark:text-white">
-							<span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200">
-								{{ $ward->code }}
-							</span>
-						</dd>
-					</div>
-					<div>
 						<dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Status</dt>
 						<dd class="mt-1 text-sm text-gray-900 dark:text-white">
 							@if($ward->is_active)

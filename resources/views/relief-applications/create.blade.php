@@ -6,7 +6,7 @@
 					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
 				</svg>
 			</a>
-			<h1 class="text-2xl font-bold text-gray-900 dark:text-white">{{ __('Submit Relief Application') }}</h1>
+			<h1 class="text-2xl font-bold text-gray-900 dark:text-white {{ app()->isLocale('bn') ? 'font-sans' : '' }}">{{ __('Submit Relief Application') }}</h1>
 		</div>
 	</x-slot>
 
@@ -23,8 +23,8 @@
 						</div>
 					</div>
 					<div class="ml-4">
-							<h3 class="text-xl font-bold text-gray-900 dark:text-white">{{ __('Relief Application Form') }}</h3>
-							<p class="text-sm text-gray-600 dark:text-gray-400">{{ __('Please complete all sections to submit your relief request') }}</p>
+							<h3 class="text-xl font-bold text-gray-900 dark:text-white {{ app()->isLocale('bn') ? 'font-sans' : '' }}">{{ __('Relief Application Form') }}</h3>
+							<p class="text-sm text-gray-600 dark:text-gray-400 {{ app()->isLocale('bn') ? 'font-sans' : '' }}">{{ __('Please complete all sections to submit your relief request') }}</p>
 					</div>
 				</div>
 			</div>
@@ -43,8 +43,8 @@
 								</div>
 							</div>
 							<div class="ml-3">
-									<h4 class="text-lg font-semibold text-gray-900 dark:text-white">{{ __('Organization Information') }}</h4>
-									<p class="text-sm text-gray-500 dark:text-gray-400">{{ __('Tell us about your organization') }}</p>
+									<h4 class="text-lg font-semibold text-gray-900 dark:text-white {{ app()->isLocale('bn') ? 'font-sans' : '' }}">{{ __('Organization Information') }}</h4>
+									<p class="text-sm text-gray-500 dark:text-gray-400 {{ app()->isLocale('bn') ? 'font-sans' : '' }}">{{ __('Tell us about your organization') }}</p>
 							</div>
 						</div>
 						
@@ -175,7 +175,7 @@
 									required>
 											<option value="">{{ __('Select a Upazila') }}</option>
 									<template x-for="upazila in upazilas" :key="upazila.id">
-										<option :value="upazila.id" x-text="upazila.name + ' (' + upazila.name_bn + ')'"></option>
+										<option :value="upazila.id" x-text="upazila.name_bn || upazila.name"></option>
 									</template>
 								</select>
 								@error('upazila_id')
@@ -197,7 +197,7 @@
 									required>
 											<option value="">{{ __('Select a Union') }}</option>
 									<template x-for="union in unions" :key="union.id">
-										<option :value="union.id" x-text="union.name + ' (' + union.name_bn + ')'"></option>
+										<option :value="union.id" x-text="union.name_bn || union.name"></option>
 									</template>
 								</select>
 								@error('union_id')
@@ -217,7 +217,7 @@
 									:disabled="!selectedUnion">
 											<option value="">{{ __('Select a Ward') }}</option>
 									<template x-for="ward in wards" :key="ward.id">
-										<option :value="ward.id" x-text="ward.name + ' (' + ward.name_bn + ')'"></option>
+										<option :value="ward.id" x-text="ward.name_bn || ward.name"></option>
 									</template>
 								</select>
 								@error('ward_id')
@@ -260,8 +260,8 @@
 									<template x-for="project in projects" :key="project.id">
 										<option :value="project.id" 
 											:data-unit="project.relief_type_unit_bn || project.relief_type_unit"
-											:data-relief-type="project.relief_type_name"
-											x-text="project.name + ' (' + project.economic_year + ') - ' + project.relief_type_name"></option>
+											:data-relief-type="project.relief_type_name_bn || project.relief_type_name"
+											x-text="project.name_bn || project.name"></option>
 									</template>
 								</select>
 											<p class="mt-1 text-xs text-gray-500 dark:text-gray-400">

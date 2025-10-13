@@ -16,11 +16,10 @@ return new class extends Migration
 			$table->foreignId('zilla_id')->constrained()->onDelete('cascade');
 			$table->string('name');
 			$table->string('name_bn')->nullable(); // Bengali name
-			$table->string('code')->unique();
 			$table->boolean('is_active')->default(true);
 			$table->timestamps();
 
-			$table->index(['zilla_id', 'code']);
+			$table->index(['zilla_id', 'name']);
 		});
 	}
 

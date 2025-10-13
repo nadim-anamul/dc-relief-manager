@@ -38,7 +38,6 @@ class ZillaController extends Controller
 		$validated = $request->validate([
 			'name' => 'required|string|max:255',
 			'name_bn' => 'nullable|string|max:255',
-			'code' => 'required|string|max:10|unique:zillas,code',
 			'is_active' => 'boolean',
 		]);
 
@@ -76,7 +75,6 @@ class ZillaController extends Controller
 		$validated = $request->validate([
 			'name' => 'required|string|max:255',
 			'name_bn' => 'nullable|string|max:255',
-			'code' => 'required|string|max:10|unique:zillas,code,' . $zilla->id,
 			'is_active' => 'boolean',
 		]);
 

@@ -14,7 +14,6 @@ class Ward extends Model
 		'union_id',
 		'name',
 		'name_bn',
-		'code',
 		'is_active',
 	];
 

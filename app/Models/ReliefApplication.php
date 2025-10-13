@@ -225,10 +225,10 @@ class ReliefApplication extends Model
 	public function getStatusDisplayAttribute(): string
 	{
 		return match($this->status) {
-			'pending' => 'Pending',
-			'approved' => 'Approved',
-			'rejected' => 'Rejected',
-			default => 'Unknown',
+			'pending' => __('Pending'),
+			'approved' => __('Approved'),
+			'rejected' => __('Rejected'),
+			default => __('Unknown'),
 		};
 	}
 

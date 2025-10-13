@@ -53,22 +53,6 @@
 						@enderror
 					</div>
 
-					<!-- Code -->
-					<div>
-						<label for="code" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-							Code <span class="text-red-500">*</span>
-						</label>
-						<input type="text" 
-							name="code" 
-							id="code" 
-							value="{{ old('code', $zilla->code) }}"
-							class="input-field @error('code') border-red-500 dark:border-red-400 @enderror"
-							placeholder="Enter unique code (e.g., BOG)"
-							required>
-						@error('code')
-							<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-						@enderror
-					</div>
 
 					<!-- Status -->
 					<div>

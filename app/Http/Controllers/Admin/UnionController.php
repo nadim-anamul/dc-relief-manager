@@ -60,7 +60,6 @@ class UnionController extends Controller
 			'upazila_id' => 'required|exists:upazilas,id',
 			'name' => 'required|string|max:255',
 			'name_bn' => 'nullable|string|max:255',
-			'code' => 'required|string|max:20|unique:unions,code',
 			'is_active' => 'boolean',
 		]);
 
@@ -105,7 +104,6 @@ class UnionController extends Controller
 			'upazila_id' => 'required|exists:upazilas,id',
 			'name' => 'required|string|max:255',
 			'name_bn' => 'nullable|string|max:255',
-			'code' => 'required|string|max:20|unique:unions,code,' . $union->id,
 			'is_active' => 'boolean',
 		]);
 

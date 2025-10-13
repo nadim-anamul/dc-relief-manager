@@ -17,7 +17,6 @@ class Zilla extends Model
 	protected $fillable = [
 		'name',
 		'name_bn',
-		'code',
 		'is_active',
 		'created_by',
 		'updated_by',

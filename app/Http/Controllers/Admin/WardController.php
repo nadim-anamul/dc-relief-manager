@@ -71,7 +71,6 @@ class WardController extends Controller
 			'union_id' => 'required|exists:unions,id',
 			'name' => 'required|string|max:255',
 			'name_bn' => 'nullable|string|max:255',
-			'code' => 'required|string|max:20|unique:wards,code',
 			'is_active' => 'boolean',
 		]);
 
@@ -120,7 +119,6 @@ class WardController extends Controller
 			'union_id' => 'required|exists:unions,id',
 			'name' => 'required|string|max:255',
 			'name_bn' => 'nullable|string|max:255',
-			'code' => 'required|string|max:20|unique:wards,code,' . $ward->id,
 			'is_active' => 'boolean',
 		]);
 

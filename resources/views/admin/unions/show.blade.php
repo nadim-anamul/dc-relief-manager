@@ -27,14 +27,6 @@
 						<dd class="mt-1 text-sm text-gray-900 dark:text-white">{{ $union->name_bn ?? '-' }}</dd>
 					</div>
 					<div>
-						<dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Code</dt>
-						<dd class="mt-1 text-sm text-gray-900 dark:text-white">
-							<span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-orange-100 dark:bg-orange-900 text-orange-800 dark:text-orange-200">
-								{{ $union->code }}
-							</span>
-						</dd>
-					</div>
-					<div>
 						<dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Status</dt>
 						<dd class="mt-1 text-sm text-gray-900 dark:text-white">
 							@if($union->is_active)
@@ -95,11 +87,6 @@
 									</td>
 									<td class="px-6 py-4 whitespace-nowrap">
 										<div class="text-sm text-gray-500 dark:text-gray-400">{{ $ward->name_bn ?? '-' }}</div>
-									</td>
-									<td class="px-6 py-4 whitespace-nowrap">
-										<span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200">
-											{{ $ward->code }}
-										</span>
 									</td>
 									<td class="px-6 py-4 whitespace-nowrap">
 										@if($ward->is_active)

@@ -49,7 +49,6 @@ class UpazilaController extends Controller
 			'zilla_id' => 'required|exists:zillas,id',
 			'name' => 'required|string|max:255',
 			'name_bn' => 'nullable|string|max:255',
-			'code' => 'required|string|max:20|unique:upazilas,code',
 			'is_active' => 'boolean',
 		]);
 
@@ -90,7 +89,6 @@ class UpazilaController extends Controller
 			'zilla_id' => 'required|exists:zillas,id',
 			'name' => 'required|string|max:255',
 			'name_bn' => 'nullable|string|max:255',
-			'code' => 'required|string|max:20|unique:upazilas,code,' . $upazila->id,
 			'is_active' => 'boolean',
 		]);
 

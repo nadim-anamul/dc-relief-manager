@@ -15,7 +15,6 @@ return new class extends Migration
 			$table->id();
 			$table->string('name');
 			$table->string('name_bn')->nullable(); // Bengali name
-			$table->string('code')->unique();
 			$table->boolean('is_active')->default(true);
 			$table->timestamps();
 		});

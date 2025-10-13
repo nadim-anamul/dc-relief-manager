@@ -15,7 +15,6 @@ class Upazila extends Model
 		'zilla_id',
 		'name',
 		'name_bn',
-		'code',
 		'is_active',
 	];
 

@@ -15,7 +15,6 @@ class Union extends Model
 		'upazila_id',
 		'name',
 		'name_bn',
-		'code',
 		'is_active',
 	];
 

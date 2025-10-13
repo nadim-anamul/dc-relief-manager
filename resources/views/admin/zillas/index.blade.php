@@ -118,7 +118,6 @@
 						<tr>
                             <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">{{ __('Name') }}</th>
                             <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">{{ __('Bengali Name') }}</th>
-                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">{{ __('Code') }}</th>
                             <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">{{ __('Upazilas') }}</th>
                             <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">{{ __('Status') }}</th>
                             <th class="px-6 py-4 text-right text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider">{{ __('Actions') }}</th>
@@ -143,11 +142,6 @@
 							</td>
 							<td class="px-6 py-5 whitespace-nowrap">
 								<div class="text-sm font-medium text-gray-900 dark:text-white">{{ $zilla->name_bn ?? '-' }}</div>
-							</td>
-							<td class="px-6 py-5 whitespace-nowrap">
-								<span class="inline-flex px-3 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
-									{{ $zilla->code }}
-								</span>
 							</td>
 							<td class="px-6 py-5 whitespace-nowrap">
                                 <div class="text-sm font-medium text-gray-900 dark:text-white">@bn($zilla->upazilas_count)</div>

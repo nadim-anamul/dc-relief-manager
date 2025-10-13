@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Permission;
+use App\Models\Project;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
@@ -25,7 +26,11 @@ class PermissionController extends Controller
      */
     public function create()
     {
-        return view('admin.permissions.create');
+        $projects = Project::with(['economicYear', 'reliefType'])
+            ->orderBy('name')
+            ->get();
+            
+        return view('admin.permissions.create', compact('projects'));
     }
 
     /**
@@ -33,18 +38,62 @@ class PermissionController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'name' => 'required|string|max:255|unique:permissions,name',
-            'guard_name' => 'required|string|max:255',
-        ]);
+        $permissionType = $request->input('permission_type', 'general');
+        
+        if ($permissionType === 'project') {
+            // Validate project-based permissions
+            $request->validate([
+                'permission_type' => 'required|in:project',
+                'project_id' => 'required|exists:projects,id',
+                'actions' => 'required|array|min:1',
+                'actions.*' => 'in:view,create,edit,delete,approve,reject,manage',
+            ]);
 
-        Permission::create([
-            'name' => $request->name,
-            'guard_name' => $request->guard_name,
-        ]);
+            $project = Project::findOrFail($request->project_id);
+            $projectSlug = $this->generateProjectSlug($project->name, $project->id);
+            $createdPermissions = [];
 
-        return redirect()->route('admin.permissions.index')
-            ->with('success', 'Permission created successfully.');
+            foreach ($request->actions as $action) {
+                $permissionName = "projects.{$projectSlug}.{$action}";
+                
+                // Check if permission already exists
+                if (!Permission::where('name', $permissionName)->exists()) {
+                    Permission::create([
+                        'name' => $permissionName,
+                        'guard_name' => 'web',
+                    ]);
+                    $createdPermissions[] = $permissionName;
+                }
+            }
+
+            if (empty($createdPermissions)) {
+                return redirect()->route('admin.permissions.index')
+                    ->with('warning', 'All permissions for this project already exist.');
+            }
+
+            $message = count($createdPermissions) > 1 
+                ? count($createdPermissions) . ' permissions created successfully.'
+                : 'Permission created successfully.';
+
+            return redirect()->route('admin.permissions.index')
+                ->with('success', $message);
+
+        } else {
+            // Validate general permission
+            $request->validate([
+                'permission_type' => 'required|in:general',
+                'name' => 'required|string|max:255|unique:permissions,name',
+                'guard_name' => 'required|string|max:255',
+            ]);
+
+            Permission::create([
+                'name' => $request->name,
+                'guard_name' => $request->guard_name,
+            ]);
+
+            return redirect()->route('admin.permissions.index')
+                ->with('success', 'Permission created successfully.');
+        }
     }
 
     /**
@@ -99,5 +148,28 @@ class PermissionController extends Controller
 
         return redirect()->route('admin.permissions.index')
             ->with('success', 'Permission deleted successfully.');
+    }
+
+    /**
+     * Generate a unique slug for project-based permissions.
+     */
+    private function generateProjectSlug(string $projectName, int $projectId): string
+    {
+        // For Bengali text or non-Latin characters, use project ID
+        if (!preg_match('/^[a-zA-Z0-9\s\-_]+$/', $projectName)) {
+            return "project-{$projectId}";
+        }
+
+        // For Latin text, create a proper slug
+        $slug = strtolower(trim($projectName));
+        $slug = preg_replace('/[^a-zA-Z0-9]+/', '-', $slug);
+        $slug = trim($slug, '-');
+        
+        // Ensure slug is not empty
+        if (empty($slug)) {
+            return "project-{$projectId}";
+        }
+
+        return $slug;
     }
 }
