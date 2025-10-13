@@ -122,6 +122,52 @@
 						@enderror
 					</div>
 
+					<!-- Ministry Address -->
+					<div>
+						<label for="ministry_address" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+							Ministry Address
+						</label>
+						<textarea name="ministry_address" 
+							id="ministry_address" 
+							rows="3"
+							class="input-field @error('ministry_address') border-red-500 dark:border-red-400 @enderror"
+							placeholder="Enter ministry address">{{ old('ministry_address', $project->ministry_address) }}</textarea>
+						@error('ministry_address')
+							<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+						@enderror
+					</div>
+
+					<!-- Office Order Number -->
+					<div>
+						<label for="office_order_number" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+							Office Order Number
+						</label>
+						<input type="text" 
+							name="office_order_number" 
+							id="office_order_number" 
+							value="{{ old('office_order_number', $project->office_order_number) }}"
+							class="input-field @error('office_order_number') border-red-500 dark:border-red-400 @enderror"
+							placeholder="Enter office order number">
+						@error('office_order_number')
+							<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+						@enderror
+					</div>
+
+					<!-- Office Order Date -->
+					<div>
+						<label for="office_order_date" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+							Office Order Date
+						</label>
+						<input type="date" 
+							name="office_order_date" 
+							id="office_order_date" 
+							value="{{ old('office_order_date', $project->office_order_date?->format('Y-m-d')) }}"
+							class="input-field @error('office_order_date') border-red-500 dark:border-red-400 @enderror">
+						@error('office_order_date')
+							<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+						@enderror
+					</div>
+
 					<!-- Submit Buttons -->
 					<div class="flex justify-end space-x-3">
 						<a href="{{ route('admin.projects.show', $project) }}" class="btn-secondary">

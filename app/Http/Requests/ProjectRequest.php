@@ -47,6 +47,20 @@ class ProjectRequest extends FormRequest
                 'string',
                 'max:1000',
             ],
+            'ministry_address' => [
+                'nullable',
+                'string',
+                'max:1000',
+            ],
+            'office_order_number' => [
+                'nullable',
+                'string',
+                'max:255',
+            ],
+            'office_order_date' => [
+                'nullable',
+                'date',
+            ],
         ];
     }
 
@@ -73,6 +87,12 @@ class ProjectRequest extends FormRequest
             'allocated_amount.max' => 'Allocated amount cannot exceed 999,999,999.99.',
             
             'remarks.max' => 'Remarks cannot exceed 1000 characters.',
+            
+            'ministry_address.max' => 'Ministry address cannot exceed 1000 characters.',
+            
+            'office_order_number.max' => 'Office order number cannot exceed 255 characters.',
+            
+            'office_order_date.date' => 'Office order date must be a valid date.',
         ];
     }
 
@@ -85,6 +105,9 @@ class ProjectRequest extends FormRequest
             'economic_year_id' => 'economic year',
             'relief_type_id' => 'relief type',
             'allocated_amount' => 'allocated amount',
+            'ministry_address' => 'ministry address',
+            'office_order_number' => 'office order number',
+            'office_order_date' => 'office order date',
         ];
     }
 }

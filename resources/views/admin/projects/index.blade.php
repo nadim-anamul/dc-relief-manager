@@ -64,9 +64,8 @@
 					</label>
 					<select name="status" id="status" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors duration-200">
                         <option value="">{{ __('All Statuses') }}</option>
-                        <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>{{ __('Active') }} ({{ __('Current Year') }})</option>
-                        <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}>{{ __('Completed') }}</option>
-                        <option value="upcoming" {{ request('status') == 'upcoming' ? 'selected' : '' }}>{{ __('Upcoming') }}</option>
+                        <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>{{ __('Active Distribution') }} </option>
+                        <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}>{{ __('Completed Projects') }}</option>
 					</select>
 				</div>
 				<div>
@@ -118,7 +117,7 @@
 						</svg>
 					</div>
 						<div>
-                            <p class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('Total') }}</p>
+                            <p class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('Total Distribution') }}</p>
                             <p class="text-2xl font-bold text-gray-900 dark:text-white">@bn($stats['total'])</p>
 						</div>
 					</div>
@@ -135,7 +134,7 @@
 						</svg>
 					</div>
 						<div>
-                            <p class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('Active') }}</p>
+                            <p class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('Active Distribution') }}</p>
                             <p class="text-2xl font-bold text-gray-900 dark:text-white">@bn($stats['active'])</p>
 						</div>
 					</div>
@@ -152,7 +151,7 @@
 						</svg>
 					</div>
 						<div>
-                            <p class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('Completed') }}</p>
+                            <p class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('Completed distribution') }}</p>
                             <p class="text-2xl font-bold text-gray-900 dark:text-white">@bn($stats['completed'])</p>
 						</div>
 					</div>

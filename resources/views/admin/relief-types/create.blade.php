@@ -8,8 +8,8 @@
 					</svg>
 				</a>
 				<div>
-					<h1 class="text-2xl font-bold text-gray-900 dark:text-white">Create New Relief Type</h1>
-					<p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Add a new relief type for disaster management</p>
+					<h1 class="text-2xl font-bold text-gray-900 dark:text-white">{{ __('Create New Relief Type') }}</h1>
+					<p class="text-sm text-gray-600 dark:text-gray-400 mt-1">{{ __('Add a new relief type for disaster management') }}</p>
 				</div>
 			</div>
 			<div class="flex space-x-3">
@@ -17,7 +17,7 @@
 					<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
 					</svg>
-					Cancel
+					{{ __('Cancel') }}
 				</a>
 			</div>
 		</div>
@@ -31,19 +31,19 @@
 					<span class="flex items-center justify-center w-8 h-8 bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400 rounded-full mr-3">
 						1
 					</span>
-					Basic Information
+					{{ __('Basic Information') }}
 				</span>
 				<span class="flex items-center text-gray-400">
 					<span class="flex items-center justify-center w-8 h-8 bg-gray-100 dark:bg-gray-700 text-gray-400 rounded-full mr-3">
 						2
 					</span>
-					Unit & Display Settings
+					{{ __('Unit & Display Settings') }}
 				</span>
 				<span class="flex items-center text-gray-400">
 					<span class="flex items-center justify-center w-8 h-8 bg-gray-100 dark:bg-gray-700 text-gray-400 rounded-full mr-3">
 						3
 					</span>
-					Review & Save
+					{{ __('Review & Save') }}
 				</span>
 			</div>
 			<div class="mt-4 bg-gray-200 dark:bg-gray-700 rounded-full h-2">
@@ -64,8 +64,8 @@
 							</svg>
 						</div>
 						<div>
-							<h3 class="text-lg font-medium text-gray-900 dark:text-white">Basic Information</h3>
-							<p class="text-sm text-gray-500 dark:text-gray-400">Provide the basic details for the relief type</p>
+						<h3 class="text-lg font-medium text-gray-900 dark:text-white">{{ __('Basic Information') }}</h3>
+						<p class="text-sm text-gray-500 dark:text-gray-400">{{ __('Provide the basic details for the relief type') }}</p>
 						</div>
 					</div>
 				</div>
@@ -73,27 +73,27 @@
 					<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 						<!-- English Name -->
 						<div>
-							<label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-								English Name <span class="text-red-500">*</span>
-							</label>
+								<label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+									{{ __('English Name') }} <span class="text-red-500">*</span>
+								</label>
 							<input type="text" 
 								name="name" 
 								id="name" 
 								value="{{ old('name') }}"
 								class="input-field @error('name') border-red-500 dark:border-red-400 @enderror"
-								placeholder="e.g., Rice, Wheat, Cash"
+									placeholder="{{ __('e.g., Rice, Wheat, Cash') }}"
 								required>
 							@error('name')
 								<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
 							@enderror
-							<p class="mt-1 text-xs text-gray-500 dark:text-gray-400">This will be used for system identification</p>
+								<p class="mt-1 text-xs text-gray-500 dark:text-gray-400">{{ __('This will be used for system identification') }}</p>
 						</div>
 
 						<!-- Bengali Name -->
 						<div>
-							<label for="name_bn" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-								Bengali Name <span class="text-red-500">*</span>
-							</label>
+								<label for="name_bn" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+									{{ __('Bengali Name') }} <span class="text-red-500">*</span>
+								</label>
 							<input type="text" 
 								name="name_bn" 
 								id="name_bn" 
@@ -104,20 +104,20 @@
 							@error('name_bn')
 								<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
 							@enderror
-							<p class="mt-1 text-xs text-gray-500 dark:text-gray-400">This will be displayed to users</p>
+								<p class="mt-1 text-xs text-gray-500 dark:text-gray-400">{{ __('This will be displayed to users') }}</p>
 						</div>
 					</div>
 
 					<!-- Description -->
 					<div>
 						<label for="description" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-							English Description
+							{{ __('English Description') }}
 						</label>
 						<textarea name="description" 
 							id="description" 
 							rows="3"
 							class="input-field @error('description') border-red-500 dark:border-red-400 @enderror"
-							placeholder="Describe this relief type and its purpose">{{ old('description') }}</textarea>
+								placeholder="{{ __('Describe this relief type and its purpose') }}">{{ old('description') }}</textarea>
 						@error('description')
 							<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
 						@enderror
@@ -126,7 +126,7 @@
 					<!-- Bengali Description -->
 					<div>
 						<label for="description_bn" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-							Bengali Description
+							{{ __('Bengali Description') }}
 						</label>
 						<textarea name="description_bn" 
 							id="description_bn" 
@@ -150,8 +150,8 @@
 							</svg>
 						</div>
 						<div>
-							<h3 class="text-lg font-medium text-gray-900 dark:text-white">Unit & Display Settings</h3>
-							<p class="text-sm text-gray-500 dark:text-gray-400">Configure measurement units and visual appearance</p>
+							<h3 class="text-lg font-medium text-gray-900 dark:text-white">{{ __('Unit & Display Settings') }}</h3>
+							<p class="text-sm text-gray-500 dark:text-gray-400">{{ __('Configure measurement units and visual appearance') }}</p>
 						</div>
 					</div>
 				</div>
@@ -159,14 +159,14 @@
 					<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 						<!-- Unit -->
 						<div>
-							<label for="unit" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-								Unit <span class="text-red-500">*</span>
-							</label>
+								<label for="unit" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+									{{ __('Unit') }} <span class="text-red-500">*</span>
+								</label>
 							<select name="unit" 
 								id="unit" 
 								class="input-field @error('unit') border-red-500 dark:border-red-400 @enderror"
 								required>
-								<option value="">Select a unit</option>
+									<option value="">{{ __('Select a unit') }}</option>
 								<option value="Taka" {{ old('unit') == 'Taka' ? 'selected' : '' }}>Taka (৳)</option>
 								<option value="Metric Ton" {{ old('unit') == 'Metric Ton' ? 'selected' : '' }}>Metric Ton</option>
 								<option value="Kg" {{ old('unit') == 'Kg' ? 'selected' : '' }}>Kilogram</option>
@@ -183,9 +183,9 @@
 
 						<!-- Bengali Unit -->
 						<div>
-							<label for="unit_bn" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-								Bengali Unit <span class="text-red-500">*</span>
-							</label>
+								<label for="unit_bn" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+									{{ __('Bengali Unit') }} <span class="text-red-500">*</span>
+								</label>
 							<select name="unit_bn" 
 								id="unit_bn" 
 								class="input-field @error('unit_bn') border-red-500 dark:border-red-400 @enderror"
@@ -209,9 +209,9 @@
 
 					<!-- Sort Order -->
 					<div>
-						<label for="sort_order" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-							Display Order
-						</label>
+								<label for="sort_order" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+									{{ __('Display Order') }}
+								</label>
 						<input type="number" 
 							name="sort_order" 
 							id="sort_order" 
@@ -222,7 +222,7 @@
 						@error('sort_order')
 							<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
 						@enderror
-						<p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Lower numbers appear first in lists (0 = highest priority)</p>
+								<p class="mt-1 text-xs text-gray-500 dark:text-gray-400">{{ __('Lower numbers appear first in lists (0 = highest priority)') }}</p>
 					</div>
 
 					<!-- Status -->
@@ -236,10 +236,10 @@
 								class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 dark:border-gray-600 rounded dark:bg-gray-700">
 						</div>
 						<div class="ml-3 text-sm">
-							<label for="is_active" class="font-medium text-gray-700 dark:text-gray-300">
-								Active Status
-							</label>
-							<p class="text-gray-500 dark:text-gray-400">Enable this relief type for use in projects and applications</p>
+								<label for="is_active" class="font-medium text-gray-700 dark:text-gray-300">
+									{{ __('Active Status') }}
+								</label>
+								<p class="text-gray-500 dark:text-gray-400">{{ __('Enable this relief type for use in projects and applications') }}</p>
 						</div>
 					</div>
 				</div>
@@ -256,8 +256,8 @@
 							</svg>
 						</div>
 						<div>
-							<h3 class="text-lg font-medium text-gray-900 dark:text-white">Preview</h3>
-							<p class="text-sm text-gray-500 dark:text-gray-400">See how your relief type will appear</p>
+							<h3 class="text-lg font-medium text-gray-900 dark:text-white">{{ __('Preview') }}</h3>
+							<p class="text-sm text-gray-500 dark:text-gray-400">{{ __('See how your relief type will appear') }}</p>
 						</div>
 					</div>
 				</div>
@@ -265,7 +265,7 @@
 					<div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
 						<div class="flex items-center justify-between">
 							<div>
-								<h4 class="font-medium text-gray-900 dark:text-white" id="preview-name">Relief Type Name</h4>
+								<h4 class="font-medium text-gray-900 dark:text-white" id="preview-name">{{ __('Relief Type Name') }}</h4>
 								<p class="text-sm text-gray-500 dark:text-gray-400" id="preview-name-bn">ত্রাণের ধরন</p>
 							</div>
 							<div class="text-right">
@@ -274,7 +274,7 @@
 							</div>
 						</div>
 						<div class="mt-3">
-							<p class="text-sm text-gray-600 dark:text-gray-400" id="preview-description">Description will appear here</p>
+									<p class="text-sm text-gray-600 dark:text-gray-400" id="preview-description">{{ __('Description will appear here') }}</p>
 						</div>
 					</div>
 				</div>
@@ -286,13 +286,13 @@
 					<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
 					</svg>
-					Cancel
+					{{ __('Cancel') }}
 				</a>
 				<button type="submit" class="btn-primary">
 					<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
 					</svg>
-					Create Relief Type
+						{{ __('Create Relief Type') }}
 				</button>
 			</div>
 		</form>
@@ -325,11 +325,11 @@
 
 		// Update preview in real-time
 		function updatePreview() {
-			const name = document.getElementById('name').value || 'Relief Type Name';
+			const name = document.getElementById('name').value || '{{ __('Relief Type Name') }}';
 			const nameBn = document.getElementById('name_bn').value || 'ত্রাণের ধরন';
-			const unit = document.getElementById('unit').value || 'Unit';
-			const unitBn = document.getElementById('unit_bn').value || 'একক';
-			const description = document.getElementById('description').value || 'Description will appear here';
+			const unit = document.getElementById('unit').value || '{{ __('Unit') }}';
+			const unitBn = document.getElementById('unit_bn').value || '{{ __('Unit') }}';
+			const description = document.getElementById('description').value || '{{ __('Description will appear here') }}';
 			document.getElementById('preview-name').textContent = name;
 			document.getElementById('preview-name-bn').textContent = nameBn;
 			document.getElementById('preview-unit').textContent = unit;

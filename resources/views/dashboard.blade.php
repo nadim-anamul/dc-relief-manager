@@ -17,15 +17,15 @@
 				</div>
 			</div>
 			<div class="flex flex-wrap gap-3">
-				<button onclick="refreshDashboard()"
-					class="inline-flex items-center px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white text-sm font-medium rounded-lg transition-colors duration-200 shadow-sm hover:shadow-md">
+				<a href="{{ route('admin.projects.create') }}"
+					class="inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition-colors duration-200 shadow-sm hover:shadow-md">
 					<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-							d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15">
+							d="M12 6v6m0 0v6m0-6h6m-6 0H6">
 						</path>
 					</svg>
-                    {{ __('Refresh Data') }}
-				</button>
+                    নতুন বরাদ্দ এন্ট্রি
+				</a>
 				<a href="{{ route('admin.relief-applications.create') }}"
 					class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors duration-200 shadow-sm hover:shadow-md">
 					<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -40,70 +40,117 @@
 
 	<div class="space-y-8">
 		@if(isset($years) && isset($selectedYearId))
-		<!-- Smart Filter Row (separate row) -->
-		<div>
-				<form id="smartFilter" method="GET" action="{{ route('dashboard') }}"
-					class="w-full relative overflow-hidden rounded-2xl shadow-xl">
-					<div
-						class="absolute inset-0 bg-gradient-to-r from-indigo-500/10 via-purple-500/10 to-cyan-500/10 pointer-events-none">
-					</div>
-					<div
-						class="relative w-full bg-white/70 dark:bg-gray-900/60 backdrop-blur-xl border border-white/40 dark:border-gray-700/60 px-5 py-3 flex items-center gap-6">
-				<div class="flex items-center gap-3">
-							<span
-								class="text-[11px] font-semibold uppercase tracking-wider text-gray-600 dark:text-gray-300">{{ __('Economic Year') }}</span>
-					<div class="relative">
-								<svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-indigo-500" fill="none"
-									stroke="currentColor" viewBox="0 0 24 24">
-									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-										d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8V7m0 10v1" />
-								</svg>
-								<select id="economic_year_id" name="economic_year_id"
-									class="smart-input appearance-none pl-9 pr-8 py-2 rounded-full border border-gray-200 dark:border-gray-700 bg-white/90 dark:bg-gray-800/90 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm">
-							@foreach($years as $y)
-								<option value="{{ $y->id }}" {{ $selectedYearId == $y->id ? 'selected' : '' }}>
-											{{ $y->name ?? ($y->start_date?->format('Y') . ' - ' . $y->end_date?->format('Y')) }}
-								</option>
-							@endforeach
-						</select>
+		<!-- Smart Filter Row (mobile responsive) -->
+		<div class="w-full">
+			<form id="smartFilter" method="GET" action="{{ route('dashboard') }}"
+				class="w-full relative overflow-hidden rounded-2xl shadow-xl">
+				<div class="absolute inset-0 bg-gradient-to-r from-indigo-500/10 via-purple-500/10 to-cyan-500/10 pointer-events-none"></div>
+				
+				<!-- Desktop Layout -->
+				<div class="hidden sm:flex relative w-full bg-gradient-to-r from-white/80 via-white/70 to-white/80 dark:from-gray-900/80 dark:via-gray-900/70 dark:to-gray-900/80 backdrop-blur-xl border border-white/50 dark:border-gray-700/50 px-6 py-4 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300">
+					<div class="flex items-center justify-between gap-6 w-full">
+						<!-- Economic Year Selector -->
+						<div class="flex items-center gap-4 flex-1">
+							<div class="flex items-center gap-4">
+								<label class="text-sm font-semibold text-gray-700 dark:text-gray-200 whitespace-nowrap">
+									{{ __('Economic Year') }}:
+								</label>
+								<div class="relative group">
+									<!-- Glowing border effect -->
+									<div class="absolute inset-0 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-2xl opacity-0 group-hover:opacity-20 transition-opacity duration-300 blur-sm"></div>
+									
+									<select id="economic_year_id_desktop" name="economic_year_id"
+										class="relative appearance-none w-full pl-5 pr-14 py-4 bg-gradient-to-r from-white/90 to-white/80 dark:from-gray-800/90 dark:to-gray-700/80 border-2 border-transparent rounded-2xl text-gray-900 dark:text-gray-100 font-semibold shadow-lg hover:shadow-xl focus:ring-4 focus:ring-indigo-500/30 focus:border-indigo-400 transition-all duration-300 cursor-pointer backdrop-blur-sm z-10 min-w-[280px]">
+										@foreach($years as $y)
+											<option value="{{ $y->id }}" {{ $selectedYearId == $y->id ? 'selected' : '' }}>
+												{{ $y->name ?? ($y->start_date?->format('Y') . ' - ' . $y->end_date?->format('Y')) }}
+											</option>
+										@endforeach
+									</select>
+									
+									<!-- Custom dropdown arrow with animation -->
+									<div class="absolute inset-y-0 right-0 flex items-center pr-5 pointer-events-none">
+										<div class="relative">
+											<svg class="w-7 h-7 text-gray-400 group-hover:text-indigo-500 transition-all duration-300 transform group-hover:scale-110 group-hover:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+												<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+											</svg>
+											<!-- Subtle glow effect -->
+											<div class="absolute inset-0 bg-indigo-400 rounded-full opacity-0 group-hover:opacity-30 blur-md transition-opacity duration-300"></div>
+										</div>
+									</div>
+									
+									<!-- Focus indicator -->
+									<div class="absolute inset-0 rounded-2xl bg-gradient-to-r from-indigo-500/10 to-purple-500/10 opacity-0 group-focus-within:opacity-100 transition-opacity duration-300"></div>
+								</div>
+							</div>
+						</div>
 						
-					</div>
-				</div>
-				@if(isset($zillas))
-				<div class="flex items-center gap-3">
-								<span
-									class="text-[11px] font-semibold uppercase tracking-wider text-gray-600 dark:text-gray-300">{{ __('Zilla (for detail tables)') }}</span>
-					<div class="relative">
-									<svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-purple-500" fill="none"
-										stroke="currentColor" viewBox="0 0 24 24">
-										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-											d="M3 7l9-4 9 4-9 4-9-4zm0 6l9 4 9-4" />
-									</svg>
-									<select id="zilla_id" name="zilla_id"
-										class="smart-input appearance-none pl-9 pr-8 py-2 rounded-full border border-gray-200 dark:border-gray-700 bg-white/90 dark:bg-gray-800/90 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm">
-                            <option value="">{{ __('All Zillas') }}</option>
-							@foreach($zillas as $z)
-								<option value="{{ $z->id }}" {{ ($selectedZillaId ?? null) == $z->id ? 'selected' : '' }}>
-								{{ app()->isLocale('bn') ? ($z->name_bn ?: $z->name) : ($z->name ?: $z->name_bn) }}
-								</option>
-							@endforeach
-						</select>
+						@if(isset($zillas))
+						<!-- Hidden zilla field for data filtering -->
+						<input type="hidden" id="zilla_id" name="zilla_id" value="{{ $selectedZillaId ?? '' }}">
+						@endif
 						
-					</div>
-				</div>
-				@endif
-				<div class="ml-auto flex items-center gap-2">
+						<!-- Action Buttons -->
+						<div class="flex items-center gap-3">
 							<a href="{{ route('dashboard') }}"
-								class="inline-flex items-center px-3 py-2 text-sm rounded-full border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700">{{ __('Reset') }}</a>
-							<button type="submit"
-								class="inline-flex items-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-full shadow-md">
-								<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-										d="M8 7h8M8 11h8m-7 4h6" />
+								class="group inline-flex items-center px-4 py-3 text-sm font-medium rounded-xl border border-gray-200/60 dark:border-gray-600/60 text-gray-700 dark:text-gray-200 bg-white/50 dark:bg-gray-800/50 hover:bg-white/80 dark:hover:bg-gray-800/80 hover:border-gray-300 dark:hover:border-gray-500 transition-all duration-200 shadow-sm hover:shadow-md">
+								<svg class="w-4 h-4 mr-2 group-hover:rotate-180 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
 								</svg>
-							{{ __('Apply') }}
-					</button>
+								{{ __('Reset') }}
+							</a>
+							<button type="submit"
+								class="group inline-flex items-center px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white text-sm font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200">
+								<svg class="w-4 h-4 mr-2 group-hover:rotate-12 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+								</svg>
+								{{ __('Apply') }}
+							</button>
+						</div>
+					</div>
 				</div>
+
+				<!-- Mobile Layout -->
+				<div class="block sm:hidden relative w-full bg-white/70 dark:bg-gray-900/60 backdrop-blur-xl border border-white/40 dark:border-gray-700/60 p-4">
+					<div class="space-y-4">
+						<!-- Economic Year Selector -->
+						<div class="space-y-2">
+							<label class="text-sm font-medium text-gray-700 dark:text-gray-300">
+								{{ __('Economic Year') }}
+							</label>
+							<div class="relative">
+								<svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8V7m0 10v1" />
+								</svg>
+								<select id="economic_year_id_mobile" name="economic_year_id"
+									class="w-full appearance-none pl-9 pr-8 py-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-white/90 dark:bg-gray-800/90 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm text-base">
+									@foreach($years as $y)
+										<option value="{{ $y->id }}" {{ $selectedYearId == $y->id ? 'selected' : '' }}>
+											{{ $y->name ?? ($y->start_date?->format('Y') . ' - ' . $y->end_date?->format('Y')) }}
+										</option>
+									@endforeach
+								</select>
+							</div>
+						</div>
+						
+						<!-- Action Buttons -->
+						<div class="flex gap-3">
+							<a href="{{ route('dashboard') }}"
+								class="flex-1 inline-flex items-center justify-center px-4 py-3 text-sm font-medium rounded-lg border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200">
+								<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+								</svg>
+								{{ __('Reset') }}
+							</a>
+							<button type="submit"
+								class="flex-1 inline-flex items-center justify-center px-4 py-3 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-lg shadow-md transition-colors duration-200">
+								<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h8M8 11h8m-7 4h6" />
+								</svg>
+								{{ __('Apply') }}
+							</button>
+						</div>
+					</div>
 				</div>
 			</form>
 		</div>
@@ -175,37 +222,87 @@
 			<!-- Relief Allocation Card -->
 			<div id="relief-allocation"
 				class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
-			<div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
-				<div class="flex items-center gap-3">
-					<div class="p-2 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-lg">
+			
+			<!-- Header Section - Mobile Responsive -->
+			<div class="px-4 sm:px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+				<!-- Desktop Header -->
+				<div class="hidden sm:flex items-center justify-between">
+					<div class="flex items-center gap-3">
+						<div class="p-2 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-lg">
 							<svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3v18h18" />
 							</svg>
-					</div>
-					<div>
+						</div>
+						<div>
 							<h3 class="text-lg font-semibold text-gray-900 dark:text-white">
 								{{ __('Allocation by Relief Type') }}</h3>
 							<p class="text-sm text-gray-500 dark:text-gray-400">
 								{{ __('Allocated vs Used vs Available for the selected year') }}</p>
+						</div>
 					</div>
-				</div>
-				<div class="flex items-center gap-2">
+					<div class="flex items-center gap-2">
 						<a href="{{ route('admin.projects.index') }}"
 							class="inline-flex items-center px-3 py-1.5 bg-indigo-100 hover:bg-indigo-200 dark:bg-indigo-900 dark:hover:bg-indigo-800 text-indigo-700 dark:text-indigo-300 text-sm font-medium rounded-lg transition-colors duration-200">{{ __('View Projects') }}</a>
-					<!-- Sort pills -->
-					<form method="GET" action="{{ route('dashboard') }}" class="flex items-center gap-2">
-						<input type="hidden" name="economic_year_id" value="{{ $selectedYearId }}" />
-						@if(isset($selectedZillaId) && $selectedZillaId)
-							<input type="hidden" name="zilla_id" value="{{ $selectedZillaId }}" />
-						@endif
-							<button name="sort" value="allocated"
-								class="px-2.5 py-1 text-xs rounded-full border {{ ($currentSort ?? '') === 'allocated' ? 'bg-indigo-600 text-white border-indigo-600' : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200' }}">{{ __('Allocated') }}</button>
-							<button name="sort" value="used"
-								class="px-2.5 py-1 text-xs rounded-full border {{ ($currentSort ?? '') === 'used' ? 'bg-indigo-600 text-white border-indigo-600' : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200' }}">{{ __('Used') }}
-								%</button>
-							<button name="sort" value="available"
-								class="px-2.5 py-1 text-xs rounded-full border {{ ($currentSort ?? '') === 'available' ? 'bg-indigo-600 text-white border-indigo-600' : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200' }}">{{ __('Available') }}</button>
-					</form>
+						<!-- Sort pills -->
+						<form method="GET" action="{{ route('dashboard') }}" class="flex items-center gap-2">
+							<input type="hidden" name="economic_year_id" value="{{ $selectedYearId }}" />
+							@if(isset($selectedZillaId) && $selectedZillaId)
+								<input type="hidden" name="zilla_id" value="{{ $selectedZillaId }}" />
+							@endif
+								<button name="sort" value="allocated"
+									class="px-2.5 py-1 text-xs rounded-full border {{ ($currentSort ?? '') === 'allocated' ? 'bg-indigo-600 text-white border-indigo-600' : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200' }}">{{ __('Allocated') }}</button>
+								<button name="sort" value="used"
+									class="px-2.5 py-1 text-xs rounded-full border {{ ($currentSort ?? '') === 'used' ? 'bg-indigo-600 text-white border-indigo-600' : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200' }}">{{ __('Used') }}
+									%</button>
+								<button name="sort" value="available"
+									class="px-2.5 py-1 text-xs rounded-full border {{ ($currentSort ?? '') === 'available' ? 'bg-indigo-600 text-white border-indigo-600' : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200' }}">{{ __('Available') }}</button>
+						</form>
+					</div>
+				</div>
+
+				<!-- Mobile Header -->
+				<div class="block sm:hidden space-y-4">
+					<div class="flex items-center gap-3">
+						<div class="p-2 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-lg">
+							<svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3v18h18" />
+							</svg>
+						</div>
+						<div class="flex-1">
+							<h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+								{{ __('Allocation by Relief Type') }}</h3>
+							<p class="text-sm text-gray-500 dark:text-gray-400">
+								{{ __('Allocated vs Used vs Available for the selected year') }}</p>
+						</div>
+					</div>
+					
+					<!-- Mobile Actions -->
+					<div class="flex flex-col gap-3">
+						<a href="{{ route('admin.projects.index') }}"
+							class="w-full inline-flex items-center justify-center px-4 py-2.5 bg-indigo-100 hover:bg-indigo-200 dark:bg-indigo-900 dark:hover:bg-indigo-800 text-indigo-700 dark:text-indigo-300 text-sm font-medium rounded-lg transition-colors duration-200">
+							<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+							</svg>
+							{{ __('View Projects') }}
+						</a>
+						
+						<!-- Mobile Sort Options -->
+						<div class="space-y-2">
+							<label class="text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('Sort by') }}</label>
+							<form method="GET" action="{{ route('dashboard') }}" class="grid grid-cols-3 gap-2">
+								<input type="hidden" name="economic_year_id" value="{{ $selectedYearId }}" />
+								@if(isset($selectedZillaId) && $selectedZillaId)
+									<input type="hidden" name="zilla_id" value="{{ $selectedZillaId }}" />
+								@endif
+								<button name="sort" value="allocated"
+									class="px-3 py-2 text-sm rounded-lg border {{ ($currentSort ?? '') === 'allocated' ? 'bg-indigo-600 text-white border-indigo-600' : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700' }} transition-colors duration-200">{{ __('Allocated') }}</button>
+								<button name="sort" value="used"
+									class="px-3 py-2 text-sm rounded-lg border {{ ($currentSort ?? '') === 'used' ? 'bg-indigo-600 text-white border-indigo-600' : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700' }} transition-colors duration-200">{{ __('Used') }}</button>
+								<button name="sort" value="available"
+									class="px-3 py-2 text-sm rounded-lg border {{ ($currentSort ?? '') === 'available' ? 'bg-indigo-600 text-white border-indigo-600' : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700' }} transition-colors duration-200">{{ __('Available') }}</button>
+							</form>
+						</div>
+					</div>
 				</div>
 			</div>
 				<!-- All Relief Types Visible -->
@@ -290,11 +387,11 @@
 						class="block bg-gradient-to-br from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20 rounded-xl p-6 border border-yellow-200 dark:border-yellow-800 hover:from-yellow-100 hover:to-orange-100 dark:hover:from-yellow-900/30 dark:hover:to-orange-900/30 transition-all duration-200">
 						<div class="flex items-center justify-between">
 							<div>
-								<p class="text-sm font-medium text-yellow-700 dark:text-yellow-300">
+								<p class="text-sm font-medium text-gray-800 dark:text-white">
 									{{ __('Pending Review') }}</p>
-								<p class="text-3xl font-bold text-yellow-800 dark:text-yellow-200">
+								<p class="text-3xl font-bold text-gray-900 dark:text-white">
 									@bn($stats['pendingApplications'])</p>
-								<p class="text-xs text-yellow-600 dark:text-yellow-400 mt-1">
+								<p class="text-xs text-gray-900 dark:text-gray-200 mt-1">
 									{{ __('Awaiting approval') }}</p>
 							</div>
 							<div class="p-3 bg-yellow-500 rounded-xl">
@@ -1249,6 +1346,22 @@
 
 		// Initialize dashboard interactions
 		document.addEventListener('DOMContentLoaded', function () {
+
+			// Sync economic year selects between desktop and mobile
+			const desktopSelect = document.getElementById('economic_year_id_desktop');
+			const mobileSelect = document.getElementById('economic_year_id_mobile');
+			
+			if (desktopSelect && mobileSelect) {
+				// Sync desktop to mobile
+				desktopSelect.addEventListener('change', function() {
+					mobileSelect.value = this.value;
+				});
+				
+				// Sync mobile to desktop
+				mobileSelect.addEventListener('change', function() {
+					desktopSelect.value = this.value;
+				});
+			}
 
 			// Add intersection observer for scroll animations
 			const observerOptions = {

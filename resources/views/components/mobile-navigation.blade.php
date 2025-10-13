@@ -43,12 +43,12 @@
         >
             <!-- Mobile menu header -->
             <div class="flex items-center justify-between px-4 py-3 border-b border-gray-200 dark:border-gray-700">
-                <div class="flex items-center">
+                <a href="{{ route('dashboard') }}" class="flex items-center" @click="open = false">
                     <svg class="h-8 w-8 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
                     </svg>
                     <span class="ml-2 text-lg font-semibold text-gray-900 dark:text-white">DC Relief</span>
-                </div>
+                </a>
                 <button @click="open = false" class="p-2 rounded-md text-gray-400 hover:text-gray-500">
                     <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />

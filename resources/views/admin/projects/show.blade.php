@@ -94,6 +94,24 @@
 						<dt class="text-sm font-semibold text-gray-600 dark:text-gray-300 mb-2">Last Updated</dt>
 						<dd class="text-lg font-semibold text-gray-900 dark:text-white">{{ $project->updated_at->format('M d, Y') }}</dd>
 					</div>
+					@if($project->ministry_address)
+					<div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 sm:col-span-2">
+						<dt class="text-sm font-semibold text-gray-600 dark:text-gray-300 mb-2">Ministry Address</dt>
+						<dd class="text-gray-900 dark:text-white">{{ $project->ministry_address }}</dd>
+					</div>
+					@endif
+					@if($project->office_order_number)
+					<div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+						<dt class="text-sm font-semibold text-gray-600 dark:text-gray-300 mb-2">Office Order Number</dt>
+						<dd class="text-lg font-semibold text-gray-900 dark:text-white">{{ $project->office_order_number }}</dd>
+					</div>
+					@endif
+					@if($project->office_order_date)
+					<div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+						<dt class="text-sm font-semibold text-gray-600 dark:text-gray-300 mb-2">Office Order Date</dt>
+						<dd class="text-lg font-semibold text-gray-900 dark:text-white">{{ $project->office_order_date->format('M d, Y') }}</dd>
+					</div>
+					@endif
 				</dl>
 			</div>
 		</div>

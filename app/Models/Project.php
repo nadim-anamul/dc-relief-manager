@@ -20,6 +20,9 @@ class Project extends Model
 		'allocated_amount',
 		'available_amount',
 		'remarks',
+		'ministry_address',
+		'office_order_number',
+		'office_order_date',
 		'created_by',
 		'updated_by',
 		'deleted_by',
@@ -28,6 +31,7 @@ class Project extends Model
 	protected $casts = [
 		'allocated_amount' => 'decimal:2',
 		'available_amount' => 'decimal:2',
+		'office_order_date' => 'date',
 	];
 
 	/**
