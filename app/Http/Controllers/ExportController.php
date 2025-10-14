@@ -80,6 +80,15 @@ class ExportController extends Controller
 			'reliefApplications' => $reliefApplications,
 			'filters' => $filters,
 			'exportDate' => now(),
+		])
+		->setPaper('a4', 'portrait')
+		->setOptions([
+			'isHtml5ParserEnabled' => true,
+			'isRemoteEnabled' => true,
+			'isPhpEnabled' => false,
+			'defaultFont' => 'Noto Sans Bengali',
+			'fontDir' => public_path('fonts/'),
+			'fontCache' => storage_path('fonts/'),
 		]);
 
 		$fileName = 'relief_applications_' . now()->format('Y-m-d_H-i-s') . '.pdf';
@@ -124,20 +133,57 @@ class ExportController extends Controller
 		}
 
 		if (isset($filters['start_date'])) {
-			$query->where('start_date', '>=', $filters['start_date']);
+			$query->whereHas('economicYear', function($q) use ($filters) {
+				$q->where('start_date', '>=', $filters['start_date']);
+			});
 		}
 
 		if (isset($filters['end_date'])) {
-			$query->where('end_date', '<=', $filters['end_date']);
+			$query->whereHas('economicYear', function($q) use ($filters) {
+				$q->where('end_date', '<=', $filters['end_date']);
+			});
 		}
 
-		$projects = $query->orderBy('name')->get();
+		$projects = $query->orderBy('created_at', 'desc')->get();
 
 		// Calculate summary statistics
 		$totalProjects = $projects->count();
 		$totalBudget = $projects->sum('allocated_amount');
 		$activeProjects = $projects->where('is_active', true)->count();
 		$completedProjects = $projects->where('is_completed', true)->count();
+
+		// Calculate relief type allocation statistics (same as admin projects page)
+		$reliefTypeStats = Project::query()
+			->when(isset($filters['economic_year_id']) && $filters['economic_year_id'], function($q) use ($filters) {
+				$q->where('economic_year_id', $filters['economic_year_id']);
+			}, function($q) {
+				// Default to current economic year if no year specified
+				$currentYear = \App\Models\EconomicYear::where('is_current', true)->first();
+				if ($currentYear) {
+					$q->where('economic_year_id', $currentYear->id);
+				}
+			})
+			->when(isset($filters['relief_type_id']) && $filters['relief_type_id'], function($q) use ($filters) {
+				$q->where('relief_type_id', $filters['relief_type_id']);
+			})
+			->selectRaw('relief_type_id, SUM(allocated_amount) as total_allocated, COUNT(*) as project_count')
+			->with('reliefType')
+			->groupBy('relief_type_id')
+			->orderBy('total_allocated', 'desc')
+			->get()
+			->map(function($stat) {
+				$unit = $stat->reliefType?->unit_bn ?? $stat->reliefType?->unit ?? '';
+				$amount = number_format((float)$stat->total_allocated, 2);
+				
+				// Format based on unit type
+				if (in_array($unit, ['টাকা', 'Taka'])) {
+					$stat->formatted_total = '৳' . $amount;
+				} else {
+					$stat->formatted_total = $amount . ' ' . $unit;
+				}
+				
+				return $stat;
+			});
 
 		$pdf = Pdf::loadView('exports.project-summary-pdf', [
 			'projects' => $projects,
@@ -147,6 +193,16 @@ class ExportController extends Controller
 			'totalBudget' => $totalBudget,
 			'activeProjects' => $activeProjects,
 			'completedProjects' => $completedProjects,
+			'reliefTypeStats' => $reliefTypeStats,
+		])
+		->setPaper('a4', 'portrait')
+		->setOptions([
+			'isHtml5ParserEnabled' => true,
+			'isRemoteEnabled' => true,
+			'isPhpEnabled' => false,
+			'defaultFont' => 'Noto Sans Bengali',
+			'fontDir' => public_path('fonts/'),
+			'fontCache' => storage_path('fonts/'),
 		]);
 
 		$fileName = 'project_summary_' . now()->format('Y-m-d_H-i-s') . '.pdf';
@@ -244,6 +300,15 @@ class ExportController extends Controller
 			'totalAmount' => $totalAmount,
 			'totalApplications' => $totalApplications,
 			'uniqueAreas' => $uniqueAreas,
+		])
+		->setPaper('a4', 'portrait')
+		->setOptions([
+			'isHtml5ParserEnabled' => true,
+			'isRemoteEnabled' => true,
+			'isPhpEnabled' => false,
+			'defaultFont' => 'Noto Sans Bengali',
+			'fontDir' => public_path('fonts/'),
+			'fontCache' => storage_path('fonts/'),
 		]);
 
 		$fileName = 'area_wise_relief_' . now()->format('Y-m-d_H-i-s') . '.pdf';

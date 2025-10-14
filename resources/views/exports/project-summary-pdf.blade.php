@@ -1,17 +1,33 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ app()->getLocale() }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Project Summary Report</title>
+    
+    <!-- Fonts for Bengali -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
     <style>
+        @font-face {
+            font-family: 'Noto Sans Bengali';
+            src: url('https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@300;400;500;600;700&display=swap');
+        }
+        
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Noto Sans Bengali', 'SolaimanLipi', 'Nikosh', Arial, sans-serif;
             font-size: 12px;
             line-height: 1.4;
             margin: 0;
             padding: 20px;
             color: #333;
+            direction: ltr;
+            unicode-bidi: embed;
+            text-rendering: optimizeLegibility;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
         
         .header {
@@ -74,9 +90,9 @@
         
         th, td {
             border: 1px solid #ddd;
-            padding: 8px;
+            padding: 6px;
             text-align: left;
-            font-size: 10px;
+            font-size: 9px;
         }
         
         th {
@@ -137,7 +153,7 @@
 <body>
     <div class="header">
         <h1>Project Summary Report</h1>
-        <p>Generated on: {{ $exportDate->format('F d, Y H:i:s') }}</p>
+        <p>Generated on: {{ $exportDate ? $exportDate->format('F d, Y H:i:s') : 'N/A' }}</p>
         <p>DC Relief Manager System</p>
     </div>
 
@@ -166,23 +182,38 @@
         <div class="summary-grid" style="margin-top: 15px;">
             <div class="summary-item">
                 <div class="label">Average Budget</div>
-                <div class="value">৳{{ number_format($projects->avg('budget'), 2) }}</div>
+                <div class="value">৳{{ number_format($projects->avg('allocated_amount'), 2) }}</div>
             </div>
             <div class="summary-item">
                 <div class="label">Min Budget</div>
-                <div class="value">৳{{ number_format($projects->min('budget'), 2) }}</div>
+                <div class="value">৳{{ number_format($projects->min('allocated_amount'), 2) }}</div>
             </div>
             <div class="summary-item">
                 <div class="label">Max Budget</div>
-                <div class="value">৳{{ number_format($projects->max('budget'), 2) }}</div>
+                <div class="value">৳{{ number_format($projects->max('allocated_amount'), 2) }}</div>
             </div>
             <div class="summary-item">
                 <div class="label">Avg Duration (Days)</div>
-                <div class="value">{{ round($projects->avg('duration_in_days'), 1) }}</div>
+                <div class="value">{{ round($projects->avg(function($project) { return $project->economicYear?->duration_in_days ?? 0; }), 1) }}</div>
             </div>
         </div>
         @endif
     </div>
+
+    @if(isset($reliefTypeStats) && $reliefTypeStats->count() > 0)
+    <div class="summary" style="margin-bottom: 20px;">
+        <h3>Allocation by Relief Type</h3>
+        <div class="summary-grid" style="grid-template-columns: repeat(4, 1fr);">
+            @foreach($reliefTypeStats as $allocation)
+            <div class="summary-item">
+                <div class="label">{{ $allocation->reliefType?->display_name ?? 'Unknown Type' }}</div>
+                <div class="value">{{ $allocation->formatted_total }}</div>
+                <div class="label" style="font-size: 10px;">{{ $allocation->project_count }} {{ $allocation->project_count == 1 ? 'project' : 'projects' }}</div>
+            </div>
+            @endforeach
+        </div>
+    </div>
+    @endif
 
     @if($projects->count() > 0)
     <table>
@@ -192,7 +223,9 @@
                 <th>Project Name</th>
                 <th>Economic Year</th>
                 <th>Relief Type</th>
-                <th>Budget</th>
+                <th>Allocated Amount</th>
+                <th>Available Amount</th>
+                <th>Used Amount</th>
                 <th>Start Date</th>
                 <th>End Date</th>
                 <th>Duration</th>
@@ -205,12 +238,14 @@
             <tr>
                 <td>{{ $project->id }}</td>
                 <td>{{ $project->name }}</td>
-                <td>{{ $project->economicYear->name }}</td>
-                <td>{{ $project->reliefType?->name ?? 'Not specified' }}</td>
-                <td class="amount">৳{{ number_format($project->budget, 2) }}</td>
-                <td>{{ $project->start_date->format('Y-m-d') }}</td>
-                <td>{{ $project->end_date->format('Y-m-d') }}</td>
-                <td class="duration">{{ $project->duration_in_days }} days</td>
+                <td>{{ $project->economicYear->name }}{{ $project->economicYear->is_current ? ' (Current)' : '' }}</td>
+                <td>{{ $project->reliefType?->display_name ?? $project->reliefType?->name ?? 'Not specified' }}</td>
+                <td class="amount">{{ $project->formatted_allocated_amount }}</td>
+                <td class="amount">{{ $project->formatted_available_amount }}</td>
+                <td class="amount">{{ $project->formatted_used_amount }}</td>
+                <td>{{ $project->economicYear?->start_date?->format('Y-m-d') ?? 'N/A' }}</td>
+                <td>{{ $project->economicYear?->end_date?->format('Y-m-d') ?? 'N/A' }}</td>
+                <td class="duration">{{ $project->economicYear?->duration_in_days ?? 0 }} days</td>
                 <td>
                     @if($project->is_active)
                         <span class="status-badge status-active">Active</span>

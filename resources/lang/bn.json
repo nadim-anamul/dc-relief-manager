@@ -43,6 +43,7 @@
     "Refresh Data": "ডেটা রিফ্রেশ",
     "Unknown Type": "অজানা ধরন",
     "projects": "বরাদ্দ",
+    "Projects Management": "বরাদ্দ ব্যবস্থাপনা",
     "types": "ধরন",
     "No allocations found for the selected year.": "নির্বাচিত বছরের জন্য কোনো বরাদ্দ পাওয়া যায়নি।",
     "Application Status": "আবেদনের অবস্থা",
@@ -598,7 +599,8 @@
     "End Date": "শেষ তারিখ",
     "Set as Current Year": "চলতি বছর হিসেবে নির্ধারণ করুন",
     "Update Economic Year": "অর্থবছর আপডেট করুন",
-    "Setting this as current will unset any other current year": "চলতি বছর হিসেবে নির্ধারণ করলে অন্য চলতি বছর হিসেবে নির্ধারণ করা হবে না"
+    "Setting this as current will unset any other current year": "চলতি বছর হিসেবে নির্ধারণ করলে অন্য চলতি বছর হিসেবে নির্ধারণ করা হবে না",
+    "Relief Type Management": "ত্রানের খাত যোগ/পরিবর্তন"
 
 
 }

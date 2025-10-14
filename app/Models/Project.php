@@ -189,6 +189,14 @@ class Project extends Model
 	}
 
 	/**
+	 * Check if this project is completed (economic year has ended).
+	 */
+	public function getIsCompletedAttribute(): bool
+	{
+		return $this->economicYear && now()->isAfter($this->economicYear->end_date);
+	}
+
+	/**
 	 * Get the status of this project.
 	 */
 	public function getStatusAttribute(): string
