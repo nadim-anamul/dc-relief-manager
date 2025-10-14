@@ -84,10 +84,9 @@ class ExportController extends Controller
 		->setPaper('a4', 'portrait')
 		->setOptions([
 			'isHtml5ParserEnabled' => true,
-			'isRemoteEnabled' => true,
+			'isRemoteEnabled' => false,
 			'isPhpEnabled' => false,
-			'defaultFont' => 'Noto Sans Bengali',
-			'fontDir' => public_path('fonts/'),
+			'fontDir' => storage_path('fonts/'),
 			'fontCache' => storage_path('fonts/'),
 		]);
 
@@ -198,10 +197,9 @@ class ExportController extends Controller
 		->setPaper('a4', 'portrait')
 		->setOptions([
 			'isHtml5ParserEnabled' => true,
-			'isRemoteEnabled' => true,
+			'isRemoteEnabled' => false,
 			'isPhpEnabled' => false,
-			'defaultFont' => 'Noto Sans Bengali',
-			'fontDir' => public_path('fonts/'),
+			'fontDir' => storage_path('fonts/'),
 			'fontCache' => storage_path('fonts/'),
 		]);
 
@@ -304,10 +302,9 @@ class ExportController extends Controller
 		->setPaper('a4', 'portrait')
 		->setOptions([
 			'isHtml5ParserEnabled' => true,
-			'isRemoteEnabled' => true,
+			'isRemoteEnabled' => false,
 			'isPhpEnabled' => false,
-			'defaultFont' => 'Noto Sans Bengali',
-			'fontDir' => public_path('fonts/'),
+			'fontDir' => storage_path('fonts/'),
 			'fontCache' => storage_path('fonts/'),
 		]);
 
