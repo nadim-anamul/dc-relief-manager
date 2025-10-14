@@ -13,7 +13,7 @@
 	<div class="max-w-2xl mx-auto">
 		<div class="card">
 			<div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-				<h3 class="text-lg font-medium text-gray-900 dark:text-white">Organization Type Information</h3>
+				<h3 class="text-lg font-medium text-gray-900 dark:text-white">{{ __('Organization Type Information') }}</h3>
 			</div>
 			<div class="p-6">
 				<form action="{{ route('admin.organization-types.update', $organizationType) }}" method="POST" class="space-y-6">
@@ -22,15 +22,15 @@
 
 					<!-- Organization Type Name -->
 					<div>
-						<label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-							Name <span class="text-red-500">*</span>
-						</label>
+					<label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+						{{ __('Name') }} <span class="text-red-500">*</span>
+					</label>
 						<input type="text" 
 							name="name" 
 							id="name" 
 							value="{{ old('name', $organizationType->name) }}"
 							class="input-field @error('name') border-red-500 dark:border-red-400 @enderror"
-							placeholder="Enter organization type name (e.g., NGO, Government, Private)"
+						placeholder="{{ __('Enter organization type name (e.g., NGO, Government, Private)') }}"
 							required>
 						@error('name')
 							<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
@@ -39,28 +39,28 @@
 
 					<!-- Description -->
 					<div>
-						<label for="description" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-							Description
-						</label>
+					<label for="description" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+						{{ __('Description') }}
+					</label>
 						<textarea name="description" 
 							id="description" 
 							rows="4"
 							class="input-field @error('description') border-red-500 dark:border-red-400 @enderror"
-							placeholder="Enter description of the organization type">{{ old('description', $organizationType->description) }}</textarea>
+						placeholder="{{ __('Enter description of the organization type') }}">{{ old('description', $organizationType->description) }}</textarea>
 						@error('description')
 							<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
 						@enderror
 					</div>
 
 					<!-- Submit Buttons -->
-					<div class="flex justify-end space-x-3">
-						<a href="{{ route('admin.organization-types.show', $organizationType) }}" class="btn-secondary">
-							Cancel
-						</a>
-						<button type="submit" class="btn-primary">
-							Update Organization Type
-						</button>
-					</div>
+				<div class="flex justify-end space-x-3">
+					<a href="{{ route('admin.organization-types.show', $organizationType) }}" class="btn-secondary">
+						{{ __('Cancel') }}
+					</a>
+					<button type="submit" class="btn-primary">
+						{{ __('Update Organization Type') }}
+					</button>
+				</div>
 				</form>
 			</div>
 		</div>

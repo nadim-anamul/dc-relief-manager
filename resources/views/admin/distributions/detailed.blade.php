@@ -29,7 +29,7 @@
             </div>
             
             <form method="GET" action="{{ route('admin.distributions.detailed', ['type' => $type]) }}" class="p-6">
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     <!-- Economic Year Filter -->
                     <div class="space-y-2">
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('Economic Year') }}</label>
@@ -48,22 +48,8 @@
                         </div>
                     </div>
 
-                    <!-- Zilla Filter -->
-                    <div class="space-y-2">
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('Zilla') }}</label>
-                        <div class="relative">
-                            <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7l9-4 9 4-9 4-9-4zm0 6l9 4 9-4"/></svg>
-                            <select name="zilla_id" class="smart-input appearance-none pl-9 pr-8 py-2 w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
-                                <option value="">{{ __('All Zillas') }}</option>
-                                @foreach($zillas as $zilla)
-                                    <option value="{{ $zilla->id }}" {{ ($selectedZillaId ?? null) == $zilla->id ? 'selected' : '' }}>
-                                        {{ app()->isLocale('bn') ? ($zilla->name_bn ?: $zilla->name) : ($zilla->name ?: $zilla->name_bn) }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-                    </div>
+                    <!-- Zilla (hidden: default to first/only zilla) -->
+                    <input type="hidden" name="zilla_id" value="{{ $selectedZillaId ?? ($zillas->count() === 1 ? ($zillas->first()->id ?? '') : '') }}">
 
                     <!-- Upazila Filter (for both upazila and union types) -->
                     @if($type === 'upazila' || $type === 'union')
@@ -73,7 +59,7 @@
                             <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
                             </svg>
-                            <select name="upazila_id" class="smart-input appearance-none pl-9 pr-8 py-2 w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                            <select name="upazila_id" id="upazilaSelect" class="smart-input appearance-none pl-9 pr-8 py-2 w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
                                 <option value="">{{ __('All Upazilas') }}</option>
                                 @foreach($upazilas as $upazila)
                                     <option value="{{ $upazila->id }}" {{ ($selectedUpazilaId ?? null) == $upazila->id ? 'selected' : '' }}>
@@ -93,7 +79,7 @@
                             <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
                             </svg>
-                            <select name="union_id" class="smart-input appearance-none pl-9 pr-8 py-2 w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                            <select name="union_id" id="unionSelect" class="smart-input appearance-none pl-9 pr-8 py-2 w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
                                 <option value="">{{ __('All Unions') }}</option>
                                 @foreach($unions as $union)
                                     <option value="{{ $union->id }}" {{ ($selectedUnionId ?? null) == $union->id ? 'selected' : '' }}>
@@ -484,3 +470,35 @@
         </div>
     </div>
 </x-main-layout>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const upazilaSelect = document.getElementById('upazilaSelect');
+    const unionSelect = document.getElementById('unionSelect');
+    const selectedUnionId = {{ $selectedUnionId ?? 'null' }};
+    const selectedUpazilaId = {{ $selectedUpazilaId ?? 'null' }};
+    const isBn = {{ app()->isLocale('bn') ? 'true' : 'false' }};
+
+    function loadUnionsForUpazila(upazilaId, setSelected) {
+        if (!unionSelect) return; // guard clause
+        unionSelect.innerHTML = '<option value="">{{ __('All Unions') }}</option>'; // reset
+        if (!upazilaId) return;
+        fetch(`/admin/unions-by-upazila/${upazilaId}`)
+            .then(r => r.json())
+            .then(list => {
+                list.forEach(u => {
+                    const opt = document.createElement('option');
+                    opt.value = u.id;
+                    opt.textContent = isBn ? (u.name_bn || u.name || '') : (u.name || u.name_bn || '');
+                    if (setSelected && selectedUnionId && Number(selectedUnionId) === Number(u.id)) opt.selected = true; // preserve selection
+                    unionSelect.appendChild(opt);
+                });
+            })
+            .catch(() => {});
+    }
+
+    if (upazilaSelect) {
+        upazilaSelect.addEventListener('change', function() { loadUnionsForUpazila(this.value, false); });
+        if (selectedUpazilaId) loadUnionsForUpazila(selectedUpazilaId, true); // initial load
+    }
+});
+</script>

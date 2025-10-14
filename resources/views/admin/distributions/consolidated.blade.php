@@ -61,7 +61,7 @@
                     <div class="absolute inset-0 bg-gradient-to-r from-indigo-500/5 via-purple-500/5 to-cyan-500/5 pointer-events-none"></div>
                     <div class="relative w-full bg-white dark:bg-gray-800 p-6">
                     <!-- Filter Fields -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 items-end mb-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 items-end mb-4">
                         <!-- Economic Year -->
                         <div>
                             <label class="block text-[11px] font-semibold uppercase tracking-wider text-gray-600 dark:text-gray-300 mb-2">{{ __('Economic Year') }}</label>
@@ -77,21 +77,8 @@
                             </div>
                         </div>
                         
-                        <!-- Zilla -->
-                        <div>
-                            <label class="block text-[11px] font-semibold uppercase tracking-wider text-gray-600 dark:text-gray-300 mb-2">{{ __('Zilla') }}</label>
-                            <div class="relative">
-                                <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
-                                <select name="zilla_id" id="zillaSelect" class="w-full appearance-none pl-9 pr-8 py-2.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white/90 dark:bg-gray-800/90 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 shadow-sm text-sm">
-                                    <option value="">{{ __('All Zillas') }}</option>
-                                    @foreach($zillas as $z)
-                                        <option value="{{ $z->id }}" {{ $selectedZillaId == $z->id ? 'selected' : '' }}>
-                                            {{ $z->name_display ?? $z->name }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
+                        <!-- Zilla (hidden: default to first/only zilla) -->
+                        <input type="hidden" name="zilla_id" value="{{ $selectedZillaId ?? ($zillas->count() === 1 ? ($zillas->first()->id ?? '') : '') }}">
 
                         <!-- Upazila -->
                         <div>

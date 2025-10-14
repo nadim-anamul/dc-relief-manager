@@ -76,7 +76,7 @@
 				</div>
 
 				<!-- Filter Fields Grid -->
-				<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+				<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-4">
 				<div>
 					<label for="economic_year_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                         {{ __('Economic Year') }}
@@ -90,19 +90,7 @@
 						@endforeach
 					</select>
 				</div>
-				<div>
-					<label for="zilla_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        {{ __('Zilla') }}
-					</label>
-					<select name="zilla_id" id="zilla_id" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200">
-                        <option value="">{{ __('All Zillas') }}</option>
-						@foreach($zillas as $zilla)
-							<option value="{{ $zilla->id }}" {{ (request('zilla_id') == $zilla->id || (!request()->filled('zilla_id') && $zilla->id == 1)) ? 'selected' : '' }}>
-                                {{ $zilla->name_display ?? localized_attr($zilla,'name') }}
-							</option>
-						@endforeach
-					</select>
-				</div>
+				<input type="hidden" name="zilla_id" value="{{ request('zilla_id') ?? ($zillas->count() === 1 ? ($zillas->first()->id ?? '') : '') }}">
 				<div>
 					<label for="upazila_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                         {{ __('Upazila') }}
@@ -166,7 +154,7 @@
 						@endforeach
 					</select>
 				</div>
-				<div class="md:col-span-2 lg:col-span-3 xl:col-span-4 flex justify-end">
+				<div class="md:col-span-2 lg:col-span-3 xl:col-span-3 flex justify-end">
 					<button type="submit" class="inline-flex items-center px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors duration-200 shadow-sm hover:shadow-md">
 						<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.207A1 1 0 013 6.5V4z"></path>
@@ -413,8 +401,8 @@
 			const upazilaSelect = document.getElementById('upazila_id');
 			const unionSelect = document.getElementById('union_id');
 
-			// Handle zilla change
-			zillaSelect.addEventListener('change', function() {
+			// Handle zilla change (if present)
+			if (zillaSelect) zillaSelect.addEventListener('change', function() {
 				const zillaId = this.value;
 				console.log('Zilla changed to:', zillaId);
 				

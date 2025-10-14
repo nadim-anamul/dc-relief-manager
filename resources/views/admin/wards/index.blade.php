@@ -112,24 +112,12 @@
 				@endif
 			</div>
 			<form method="GET" action="{{ route('admin.wards.index') }}" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-				<div>
-					<label for="zilla_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        {{ __('Zilla') }}
-					</label>
-					<select name="zilla_id" id="zilla_id" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-colors duration-200">
-                        <option value="">{{ __('All Zillas') }}</option>
-						@foreach($zillas as $zilla)
-							<option value="{{ $zilla->id }}" {{ request('zilla_id') == $zilla->id ? 'selected' : '' }}>
-                                {{ $zilla->name_display }}
-							</option>
-						@endforeach
-					</select>
-				</div>
+				<input type="hidden" name="zilla_id" value="{{ request('zilla_id') ?? ($zillas->count() === 1 ? ($zillas->first()->id ?? '') : '') }}">
 				<div>
 					<label for="upazila_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                         {{ __('Upazila') }}
 					</label>
-					<select name="upazila_id" id="upazila_id" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-colors duration-200">
+				<select name="upazila_id" id="upazila_id" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-colors duration-200">
                         <option value="">{{ __('All Upazilas') }}</option>
 						@foreach($upazilas as $upazila)
 							<option value="{{ $upazila->id }}" {{ request('upazila_id') == $upazila->id ? 'selected' : '' }}>
@@ -142,14 +130,10 @@
 					<label for="union_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                         {{ __('Union') }}
 					</label>
-					<select name="union_id" id="union_id" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-colors duration-200">
-                        <option value="">{{ __('All Unions') }}</option>
-						@foreach($unions as $union)
-							<option value="{{ $union->id }}" {{ request('union_id') == $union->id ? 'selected' : '' }}>
-                                {{ $union->name_display }} ({{ $union->upazila->name_display }})
-							</option>
-						@endforeach
-					</select>
+				<select name="union_id" id="union_id" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-colors duration-200">
+					<option value="">{{ __('All Unions') }}</option>
+					<!-- Options will load dynamically based on upazila selection -->
+				</select>
 				</div>
 				<div class="md:col-span-2 lg:col-span-4 flex justify-end">
 					<button type="submit" class="inline-flex items-center px-6 py-2 bg-cyan-600 hover:bg-cyan-700 text-white text-sm font-medium rounded-lg transition-colors duration-200 shadow-sm hover:shadow-md">
@@ -310,3 +294,34 @@
 		@endif
 	</div>
 </x-main-layout>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const upazilaSelect = document.getElementById('upazila_id');
+    const unionSelect = document.getElementById('union_id');
+    const selectedUnionId = {{ request('union_id') ? (int)request('union_id') : 'null' }};
+    const selectedUpazilaId = {{ request('upazila_id') ? (int)request('upazila_id') : 'null' }};
+    const isBn = {{ app()->isLocale('bn') ? 'true' : 'false' }};
+
+    function loadUnions(upazilaId, setSelected) {
+        unionSelect.innerHTML = '<option value="">{{ __('All Unions') }}</option>';
+        if (!upazilaId) return;
+        fetch(`/admin/unions-by-upazila/${upazilaId}`)
+            .then(r => r.json())
+            .then(list => {
+                list.forEach(u => {
+                    const opt = document.createElement('option');
+                    opt.value = u.id;
+                    opt.textContent = isBn ? (u.name_bn || u.name || '') : (u.name || u.name_bn || '');
+                    if (setSelected && selectedUnionId && Number(selectedUnionId) === Number(u.id)) opt.selected = true; // keep selection
+                    unionSelect.appendChild(opt);
+                });
+            })
+            .catch(() => {});
+    }
+
+    if (upazilaSelect) {
+        upazilaSelect.addEventListener('change', function() { loadUnions(this.value, false); });
+        if (selectedUpazilaId) loadUnions(selectedUpazilaId, true); // initial load
+    }
+});
+</script>

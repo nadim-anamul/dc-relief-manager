@@ -583,5 +583,12 @@
     "Complete application details with export options": "আবেদনের সম্পূর্ণ তথ্য এবং এক্সপোর্ট অপশন",
     "utilized": "ব্যবহারকৃত",
     "Per Page": "প্রতি পৃষ্ঠা",
-    "Search by project name, upazila, union, or zilla...": "প্রকল্পের নাম, উপজেলা, ইউনিয়ন বা জেলা অনুসন্ধান করুন..."
+    "Search by project name, upazila, union, or zilla...": "প্রকল্পের নাম, উপজেলা, ইউনিয়ন বা জেলা অনুসন্ধান করুন...",
+    "Active Project Allocations": "সক্রিয় প্রকল্প বরাদ্দ",
+    "Current year project allocations with applications": "আবেদনপত্র সহ চলতি বছরের প্রকল্প বরাদ্দ",
+    "Edit Organization Type": "সংস্থার ধরন সম্পাদনা",
+    "Organization Type Information": "সংস্থার ধরণের তথ্য",
+    "Manage different types of organizations in the system": "সিস্টেমে বিভিন্ন ধরনের সংস্থা ব্যবস্থাপনা করুন",
+    "Add New Organization Type": "নতুন সংস্থার ধরন যোগ করুন",
+    "Back to Organization Types": "সংগঠনের ধরণ-এ ফিরে যান"
 }

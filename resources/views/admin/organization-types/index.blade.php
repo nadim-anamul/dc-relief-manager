@@ -143,9 +143,11 @@
                                         {{ ($desc = localized_attr($organizationType,'description')) ? Str::limit($desc, 100) : '-' }}
                                     </div>
 							</td>
-							<td class="px-6 py-5 whitespace-nowrap">
-                                <div class="text-sm font-medium text-gray-900 dark:text-white">{{ $organizationType->created_at->translatedFormat('j F, Y') }}</div>
-							</td>
+                            <td class="px-6 py-5 whitespace-nowrap">
+                                <div class="text-sm font-medium text-gray-900 dark:text-white">
+                                    {{ app()->isLocale('bn') ? bn_date($organizationType->created_at, 'j F, Y') : ($organizationType->created_at?->format('M d, Y')) }}
+                                </div>
+                            </td>
 							<td class="px-6 py-5 whitespace-nowrap text-right text-sm font-medium">
 								<div class="flex justify-end space-x-2">
 									<a href="{{ route('admin.organization-types.show', $organizationType) }}" 

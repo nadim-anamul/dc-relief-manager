@@ -112,19 +112,7 @@
 				@endif
 			</div>
 			<form method="GET" action="{{ route('admin.unions.index') }}" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-				<div>
-					<label for="zilla_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        {{ __('Zilla') }}
-					</label>
-					<select name="zilla_id" id="zilla_id" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors duration-200">
-                        <option value="">{{ __('All Zillas') }}</option>
-						@foreach($zillas as $zilla)
-							<option value="{{ $zilla->id }}" {{ request('zilla_id') == $zilla->id ? 'selected' : '' }}>
-                                {{ $zilla->name_display }}
-							</option>
-						@endforeach
-					</select>
-				</div>
+				<input type="hidden" name="zilla_id" value="{{ request('zilla_id') ?? ($zillas->count() === 1 ? ($zillas->first()->id ?? '') : '') }}">
 				<div>
 					<label for="upazila_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                         {{ __('Upazila') }}

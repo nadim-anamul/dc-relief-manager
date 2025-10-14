@@ -6,7 +6,7 @@
 					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
 				</svg>
 			</a>
-			<h1 class="text-2xl font-bold text-gray-900 dark:text-white">{{ $organizationType->name }}</h1>
+			<h1 class="text-2xl font-bold text-gray-900 dark:text-white">{{ localized_attr($organizationType,'name') }}</h1>
 		</div>
 	</x-slot>
 
@@ -14,33 +14,33 @@
 		<!-- Organization Type Details -->
 		<div class="card">
 			<div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-				<h3 class="text-lg font-medium text-gray-900 dark:text-white">Organization Type Information</h3>
+			<h3 class="text-lg font-medium text-gray-900 dark:text-white">{{ __('Organization Type Information') }}</h3>
 			</div>
 			<div class="p-6">
 				<dl class="grid grid-cols-1 gap-x-4 gap-y-6 sm:grid-cols-2">
 					<div>
-						<dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Name</dt>
-						<dd class="mt-1 text-sm text-gray-900 dark:text-white">{{ $organizationType->name }}</dd>
+					<dt class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('Name') }}</dt>
+					<dd class="mt-1 text-sm text-gray-900 dark:text-white">{{ localized_attr($organizationType,'name') }}</dd>
 					</div>
 					<div>
-						<dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Created</dt>
-						<dd class="mt-1 text-sm text-gray-900 dark:text-white">{{ $organizationType->created_at->format('M d, Y') }}</dd>
+					<dt class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('Created') }}</dt>
+					<dd class="mt-1 text-sm text-gray-900 dark:text-white">{{ app()->isLocale('bn') ? bn_date($organizationType->created_at, 'j F, Y') : ($organizationType->created_at?->format('M d, Y')) }}</dd>
 					</div>
 					<div class="sm:col-span-2">
-						<dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Description</dt>
+					<dt class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('Description') }}</dt>
 						<dd class="mt-1 text-sm text-gray-900 dark:text-white">
 							@if($organizationType->description)
 								<div class="prose dark:prose-invert max-w-none">
-									<p class="whitespace-pre-wrap">{{ $organizationType->description }}</p>
+								<p class="whitespace-pre-wrap">{{ localized_attr($organizationType,'description') }}</p>
 								</div>
 							@else
-								<span class="text-gray-500 dark:text-gray-400">No description provided</span>
+								<span class="text-gray-500 dark:text-gray-400">{{ __('No description provided') }}</span>
 							@endif
 						</dd>
 					</div>
 					<div>
-						<dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Last Updated</dt>
-						<dd class="mt-1 text-sm text-gray-900 dark:text-white">{{ $organizationType->updated_at->format('M d, Y') }}</dd>
+					<dt class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('Last Updated') }}</dt>
+					<dd class="mt-1 text-sm text-gray-900 dark:text-white">{{ app()->isLocale('bn') ? bn_date($organizationType->updated_at, 'j F, Y') : ($organizationType->updated_at?->format('M d, Y')) }}</dd>
 					</div>
 				</dl>
 			</div>
@@ -49,10 +49,10 @@
 		<!-- Actions -->
 		<div class="flex justify-end space-x-3">
 			<a href="{{ route('admin.organization-types.index') }}" class="btn-secondary">
-				Back to Organization Types
+				{{ __('Back to Organization Types') }}
 			</a>
 			<a href="{{ route('admin.organization-types.edit', $organizationType) }}" class="btn-primary">
-				Edit Organization Type
+				{{ __('Edit Organization Type') }}
 			</a>
 		</div>
 	</div>
