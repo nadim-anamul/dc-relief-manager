@@ -928,10 +928,18 @@ class DistributionController extends Controller
             ->limit($pageSize)
             ->get();
 
-        // Get names for display
-        $projectNames = Project::whereIn('id', $results->pluck('project_id'))->pluck('name', 'id');
-        $upazilaNames = Upazila::whereIn('id', $results->pluck('upazila_id'))->pluck('name', 'id');
-        $zillaNames = Zilla::whereIn('id', $results->pluck('zilla_id'))->pluck('name', 'id');
+        // Get names for display with both English and Bangla
+        $projectNames = Project::whereIn('id', $results->pluck('project_id'))->get(['id', 'name'])->mapWithKeys(function ($item) {
+            return [$item->id => $item->name];
+        });
+        
+        $upazilaNames = Upazila::whereIn('id', $results->pluck('upazila_id'))->get(['id', 'name', 'name_bn'])->mapWithKeys(function ($item) {
+            return [$item->id => app()->isLocale('bn') ? ($item->name_bn ?: $item->name) : ($item->name ?: $item->name_bn)];
+        });
+        
+        $zillaNames = Zilla::whereIn('id', $results->pluck('zilla_id'))->get(['id', 'name', 'name_bn'])->mapWithKeys(function ($item) {
+            return [$item->id => app()->isLocale('bn') ? ($item->name_bn ?: $item->name) : ($item->name ?: $item->name_bn)];
+        });
 
         return [
             'results' => $results,
@@ -1005,11 +1013,22 @@ class DistributionController extends Controller
             ->limit($pageSize)
             ->get();
 
-        // Get names for display
-        $projectNames = Project::whereIn('id', $results->pluck('project_id'))->pluck('name', 'id');
-        $unionNames = Union::whereIn('id', $results->pluck('union_id'))->pluck('name', 'id');
-        $upazilaNames = Upazila::whereIn('id', $results->pluck('upazila_id'))->pluck('name', 'id');
-        $zillaNames = Zilla::whereIn('id', $results->pluck('zilla_id'))->pluck('name', 'id');
+        // Get names for display with both English and Bangla
+        $projectNames = Project::whereIn('id', $results->pluck('project_id'))->get(['id', 'name'])->mapWithKeys(function ($item) {
+            return [$item->id => $item->name];
+        });
+        
+        $unionNames = Union::whereIn('id', $results->pluck('union_id'))->get(['id', 'name', 'name_bn'])->mapWithKeys(function ($item) {
+            return [$item->id => app()->isLocale('bn') ? ($item->name_bn ?: $item->name) : ($item->name ?: $item->name_bn)];
+        });
+        
+        $upazilaNames = Upazila::whereIn('id', $results->pluck('upazila_id'))->get(['id', 'name', 'name_bn'])->mapWithKeys(function ($item) {
+            return [$item->id => app()->isLocale('bn') ? ($item->name_bn ?: $item->name) : ($item->name ?: $item->name_bn)];
+        });
+        
+        $zillaNames = Zilla::whereIn('id', $results->pluck('zilla_id'))->get(['id', 'name', 'name_bn'])->mapWithKeys(function ($item) {
+            return [$item->id => app()->isLocale('bn') ? ($item->name_bn ?: $item->name) : ($item->name ?: $item->name_bn)];
+        });
 
         return [
             'results' => $results,

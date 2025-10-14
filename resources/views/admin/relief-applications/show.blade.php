@@ -99,19 +99,19 @@
 				<dl class="grid grid-cols-1 gap-x-4 gap-y-6 sm:grid-cols-2">
 					<div>
                         <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('Zilla (District)') }}</dt>
-						<dd class="mt-1 text-sm text-gray-900 dark:text-white">{{ $reliefApplication->zilla?->name ?? 'Not specified' }}</dd>
+						<dd class="mt-1 text-sm text-gray-900 dark:text-white">{{ $reliefApplication->zilla?->name_display ?? __('Not specified') }}</dd>
 					</div>
 					<div>
                         <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('Upazila (Sub-district)') }}</dt>
-						<dd class="mt-1 text-sm text-gray-900 dark:text-white">{{ $reliefApplication->upazila?->name ?? 'Not specified' }}</dd>
+						<dd class="mt-1 text-sm text-gray-900 dark:text-white">{{ $reliefApplication->upazila?->name_display ?? __('Not specified') }}</dd>
 					</div>
 					<div>
                         <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('Union') }}</dt>
-						<dd class="mt-1 text-sm text-gray-900 dark:text-white">{{ $reliefApplication->union?->name ?? 'Not specified' }}</dd>
+						<dd class="mt-1 text-sm text-gray-900 dark:text-white">{{ $reliefApplication->union?->name_display ?? __('Not specified') }}</dd>
 					</div>
 					<div>
                         <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('Ward') }}</dt>
-						<dd class="mt-1 text-sm text-gray-900 dark:text-white">{{ $reliefApplication->ward?->name ?? 'Not specified' }}</dd>
+						<dd class="mt-1 text-sm text-gray-900 dark:text-white">{{ $reliefApplication->ward?->name_display ?? __('Not specified') }}</dd>
 					</div>
 				</dl>
 			</div>
@@ -129,14 +129,14 @@
 						<dd class="mt-1 text-sm text-gray-900 dark:text-white">{{ $reliefApplication->subject }}</dd>
 					</div>
 					<div>
-						<dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Relief Type</dt>
+						<dt class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('Relief Type') }}</dt>
 						<dd class="mt-1 text-sm text-gray-900 dark:text-white">
 							@if($reliefApplication->reliefType)
 								<div class="flex items-center">
 									@if($reliefApplication->reliefType->color_code)
 										<div class="w-4 h-4 rounded-full mr-2" style="background-color: {{ $reliefApplication->reliefType->color_code }}"></div>
 									@endif
-									{{ $reliefApplication->reliefType->name }}
+									{{ $reliefApplication->reliefType->display_name }}
 								</div>
 							@else
                                 <span class="text-gray-500 dark:text-gray-400">{{ __('Not specified') }}</span>
@@ -145,12 +145,12 @@
 					</div>
 					<div>
                         <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('Amount Requested') }}</dt>
-						<dd class="mt-1 text-sm text-gray-900 dark:text-white font-semibold text-lg">{{ $reliefApplication->formatted_amount }}</dd>
+						<dd class="mt-1 text-sm text-gray-900 dark:text-white font-semibold text-lg">{{ bn_number($reliefApplication->formatted_amount) }}</dd>
 					</div>
 					@if($reliefApplication->approved_amount)
 						<div>
                             <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('Amount Approved') }}</dt>
-							<dd class="mt-1 text-sm text-gray-900 dark:text-white font-semibold text-lg text-green-600 dark:text-green-400">{{ $reliefApplication->formatted_approved_amount }}</dd>
+							<dd class="mt-1 text-sm text-gray-900 dark:text-white font-semibold text-lg text-green-600 dark:text-green-400">{{ bn_number($reliefApplication->formatted_approved_amount) }}</dd>
 						</div>
 					@endif
 					@if($reliefApplication->project)
@@ -184,11 +184,11 @@
 					</div>
 					<div>
                         <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('Designation') }}</dt>
-						<dd class="mt-1 text-sm text-gray-900 dark:text-white">{{ $reliefApplication->applicant_designation ?? 'Not specified' }}</dd>
+							<dd class="mt-1 text-sm text-gray-900 dark:text-white">{{ $reliefApplication->applicant_designation ?? __('Not specified') }}</dd>
 					</div>
 					<div>
                         <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('Phone Number') }}</dt>
-						<dd class="mt-1 text-sm text-gray-900 dark:text-white">{{ $reliefApplication->applicant_phone }}</dd>
+						<dd class="mt-1 text-sm text-gray-900 dark:text-white">{{ bn_number($reliefApplication->applicant_phone) }}</dd>
 					</div>
 					<div class="sm:col-span-2">
                         <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('Applicant Address') }}</dt>

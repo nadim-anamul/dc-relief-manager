@@ -117,7 +117,7 @@
 						</svg>
 					</div>
 						<div>
-                            <p class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('Total Distribution') }}</p>
+                            <p class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('Total Projects') }}</p>
                             <p class="text-2xl font-bold text-gray-900 dark:text-white">@bn($stats['total'])</p>
 						</div>
 					</div>
@@ -134,7 +134,7 @@
 						</svg>
 					</div>
 						<div>
-                            <p class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('Active Distribution') }}</p>
+                            <p class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('Active Projects') }}</p>
                             <p class="text-2xl font-bold text-gray-900 dark:text-white">@bn($stats['active'])</p>
 						</div>
 					</div>
@@ -151,7 +151,7 @@
 						</svg>
 					</div>
 						<div>
-                            <p class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('Completed distribution') }}</p>
+                            <p class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('Completed Projects') }}</p>
                             <p class="text-2xl font-bold text-gray-900 dark:text-white">@bn($stats['completed'])</p>
 						</div>
 					</div>

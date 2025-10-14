@@ -55,12 +55,25 @@ class ProjectController extends Controller
 		$economicYears = EconomicYear::where('is_active', true)->orderBy('start_date', 'desc')->get();
 		$reliefTypes = ReliefType::where('is_active', true)->ordered()->get();
 
-		// Calculate summary statistics
+		// Calculate summary statistics based on relief type allocation
+		$baseQuery = Project::query()
+			->when($request->filled('economic_year_id'), function($q) use ($request) {
+				$q->where('economic_year_id', $request->economic_year_id);
+			}, function($q) use ($request) {
+				// Default to current economic year if no year specified
+				$currentYear = EconomicYear::where('is_current', true)->first();
+				if ($currentYear) {
+					$q->where('economic_year_id', $currentYear->id);
+				}
+			})
+			->when($request->filled('relief_type_id'), function($q) use ($request) {
+				$q->where('relief_type_id', $request->relief_type_id);
+			});
+
 		$stats = [
-			'total' => Project::count(),
-			'active' => Project::active()->count(),
-			'completed' => Project::completed()->count(),
-			'upcoming' => Project::upcoming()->count(),
+			'total' => $baseQuery->clone()->count(),
+			'active' => $baseQuery->clone()->active()->count(),
+			'completed' => $baseQuery->clone()->completed()->count(),
 		];
 
 		// Calculate relief type allocation statistics with proper unit handling

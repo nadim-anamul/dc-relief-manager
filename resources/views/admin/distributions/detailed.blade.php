@@ -41,7 +41,7 @@
                                 <option value="">{{ __('All Years') }}</option>
                                 @foreach($years as $year)
                                     <option value="{{ $year->id }}" {{ ($selectedYear?->id ?? null) == $year->id ? 'selected' : '' }}>
-                                        {{ $year->name }} ({{ bn_number($year->start_date->format('Y')) }} - {{ bn_number($year->end_date->format('Y')) }})
+                                        {{ $year->name_display }}
                                     </option>
                                 @endforeach
                             </select>
@@ -109,9 +109,9 @@
                     <div class="space-y-2">
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">{{ __('Per Page') }}</label>
                         <select name="per_page" class="smart-input appearance-none px-3 py-2 w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
-                            <option value="25" {{ ($pageSize ?? 25) == 25 ? 'selected' : '' }}>25</option>
-                            <option value="50" {{ ($pageSize ?? 25) == 50 ? 'selected' : '' }}>50</option>
-                            <option value="100" {{ ($pageSize ?? 25) == 100 ? 'selected' : '' }}>100</option>
+                            <option value="25" {{ ($pageSize ?? 25) == 25 ? 'selected' : '' }}>{{ bn_number(25) }}</option>
+                            <option value="50" {{ ($pageSize ?? 25) == 50 ? 'selected' : '' }}>{{ bn_number(50) }}</option>
+                            <option value="100" {{ ($pageSize ?? 25) == 100 ? 'selected' : '' }}>{{ bn_number(100) }}</option>
                         </select>
                     </div>
                 </div>
@@ -150,7 +150,8 @@
             </form>
         </div>
 
-        <!-- Summary Cards -->
+        <!-- Summary Cards (hidden for duplicates page) -->
+        @if($type !== 'duplicates')
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
                 <div class="flex items-center justify-between">
@@ -196,6 +197,7 @@
                 </div>
             </div>
         </div>
+        @endif
 
         <!-- Detailed Table -->
         <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
@@ -402,8 +404,8 @@
                                         @if($row->application_count > 0)
                                             <a href="{{ route('admin.relief-applications.index', array_filter([
                                                 'economic_year_id' => $selectedYear?->id,
-                                                'zilla_id' => $selectedZillaId,
-                                                'upazila_id' => $selectedUpazilaId,
+                                                'zilla_id' => $row->zilla_id,
+                                                'upazila_id' => $row->upazila_id,
                                                 'union_id' => $type === 'union' ? $row->union_id : null,
                                                 'project_id' => $row->project_id,
                                                 'status' => 'approved'
