@@ -140,7 +140,7 @@ class DashboardController extends Controller
                     $display = $p->economicYear->name
                         ?: (bn_number($p->economicYear->start_date?->format('Y')) . ' - ' . bn_number($p->economicYear->end_date?->format('Y')));
                 } elseif ($year) {
-                    $display = $year->name ?: (bn_number($year->start_date?->format('Y')) . ' - ' . bn_number($year->end_date?->format('Y')));
+                    $display = $year->name ?: (bn_number(\Carbon\Carbon::parse($year->start_date)->format('Y')) . ' - ' . bn_number(\Carbon\Carbon::parse($year->end_date)->format('Y')));
                 } else {
                     $display = null;
                 }
@@ -511,7 +511,9 @@ class DashboardController extends Controller
 		if ($yearId) {
 			return $years->firstWhere('id', $yearId) ?? EconomicYear::find($yearId);
 		}
-		return $years->firstWhere('is_current', true) ?? $years->first();
+		
+		// Use the auto-detection method to ensure we get the correct current year
+		return EconomicYear::getCurrent() ?? $years->first();
 	}
 
 	/**

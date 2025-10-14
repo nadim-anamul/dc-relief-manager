@@ -590,5 +590,15 @@
     "Organization Type Information": "সংস্থার ধরণের তথ্য",
     "Manage different types of organizations in the system": "সিস্টেমে বিভিন্ন ধরনের সংস্থা ব্যবস্থাপনা করুন",
     "Add New Organization Type": "নতুন সংস্থার ধরন যোগ করুন",
-    "Back to Organization Types": "সংগঠনের ধরণ-এ ফিরে যান"
+    "Back to Organization Types": "সংগঠনের ধরণ-এ ফিরে যান",
+    "Manage administrative zillas and their upazilas": "জেলা ও উপজেলা পরিচালনা করুন",
+    "Add New Zilla": "নতুন জেলা যোগ করুন",
+    "Edit Economic Year Information": "অর্থবছর তথ্য সম্পাদনা করুন",
+    "Start Date": "শুরু তারিখ",
+    "End Date": "শেষ তারিখ",
+    "Set as Current Year": "চলতি বছর হিসেবে নির্ধারণ করুন",
+    "Update Economic Year": "অর্থবছর আপডেট করুন",
+    "Setting this as current will unset any other current year": "চলতি বছর হিসেবে নির্ধারণ করলে অন্য চলতি বছর হিসেবে নির্ধারণ করা হবে না"
+
+
 }

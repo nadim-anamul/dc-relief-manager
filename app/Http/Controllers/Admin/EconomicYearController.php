@@ -15,10 +15,16 @@ class EconomicYearController extends Controller
 	 */
 	public function index(): View
 	{
+		// Ensure current economic year is up-to-date
+		EconomicYear::updateCurrentYear();
+
 		$economicYears = EconomicYear::orderBy('start_date', 'desc')
 			->paginate(15);
 
-		return view('admin.economic-years.index', compact('economicYears'));
+		// Get all economic years for accurate summary statistics
+		$allEconomicYears = EconomicYear::all();
+
+		return view('admin.economic-years.index', compact('economicYears', 'allEconomicYears'));
 	}
 
 	/**

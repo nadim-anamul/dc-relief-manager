@@ -21,6 +21,9 @@ return Application::configure(basePath: dirname(__DIR__))
         
         // Convert Bengali numbers to English numbers for form processing
         $middleware->appendToGroup('web', \App\Http\Middleware\ConvertBengaliNumbers::class);
+        
+        // Update current economic year (after locale is set)
+        $middleware->appendToGroup('web', \App\Http\Middleware\UpdateCurrentEconomicYearMiddleware::class);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

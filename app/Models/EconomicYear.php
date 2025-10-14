@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 
 class EconomicYear extends Model
 {
@@ -83,14 +84,15 @@ class EconomicYear extends Model
 	 * Get the duration of the economic year in months.
 	 */
     public function getDurationInMonthsAttribute(): int
-	{
+    {
         if (!$this->start_date || !$this->end_date) {
             return 0;
         }
         $start = Carbon::parse($this->start_date);
         $end = Carbon::parse($this->end_date);
-        return $start->diffInMonths($end);
-	}
+        // Count months inclusively (e.g., Jul 1 to Jun 30 = 12 months)
+        return $start->diffInMonths($end) + 1;
+    }
 
 	/**
 	 * Check if a given date falls within this economic year.
@@ -99,5 +101,102 @@ class EconomicYear extends Model
 	{
 		$date = is_string($date) ? \Carbon\Carbon::parse($date) : $date;
 		return $date->between($this->start_date, $this->end_date);
+	}
+
+	/**
+	 * Automatically determine and set the current economic year based on today's date.
+	 * 
+	 * @return EconomicYear|null The current economic year, or null if none found
+	 */
+	public static function updateCurrentYear(): ?EconomicYear
+	{
+		$today = Carbon::today();
+		
+		// Find the economic year that contains today's date
+		$currentYear = static::where('is_active', true)
+			->where('start_date', '<=', $today)
+			->where('end_date', '>=', $today)
+			->orderBy('start_date', 'desc')
+			->first();
+		
+		if (!$currentYear) {
+			// Fallback: find the most recent active year that hasn't ended yet
+			$currentYear = static::where('is_active', true)
+				->where('end_date', '>=', $today)
+				->orderBy('start_date', 'asc')
+				->first();
+		}
+		
+		if ($currentYear) {
+			// Check if this year is already set as current
+			$existingCurrent = static::where('is_current', true)->first();
+			
+			if (!$existingCurrent || $existingCurrent->id !== $currentYear->id) {
+				// Update all years to not current
+				static::query()->update(['is_current' => false]);
+				
+				// Set the found year as current
+				$currentYear->update(['is_current' => true]);
+				
+				// Log the change if logging is enabled
+                if (config('economic-year.log_changes', true)) {
+                    Log::info("Updated current economic year to: {$currentYear->name} (ID: {$currentYear->id})");
+                }
+			}
+			
+			return $currentYear;
+		}
+		
+		// Log warning if no suitable economic year found
+        if (config('economic-year.log_changes', true)) {
+            Log::warning('No suitable economic year found for current date: ' . $today->format('Y-m-d'));
+        }
+		
+		return null;
+	}
+
+	/**
+	 * Find the economic year that contains the given date.
+	 * 
+	 * @param string|Carbon $date
+	 * @return EconomicYear|null
+	 */
+	public static function findByDate($date): ?EconomicYear
+	{
+		$date = is_string($date) ? Carbon::parse($date) : $date;
+		
+		return static::where('is_active', true)
+			->where('start_date', '<=', $date)
+			->where('end_date', '>=', $date)
+			->orderBy('start_date', 'desc')
+			->first();
+	}
+
+	/**
+	 * Get the current economic year based on the is_current flag.
+	 * 
+	 * @return EconomicYear|null
+	 */
+	public static function getCurrentByDate(): ?EconomicYear
+	{
+		return static::where('is_current', true)->first();
+	}
+
+	/**
+	 * Get the current economic year, automatically updating if needed.
+	 * This method ensures you always get the correct current year.
+	 * 
+	 * @return EconomicYear|null
+	 */
+	public static function getCurrent(): ?EconomicYear
+	{
+		$current = static::getCurrentByDate();
+		
+		// If no current year is set, try to update automatically
+		if (!$current) {
+			$current = static::updateCurrentYear();
+		}
+		
+		return $current;
 	}
 }
