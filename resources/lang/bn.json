@@ -99,7 +99,7 @@
     "Economic Years": "অর্থবছরসমূহ",
     "Relief Types": "ত্রাণের ধরন",
     "Manage different types of relief assistance and their properties": "ত্রাণ সহায়তার বিভিত্তিক পরিচালনা করুন",
-    "Projects": "বরাদ্দসমূহ",
+    "Projects": "বরাদ্দ",
     "Organization Types": "সংস্থার ধরন",
     "User Management": "ব্যবহারকারী ব্যবস্থাপনা",
     "Users": "ব্যবহারকারী",
@@ -352,7 +352,7 @@
     "View Detailed Distribution": "বিস্তারিত বিতরণ দেখুন",
     "unions": "ইউনিয়ন",
     "upazilas": "উপজেলা",
-    "Create New Project": "নতুন বরাদ্দ তৈরি করুন",
+    "Create New Project": "নতুন বরাদ্দ যোগ করুন",
     "Project Information": "বরাদ্দ তথ্য",
     "Select an Economic Year": "অর্থবছর নির্বাচন করুন",
     "Select a Relief Type": "ত্রাণের ধরন নির্বাচন করুন",
@@ -364,7 +364,7 @@
     "in this economic year": "",
     "Enter amount in Taka": "টাকায় পরিমাণ লিখুন",
     "Enter quantity": "পরিমাণ লিখুন",
-    "Create Project": "প্রকল্প তৈরি করুন",
+    "Create Project": "বরাদ্দ যোগ করুন",
     "Current": "বর্তমান",
     "Create New Relief Type": "নতুন ত্রাণের ধরন তৈরি করুন",
     "Add a new relief type for disaster management": "দুর্যোগ ব্যবস্থাপনার জন্য নতুন ত্রাণের ধরন যোগ করুন",
@@ -600,7 +600,8 @@
     "Set as Current Year": "চলতি বছর হিসেবে নির্ধারণ করুন",
     "Update Economic Year": "অর্থবছর আপডেট করুন",
     "Setting this as current will unset any other current year": "চলতি বছর হিসেবে নির্ধারণ করলে অন্য চলতি বছর হিসেবে নির্ধারণ করা হবে না",
-    "Relief Type Management": "ত্রানের খাত যোগ/পরিবর্তন"
+    "Relief Type Management": "ত্রানের খাত যোগ/পরিবর্তন",
+    "Theme": "থিম"
 
 
 }

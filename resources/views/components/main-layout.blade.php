@@ -82,22 +82,15 @@
 						</div>
 						
 					@if(auth()->user()->hasAnyRole(['super-admin', 'district-admin']))
-					<!-- Administrative Divisions -->
-					<div class="space-y-1">
-						<div class="px-2 py-1 text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
-                            {{ __('Administrative Divisions') }}
-						</div>
-							
-							<a href="{{ route('admin.zillas.index') }}" class="group flex items-center px-2 py-2 text-sm font-medium rounded-md {{ request()->routeIs('admin.zillas.*') ? 'bg-blue-100 dark:bg-blue-900 text-blue-900 dark:text-blue-100' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white' }}">
-								<svg class="mr-3 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
-								</svg>
-								প্রশাসনিক বিভাগ যোগ/পরিবর্তন
-							</a>
-							
-						</div>
-						
-						<!-- System Management -->
+					<!-- Projects top-level after Applications -->
+					<a href="{{ route('admin.projects.index') }}" class="group flex items-center px-2 py-2 text-sm font-medium rounded-md {{ request()->routeIs('admin.projects.*') ? 'bg-blue-100 dark:bg-blue-900 text-blue-900 dark:text-blue-100' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white' }}">
+						<svg class="mr-3 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+						</svg>
+						{{ __('Projects Management') }}
+					</a>
+					
+					<!-- System Management -->
 						<div class="space-y-1">
 							<div class="px-2 py-1 text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
                                 {{ __('System Management') }}
@@ -109,13 +102,14 @@
 								</svg>
 								{{ __('Relief Type Management') }}
 							</a>
-							
-							<a href="{{ route('admin.projects.index') }}" class="group flex items-center px-2 py-2 text-sm font-medium rounded-md {{ request()->routeIs('admin.projects.*') ? 'bg-blue-100 dark:bg-blue-900 text-blue-900 dark:text-blue-100' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white' }}">
-								<svg class="mr-3 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
-								</svg>
-                                {{ __('Projects Management') }}
-							</a>
+
+						<!-- Administrative Divisions moved under System Management -->
+						<a href="{{ route('admin.zillas.index') }}" class="group flex items-center px-2 py-2 text-sm font-medium rounded-md {{ request()->routeIs('admin.zillas.*') ? 'bg-blue-100 dark:bg-blue-900 text-blue-900 dark:text-blue-100' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white' }}">
+							<svg class="mr-3 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+							</svg>
+							প্রশাসনিক বিভাগ যোগ/পরিবর্তন
+						</a>
 							
 						</div>
 						
@@ -247,9 +241,20 @@
 		<div class="flex flex-col w-0 flex-1 overflow-hidden">
 			<!-- Top Navigation -->
 			<div class="relative z-10 flex-shrink-0 flex h-16 bg-white dark:bg-gray-800 shadow border-b border-gray-200 dark:border-gray-700">
-				<x-mobile-navigation />
-				
-				<div class="flex-1 px-4 flex justify-between">
+				<!-- Mobile top row: logo left, hamburger right -->
+				<div class="flex items-center justify-between w-full px-4 md:hidden">
+					<a href="{{ route('dashboard') }}" class="flex items-center">
+						<svg class="h-7 w-7 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+						</svg>
+						<span class="ml-2 text-lg font-semibold text-gray-900 dark:text-white">DC Relief</span>
+					</a>
+					<!-- Hamburger on the right -->
+					<x-mobile-navigation />
+				</div>
+
+				<!-- Desktop/top row content hidden on mobile -->
+				<div class="hidden md:flex flex-1 px-4 justify-between">
 					<div class="flex-1 flex">
 						<div class="w-full flex md:ml-0">
 							<div class="relative w-full text-gray-400 focus-within:text-gray-600 dark:focus-within:text-gray-300" 
