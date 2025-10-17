@@ -15,6 +15,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Maatwebsite\Excel\Facades\Excel;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Spatie\Browsershot\Browsershot;
 
 class ExportController extends Controller
 {
@@ -101,7 +102,7 @@ class ExportController extends Controller
 	public function exportProjectSummaryExcel(Request $request)
 	{
 		$filters = $request->only([
-			'economic_year_id', 'relief_type_id', 'start_date', 'end_date'
+			'economic_year_id', 'relief_type_id', 'status', 'start_date', 'end_date'
 		]);
 
 		$fileName = 'project_summary_' . now()->format('Y-m-d_H-i-s') . '.xlsx';
@@ -115,20 +116,39 @@ class ExportController extends Controller
 	public function exportProjectSummaryPdf(Request $request)
 	{
 		$filters = $request->only([
-			'economic_year_id', 'relief_type_id', 'start_date', 'end_date'
+			'economic_year_id', 'relief_type_id', 'status', 'start_date', 'end_date'
 		]);
 
 		$query = Project::with([
 			'economicYear', 'reliefType', 'createdBy', 'updatedBy'
 		]);
 
-		// Apply filters
+		// Apply filters - same as ProjectController
 		if (isset($filters['economic_year_id'])) {
 			$query->where('economic_year_id', $filters['economic_year_id']);
+		} else {
+			$currentYear = EconomicYear::where('is_current', true)->first();
+			if ($currentYear) {
+				$query->where('economic_year_id', $currentYear->id);
+			}
 		}
 
 		if (isset($filters['relief_type_id'])) {
 			$query->where('relief_type_id', $filters['relief_type_id']);
+		}
+
+		if (isset($filters['status'])) {
+			switch ($filters['status']) {
+				case 'active':
+					$query->active();
+					break;
+				case 'completed':
+					$query->completed();
+					break;
+				case 'upcoming':
+					$query->upcoming();
+					break;
+			}
 		}
 
 		if (isset($filters['start_date'])) {
@@ -145,25 +165,41 @@ class ExportController extends Controller
 
 		$projects = $query->orderBy('created_at', 'desc')->get();
 
-		// Calculate summary statistics
+		// Calculate summary statistics - same as ProjectController
 		$totalProjects = $projects->count();
 		$totalBudget = $projects->sum('allocated_amount');
-		$activeProjects = $projects->where('is_active', true)->count();
-		$completedProjects = $projects->where('is_completed', true)->count();
+		$activeProjects = $projects->filter(function($project) {
+			return $project->status === 'Active';
+		})->count();
+		$completedProjects = $projects->filter(function($project) {
+			return $project->status === 'Completed';
+		})->count();
 
-		// Calculate relief type allocation statistics (same as admin projects page)
+		// Calculate relief type allocation statistics with status filter
 		$reliefTypeStats = Project::query()
 			->when(isset($filters['economic_year_id']) && $filters['economic_year_id'], function($q) use ($filters) {
 				$q->where('economic_year_id', $filters['economic_year_id']);
 			}, function($q) {
-				// Default to current economic year if no year specified
-				$currentYear = \App\Models\EconomicYear::where('is_current', true)->first();
+				$currentYear = EconomicYear::where('is_current', true)->first();
 				if ($currentYear) {
 					$q->where('economic_year_id', $currentYear->id);
 				}
 			})
 			->when(isset($filters['relief_type_id']) && $filters['relief_type_id'], function($q) use ($filters) {
 				$q->where('relief_type_id', $filters['relief_type_id']);
+			})
+			->when(isset($filters['status']) && $filters['status'], function($q) use ($filters) {
+				switch ($filters['status']) {
+					case 'active':
+						$q->active();
+						break;
+					case 'completed':
+						$q->completed();
+						break;
+					case 'upcoming':
+						$q->upcoming();
+						break;
+				}
 			})
 			->selectRaw('relief_type_id, SUM(allocated_amount) as total_allocated, COUNT(*) as project_count')
 			->with('reliefType')
@@ -174,7 +210,6 @@ class ExportController extends Controller
 				$unit = $stat->reliefType?->unit_bn ?? $stat->reliefType?->unit ?? '';
 				$amount = number_format((float)$stat->total_allocated, 2);
 				
-				// Format based on unit type
 				if (in_array($unit, ['টাকা', 'Taka'])) {
 					$stat->formatted_total = '৳' . $amount;
 				} else {
@@ -184,7 +219,7 @@ class ExportController extends Controller
 				return $stat;
 			});
 
-		$pdf = Pdf::loadView('exports.project-summary-pdf', [
+		$html = view('exports.project-summary-pdf', [
 			'projects' => $projects,
 			'filters' => $filters,
 			'exportDate' => now(),
@@ -193,19 +228,24 @@ class ExportController extends Controller
 			'activeProjects' => $activeProjects,
 			'completedProjects' => $completedProjects,
 			'reliefTypeStats' => $reliefTypeStats,
-		])
-		->setPaper('a4', 'portrait')
-		->setOptions([
-			'isHtml5ParserEnabled' => true,
-			'isRemoteEnabled' => false,
-			'isPhpEnabled' => false,
-			'fontDir' => storage_path('fonts/'),
-			'fontCache' => storage_path('fonts/'),
-		]);
+		])->render();
 
 		$fileName = 'project_summary_' . now()->format('Y-m-d_H-i-s') . '.pdf';
+		$tempPath = storage_path('app/temp/' . $fileName);
 
-		return $pdf->download($fileName);
+		if (!file_exists(dirname($tempPath))) {
+			mkdir(dirname($tempPath), 0755, true);
+		}
+
+		Browsershot::html($html)
+			->setOption('args', ['--no-sandbox', '--disable-setuid-sandbox'])
+			->format('A4')
+			->margins(15, 15, 15, 15)
+			->showBackground()
+			->waitUntilNetworkIdle()
+			->save($tempPath);
+
+		return response()->download($tempPath, $fileName)->deleteFileAfterSend(true);
 	}
 
 	/**

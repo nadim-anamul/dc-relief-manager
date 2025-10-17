@@ -33,24 +33,47 @@ class ProjectSummaryExport implements FromCollection, WithHeadings, WithMapping,
 			'economicYear', 'reliefType', 'createdBy', 'updatedBy'
 		]);
 
-		// Apply filters
+		// Apply filters - same as ProjectController
 		if (isset($this->filters['economic_year_id'])) {
 			$query->where('economic_year_id', $this->filters['economic_year_id']);
+		} else {
+			$currentYear = \App\Models\EconomicYear::where('is_current', true)->first();
+			if ($currentYear) {
+				$query->where('economic_year_id', $currentYear->id);
+			}
 		}
 
 		if (isset($this->filters['relief_type_id'])) {
 			$query->where('relief_type_id', $this->filters['relief_type_id']);
 		}
 
+		if (isset($this->filters['status'])) {
+			switch ($this->filters['status']) {
+				case 'active':
+					$query->active();
+					break;
+				case 'completed':
+					$query->completed();
+					break;
+				case 'upcoming':
+					$query->upcoming();
+					break;
+			}
+		}
+
 		if (isset($this->filters['start_date'])) {
-			$query->where('start_date', '>=', $this->filters['start_date']);
+			$query->whereHas('economicYear', function($q) {
+				$q->where('start_date', '>=', $this->filters['start_date']);
+			});
 		}
 
 		if (isset($this->filters['end_date'])) {
-			$query->where('end_date', '<=', $this->filters['end_date']);
+			$query->whereHas('economicYear', function($q) {
+				$q->where('end_date', '<=', $this->filters['end_date']);
+			});
 		}
 
-		return $query->orderBy('name')->get();
+		return $query->orderBy('created_at', 'desc')->get();
 	}
 
 	/**

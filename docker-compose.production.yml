@@ -2,16 +2,16 @@ services:
   app:
     build:
       context: .
-      dockerfile: Dockerfile.dev
-    container_name: dc_relief_app_dev
+      dockerfile: Dockerfile.production
+    container_name: dc_relief_app_prod
     restart: unless-stopped
     ports:
       - "8182:8182"
     environment:
       - APP_NAME=DC Relief Manager
-      - APP_ENV=local
-      - APP_DEBUG=true
-      - APP_URL=http://localhost:8182
+      - APP_ENV=production
+      - APP_DEBUG=false
+      - APP_URL=http://139.162.3.19:8182
       - DB_CONNECTION=mysql
       - DB_HOST=db
       - DB_PORT=3306
@@ -24,12 +24,6 @@ services:
       # Security settings for Chromium in Docker
       - CHROME_NO_SANDBOX=true
     volumes:
-      # Mount entire application for live code changes
-      - .:/var/www/html
-      # Exclude node_modules and vendor to avoid conflicts
-      - /var/www/html/node_modules
-      - /var/www/html/vendor
-      # Persistent storage
       - ./storage:/var/www/html/storage
       - ./bootstrap/cache:/var/www/html/bootstrap/cache
     depends_on:
@@ -44,7 +38,7 @@ services:
 
   db:
     image: mysql:8.0
-    container_name: dc_relief_db_dev
+    container_name: dc_relief_db_prod
     restart: unless-stopped
     environment:
       MYSQL_DATABASE: dc_relief_manager
@@ -52,7 +46,7 @@ services:
       MYSQL_PASSWORD: dc_password_2024
       MYSQL_ROOT_PASSWORD: root_password_2024
     volumes:
-      - db_data_dev:/var/lib/mysql
+      - db_data:/var/lib/mysql
     ports:
       - "33011:3306"
     networks:
@@ -61,13 +55,14 @@ services:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "dc_user", "-pdc_password_2024"]
       timeout: 20s
       retries: 10
-      interval: 5s
+      interval: 10s
       start_period: 30s
 
 volumes:
-  db_data_dev:
+  db_data:
     driver: local
 
 networks:
   dc_network:
     driver: bridge
+
