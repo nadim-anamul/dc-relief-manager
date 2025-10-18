@@ -126,6 +126,22 @@ Route::get('/locale/{lang}', function (string $lang) {
             // Area-wise Relief Export
             Route::get('area-wise-relief/excel', [App\Http\Controllers\ExportController::class, 'exportAreaWiseReliefExcel'])->name('area-wise-relief.excel');
             Route::get('area-wise-relief/pdf', [App\Http\Controllers\ExportController::class, 'exportAreaWiseReliefPdf'])->name('area-wise-relief.pdf');
+            
+            // Distribution Export Routes
+            Route::get('distributions/consolidated/excel', [App\Http\Controllers\ExportController::class, 'exportConsolidatedDistributionExcel'])->name('distributions.consolidated.excel');
+            Route::get('distributions/consolidated/pdf', [App\Http\Controllers\ExportController::class, 'exportConsolidatedDistributionPdf'])->name('distributions.consolidated.pdf');
+            
+            Route::get('distributions/detailed/upazila/excel', [App\Http\Controllers\ExportController::class, 'exportDetailedUpazilaDistributionExcel'])->name('distributions.detailed.upazila.excel');
+            Route::get('distributions/detailed/upazila/pdf', [App\Http\Controllers\ExportController::class, 'exportDetailedUpazilaDistributionPdf'])->name('distributions.detailed.upazila.pdf');
+            
+            Route::get('distributions/detailed/union/excel', [App\Http\Controllers\ExportController::class, 'exportDetailedUnionDistributionExcel'])->name('distributions.detailed.union.excel');
+            Route::get('distributions/detailed/union/pdf', [App\Http\Controllers\ExportController::class, 'exportDetailedUnionDistributionPdf'])->name('distributions.detailed.union.pdf');
+            
+            Route::get('distributions/detailed/duplicates/excel', [App\Http\Controllers\ExportController::class, 'exportDetailedDuplicatesDistributionExcel'])->name('distributions.detailed.duplicates.excel');
+            Route::get('distributions/detailed/duplicates/pdf', [App\Http\Controllers\ExportController::class, 'exportDetailedDuplicatesDistributionPdf'])->name('distributions.detailed.duplicates.pdf');
+            
+            Route::get('distributions/detailed/projects/excel', [App\Http\Controllers\ExportController::class, 'exportDetailedProjectsDistributionExcel'])->name('distributions.detailed.projects.excel');
+            Route::get('distributions/detailed/projects/pdf', [App\Http\Controllers\ExportController::class, 'exportDetailedProjectsDistributionPdf'])->name('distributions.detailed.projects.pdf');
         });
     });
 

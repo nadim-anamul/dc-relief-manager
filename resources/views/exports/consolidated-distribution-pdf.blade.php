@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ত্রাণ আবেদন রিপোর্ট</title>
+    <title>সমন্বিত বিতরণ বিশ্লেষণ রিপোর্ট</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@400;600;700&display=swap" rel="stylesheet">
     
     <style>
@@ -88,11 +88,71 @@
             font-weight: 700;
         }
 
-        .summary-row {
+        .project-budget {
+            background-color: #f8fafc;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .project-budget h3 {
+            margin: 0 0 15px 0;
+            color: #059669;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .project-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 15px;
-            margin-top: 15px;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .project-item {
+            background: white;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .project-item .name {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .project-item .amounts {
+            display: flex;
+            justify-content: space-between;
+            font-size: 10px;
+        }
+
+        .project-item .allocated {
+            color: #059669;
+        }
+
+        .project-item .distributed {
+            color: #dc2626;
+        }
+
+        .project-item .available {
+            color: #2563eb;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background-color: #e5e7eb;
+            border-radius: 4px;
+            margin: 5px 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background-color: #059669;
+            transition: width 0.3s ease;
         }
 
         table {
@@ -122,31 +182,6 @@
             background-color: #f9f9f9;
         }
 
-        .status-badge {
-            padding: 3px 8px;
-            border-radius: 4px;
-            font-size: 9px;
-            font-weight: 600;
-            text-align: center;
-            display: inline-block;
-            min-width: 60px;
-        }
-
-        .status-pending {
-            background-color: #fef3c7;
-            color: #92400e;
-        }
-
-        .status-approved {
-            background-color: #d1fae5;
-            color: #065f46;
-        }
-
-        .status-rejected {
-            background-color: #fee2e2;
-            color: #991b1b;
-        }
-
         .amount {
             text-align: right;
             font-weight: 600;
@@ -165,10 +200,6 @@
             padding-top: 15px;
         }
 
-        .page-break {
-            page-break-before: always;
-        }
-
         .no-data {
             text-align: center;
             padding: 40px;
@@ -183,101 +214,94 @@
 </head>
 <body>
     <div class="header">
-        <h1>ত্রাণ আবেদন রিপোর্ট</h1>
+        <h1>সমন্বিত বিতরণ বিশ্লেষণ রিপোর্ট</h1>
         <p>তৈরির তারিখ: {{ bn_date($exportDate, 'd M Y') }} {{ bn_number($exportDate->format('h:i')) }} {{ $exportDate->format('A') === 'AM' ? 'সকাল' : 'বিকাল' }}</p>
         <p>ডিসি ত্রাণ ব্যবস্থাপনা সিস্টেম</p>
     </div>
 
     <div class="summary">
-        <h3>আবেদন সারসংক্ষেপ</h3>
+        <h3>সারসংক্ষেপ</h3>
         <div class="summary-grid">
             <div class="summary-item">
                 <div class="label">মোট আবেদন</div>
-                <div class="value">{{ bn_number($totalApplications) }}</div>
+                <div class="value">{{ bn_number($data['distribution']->count()) }}</div>
             </div>
             <div class="summary-item">
-                <div class="label">অপেক্ষমান</div>
-                <div class="value">{{ bn_number($pendingApplications) }}</div>
+                <div class="label">মোট পরিমাণ</div>
+                <div class="value">৳{{ bn_number(number_format($data['distribution']->sum('approved_amount'), 2)) }}</div>
             </div>
             <div class="summary-item">
-                <div class="label">অনুমোদিত</div>
-                <div class="value">{{ bn_number($approvedApplications) }}</div>
+                <div class="label">অনন্য প্রকল্প</div>
+                <div class="value">{{ bn_number($data['distribution']->pluck('project_id')->unique()->count()) }}</div>
             </div>
             <div class="summary-item">
-                <div class="label">প্রত্যাখ্যাত</div>
-                <div class="value">{{ bn_number($rejectedApplications) }}</div>
+                <div class="label">অনন্য সংস্থা</div>
+                <div class="value">{{ bn_number($data['distribution']->pluck('organization_name')->unique()->count()) }}</div>
             </div>
         </div>
-        
-        @if($approvedApplications > 0)
-        <div class="summary-row">
-            <div class="summary-item">
-                <div class="label">মোট অনুমোদিত পরিমাণ</div>
-                <div class="value">৳{{ bn_number(number_format($totalApprovedAmount, 2)) }}</div>
-            </div>
-            <div class="summary-item">
-                <div class="label">মোট আবেদনকৃত পরিমাণ</div>
-                <div class="value">৳{{ bn_number(number_format($totalRequestedAmount, 2)) }}</div>
-            </div>
-            <div class="summary-item">
-                <div class="label">গড় অনুমোদিত পরিমাণ</div>
-                <div class="value">৳{{ bn_number(number_format($approvedApplications > 0 ? $totalApprovedAmount / $approvedApplications : 0, 2)) }}</div>
-            </div>
-            <div class="summary-item">
-                <div class="label">অনুমোদনের হার</div>
-                <div class="value">{{ $totalApplications > 0 ? bn_number(round(($approvedApplications / $totalApplications) * 100, 1)) : '০' }}%</div>
-            </div>
-        </div>
-        @endif
     </div>
 
-    @if($reliefApplications->count() > 0)
+    @if($projectBudgetBreakdown->count() > 0)
+    <div class="project-budget">
+        <h3>প্রকল্প বাজেট বিশ্লেষণ</h3>
+        <div class="project-grid">
+            @foreach($projectBudgetBreakdown as $budget)
+            <div class="project-item">
+                <div class="name">{{ $budget['project']->name }}</div>
+                <div class="amounts">
+                    <span class="allocated">বরাদ্দ: ৳{{ bn_number(number_format($budget['allocated_amount'], 2)) }}</span>
+                    <span class="distributed">বিতরণ: ৳{{ bn_number(number_format($budget['distributed_amount'], 2)) }}</span>
+                    <span class="available">অবশিষ্ট: ৳{{ bn_number(number_format($budget['available_amount'], 2)) }}</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: {{ $budget['utilization_percentage'] }}%"></div>
+                </div>
+                <div style="text-align: center; font-size: 9px; color: #666;">
+                    {{ bn_number(number_format($budget['utilization_percentage'], 1)) }}% ব্যবহার
+                </div>
+            </div>
+            @endforeach
+        </div>
+    </div>
+    @endif
+
+    @if($data['distribution']->count() > 0)
     <table>
         <thead>
             <tr>
                 <th style="width: 4%;">ক্রমিক</th>
-                <th style="width: 15%;">সংস্থার নাম</th>
+                <th style="width: 18%;">সংস্থার নাম</th>
                 <th style="width: 8%;">তারিখ</th>
-                <th style="width: 12%;">অবস্থান</th>
-                <th style="width: 15%;">বিষয়</th>
+                <th style="width: 10%;">জেলা</th>
+                <th style="width: 10%;">উপজেলা</th>
+                <th style="width: 10%;">ইউনিয়ন</th>
+                <th style="width: 15%;">প্রকল্পের নাম</th>
                 <th style="width: 10%;">ত্রাণের ধরন</th>
-                <th style="width: 10%;">আবেদনকৃত পরিমাণ</th>
-                <th style="width: 10%;">অনুমোদিত পরিমাণ</th>
-                <th style="width: 8%;">অবস্থা</th>
-                <th style="width: 8%;">প্রকল্প</th>
+                <th style="width: 8%;">আবেদনকৃত</th>
+                <th style="width: 8%;">অনুমোদিত</th>
             </tr>
         </thead>
         <tbody>
-            @foreach($reliefApplications as $index => $application)
+            @foreach($data['distribution'] as $index => $application)
             <tr>
                 <td class="text-center">{{ bn_number($index + 1) }}</td>
                 <td>{{ $application->organization_name }}</td>
                 <td class="text-center">{{ bn_date($application->date, 'd/m/Y') }}</td>
-                <td>{{ localized_attr($application->zilla, 'name') ?? 'উল্লেখ নেই' }}, {{ localized_attr($application->upazila, 'name') ?? 'উল্লেখ নেই' }}</td>
-                <td>{{ $application->subject }}</td>
+                <td>{{ localized_attr($application->zilla, 'name') ?? 'উল্লেখ নেই' }}</td>
+                <td>{{ localized_attr($application->upazila, 'name') ?? 'উল্লেখ নেই' }}</td>
+                <td>{{ localized_attr($application->union, 'name') ?? 'উল্লেখ নেই' }}</td>
+                <td>{{ $application->project->name ?? 'উল্লেখ নেই' }}</td>
                 <td>{{ localized_attr($application->reliefType, 'name') ?? 'উল্লেখ নেই' }}</td>
                 <td class="amount">৳{{ bn_number(number_format($application->amount_requested, 2)) }}</td>
-                <td class="amount">{{ $application->approved_amount ? '৳' . bn_number(number_format($application->approved_amount, 2)) : '-' }}</td>
-                <td class="text-center">
-                    @if($application->status === 'pending')
-                        <span class="status-badge status-pending">অপেক্ষমান</span>
-                    @elseif($application->status === 'approved')
-                        <span class="status-badge status-approved">অনুমোদিত</span>
-                    @elseif($application->status === 'rejected')
-                        <span class="status-badge status-rejected">প্রত্যাখ্যাত</span>
-                    @else
-                        <span class="status-badge status-pending">{{ ucfirst($application->status) }}</span>
-                    @endif
-                </td>
-                <td>{{ $application->project->name ?? '-' }}</td>
+                <td class="amount">৳{{ bn_number(number_format($application->approved_amount, 2)) }}</td>
             </tr>
             @endforeach
         </tbody>
     </table>
     @else
     <div class="no-data">
-        <h3>কোনো ত্রাণ আবেদন পাওয়া যায়নি</h3>
-        <p>বর্তমান ফিল্টার অনুযায়ী কোনো ত্রাণ আবেদন খুঁজে পাওয়া যায়নি।</p>
+        <h3>কোনো বিতরণ তথ্য পাওয়া যায়নি</h3>
+        <p>বর্তমান ফিল্টার অনুযায়ী কোনো বিতরণ তথ্য খুঁজে পাওয়া যায়নি।</p>
     </div>
     @endif
 

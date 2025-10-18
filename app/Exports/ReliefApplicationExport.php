@@ -32,10 +32,16 @@ class ReliefApplicationExport implements FromCollection, WithHeadings, WithMappi
 		$query = ReliefApplication::with([
 			'organizationType', 'zilla', 'upazila', 'union', 'ward', 
 			'reliefType', 'project', 'approvedBy', 'rejectedBy',
-			'createdBy', 'updatedBy'
+			'createdBy', 'updatedBy', 'project.economicYear'
 		]);
 
-		// Apply filters
+		// Default zilla filter (set to Bogura zilla ID 1) - same as admin controller
+		$defaultZillaId = 1;
+		if (!isset($this->filters['zilla_id'])) {
+			$query->where('zilla_id', $defaultZillaId);
+		}
+
+		// Apply filters - same as ReliefApplicationController
 		if (isset($this->filters['status']) && $this->filters['status'] !== 'all') {
 			$query->where('status', $this->filters['status']);
 		}
@@ -50,6 +56,26 @@ class ReliefApplicationExport implements FromCollection, WithHeadings, WithMappi
 
 		if (isset($this->filters['zilla_id'])) {
 			$query->where('zilla_id', $this->filters['zilla_id']);
+		}
+
+		// Filter by economic year if provided (but not if project_id is also provided, as project determines economic year)
+		if (isset($this->filters['economic_year_id']) && !isset($this->filters['project_id'])) {
+			$query->whereHas('project', function($q) {
+				$q->where('economic_year_id', $this->filters['economic_year_id']);
+			});
+		} elseif (!isset($this->filters['project_id'])) {
+			// Default to current economic year if no specific year is selected
+			$currentYear = \App\Models\EconomicYear::where('is_current', true)->first();
+			if ($currentYear) {
+				$query->whereHas('project', function($q) use ($currentYear) {
+					$q->where('economic_year_id', $currentYear->id);
+				});
+			}
+		}
+
+		// Filter by project if provided
+		if (isset($this->filters['project_id'])) {
+			$query->where('project_id', $this->filters['project_id']);
 		}
 
 		if (isset($this->filters['start_date'])) {
