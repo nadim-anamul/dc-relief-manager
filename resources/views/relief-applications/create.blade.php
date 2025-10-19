@@ -56,7 +56,8 @@
 								<select name="application_type" 
 									id="application_type" 
 									x-model="applicationType"
-									class="input-field @error('application_type') border-red-500 dark:border-red-400 @enderror"
+							class="input-field @error('application_type') border-red-500 dark:border-red-400 @enderror"
+							@change="checkDuplicate()"
 									required>
 									<option value="">{{ __('Select Application Type') }}</option>
 									<option value="individual" {{ old('application_type') == 'individual' ? 'selected' : '' }}>{{ __('Individual') }}</option>
@@ -89,7 +90,7 @@
 							<!-- Relief Type Selection -->
 							<div class="md:col-span-2">
 								<label for="relief_type_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-									{{ __('Relief Type') }} (ত্রাণের ধরন) <span class="text-red-500">*</span>
+							{{ __('Relief Type') }} <span class="text-red-500">*</span>
 								</label>
 								<select name="relief_type_id" 
 									id="relief_type_id" 
@@ -97,7 +98,7 @@
 									required
 									x-model="selectedReliefType"
 									@change="loadProjectsByReliefType()">
-									<option value="">{{ __('Select Relief Type') }} (ত্রাণের ধরন নির্বাচন করুন)</option>
+							<option value="">{{ __('Select a Relief Type') }}</option>
 									@foreach($reliefTypes as $reliefType)
 										<option value="{{ $reliefType->id }}" {{ old('relief_type_id') == $reliefType->id ? 'selected' : '' }}>
 											{{ $reliefType->name_bn ?? $reliefType->name }}
@@ -105,7 +106,7 @@
 									@endforeach
 								</select>
 								<p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-									{{ __('Select the type of relief you are applying for') }}
+									{{ __('Details about your relief request') }}
 								</p>
 								@error('relief_type_id')
 									<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
@@ -115,7 +116,7 @@
 							<!-- Project Selection -->
 							<div class="md:col-span-2">
 								<label for="project_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-									{{ __('Project') }} (প্রকল্প) <span class="text-red-500">*</span>
+							{{ __('Project') }} <span class="text-red-500">*</span>
 								</label>
 								<select name="project_id" 
 									id="project_id" 
@@ -124,7 +125,7 @@
 									x-model="selectedProject"
 									@change="updateProjectDetails()"
 									:disabled="!selectedReliefType">
-									<option value="">{{ __('Select Project') }} (প্রকল্প নির্বাচন করুন)</option>
+							<option value="">{{ __('Select Project') }}</option>
 									<template x-for="project in filteredProjects" :key="project.id">
 										<option :value="project.id" 
 											:data-unit="project.relief_type_unit_bn || project.relief_type_unit"
@@ -133,7 +134,7 @@
 									</template>
 								</select>
 								<p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-									{{ __('Select relief type first to see available projects') }}
+									{{ __('Only current economic year active projects are shown') }}
 								</p>
 								@error('project_id')
 									<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
@@ -228,12 +229,16 @@
 									name="organization_name" 
 									id="organization_name" 
 									value="{{ old('organization_name') }}"
-									class="input-field @error('organization_name') border-red-500 dark:border-red-400 @enderror"
+							class="input-field @error('organization_name') border-red-500 dark:border-red-400 @enderror"
 									placeholder="{{ __('Enter organization name') }}"
-									x-bind:required="applicationType === 'organization'">
+							x-bind:required="applicationType === 'organization'"
+							@input.debounce.500ms="checkDuplicate()">
 								@error('organization_name')
 									<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
 								@enderror
+						<div x-show="duplicateExists && applicationType === 'organization'" class="mt-2 text-sm text-yellow-700 bg-yellow-50 dark:bg-yellow-900/30 dark:text-yellow-300 border border-yellow-200 dark:border-yellow-800 rounded-md p-2">
+							<span x-text="duplicateMessage"></span>
+						</div>
 							</div>
 
 							<!-- Organization Type -->
@@ -335,10 +340,14 @@
 									value="{{ old('applicant_nid') }}"
 									class="input-field @error('applicant_nid') border-red-500 dark:border-red-400 @enderror"
 									placeholder="{{ __('Enter NID number') }}"
-									required>
+						required
+						@input.debounce.500ms="checkDuplicate()">
 								@error('applicant_nid')
 									<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
 								@enderror
+						<div x-show="duplicateExists && applicationType === 'individual'" class="mt-2 text-sm text-yellow-700 bg-yellow-50 dark:bg-yellow-900/30 dark:text-yellow-300 border border-yellow-200 dark:border-yellow-800 rounded-md p-2">
+							<span x-text="duplicateMessage"></span>
+						</div>
 							</div>
 
 							<!-- Applicant Designation (only for organizations, not mandatory) -->
@@ -592,6 +601,12 @@
 				selectedReliefType: '{{ old('relief_type_id') }}',
 				projects: @json($projects ?? []),
 				filteredProjects: [],
+				duplicateExists: false,
+				duplicateCount: 0,
+				duplicateMessage: '',
+				duplicateExists: false,
+				duplicateCount: 0,
+				duplicateMessage: '',
 				
 				loadUpazilas() {
 					if (this.selectedZilla) {
@@ -693,6 +708,81 @@
 						this.projectUnit = '';
 					}
 				},
+
+				checkDuplicate() {
+					const params = new URLSearchParams();
+					params.append('application_type', this.applicationType || '');
+					if (this.applicationType === 'organization') {
+						const orgName = document.getElementById('organization_name')?.value || '';
+						params.append('organization_name', orgName.trim());
+					}
+					if (this.applicationType === 'individual') {
+						const nid = document.getElementById('applicant_nid')?.value || '';
+						params.append('applicant_nid', nid.trim());
+					}
+
+					if (!this.applicationType) {
+						this.duplicateExists = false;
+						this.duplicateCount = 0;
+						this.duplicateMessage = '';
+						return;
+					}
+
+					fetch(`/relief-applications/check-duplicate?${params.toString()}`)
+						.then(r => r.json())
+						.then(data => {
+							this.duplicateExists = !!data.duplicate;
+							this.duplicateCount = data.count || 0;
+							if (this.duplicateExists) {
+								this.duplicateMessage = this.applicationType === 'organization'
+									? `{{ __('Approved application already exists this year for this organization') }}`
+									: `{{ __('Approved application already exists this year for this NID') }}`;
+							} else {
+								this.duplicateMessage = '';
+							}
+						})
+						.catch(() => {
+							this.duplicateExists = false;
+							this.duplicateMessage = '';
+						});
+				},
+
+				checkDuplicate() {
+					const params = new URLSearchParams();
+					params.set('application_type', this.applicationType || '');
+					if (this.applicationType === 'organization') {
+						const name = document.getElementById('organization_name')?.value || '';
+						if (!name || name.length < 2) { this.duplicateExists = false; return; }
+						params.set('organization_name', name);
+					} else if (this.applicationType === 'individual') {
+						const nid = document.getElementById('applicant_nid')?.value || '';
+						if (!nid || nid.length < 5) { this.duplicateExists = false; return; }
+						params.set('applicant_nid', nid);
+					} else {
+						this.duplicateExists = false; return;
+					}
+
+					fetch(`/relief-applications/check-duplicate?${params.toString()}`, {
+						headers: {
+							'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+							'Accept': 'application/json',
+							'Content-Type': 'application/json'
+						}
+					})
+						.then(r => r.json())
+						.then(data => {
+							this.duplicateExists = !!data.duplicate;
+							this.duplicateCount = data.count || 0;
+							if (this.duplicateExists) {
+								this.duplicateMessage = this.applicationType === 'organization'
+									? `{{ __('Approved application already exists this year for this organization') }}`
+									: `{{ __('Approved application already exists this year for this NID') }}`;
+							} else {
+								this.duplicateMessage = '';
+							}
+						})
+						.catch(() => { this.duplicateExists = false; });
+				},
 				
 				handleFileChange(event) {
 					const file = event.target.files[0];
@@ -723,6 +813,9 @@
 					if (this.selectedProject) {
 						this.updateProjectDetails();
 					}
+
+					// Initial duplicate check if values prefilled
+					this.checkDuplicate();
 				}
 			}
 		}

@@ -146,6 +146,7 @@ Route::get('/locale/{lang}', function (string $lang) {
     });
 
     // Relief Application routes (accessible to authenticated users)
+    Route::get('relief-applications/check-duplicate', [App\Http\Controllers\ReliefApplicationController::class, 'checkDuplicate'])->name('relief-applications.check-duplicate');
     Route::resource('relief-applications', App\Http\Controllers\ReliefApplicationController::class)->middleware(['permission:relief-applications.create-own,relief-applications.view-own']);
     Route::get('upazilas-by-zilla/{zilla}', [App\Http\Controllers\ReliefApplicationController::class, 'getUpazilasByZilla'])->name('upazilas.by-zilla');
     Route::get('unions-by-upazila/{upazila}', [App\Http\Controllers\ReliefApplicationController::class, 'getUnionsByUpazila'])->name('unions.by-upazila');

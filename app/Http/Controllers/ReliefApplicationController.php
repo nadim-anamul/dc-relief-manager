@@ -239,6 +239,40 @@ class ReliefApplicationController extends Controller
 	}
 
 	/**
+	 * Check for duplicate approved applications within current economic year.
+	 */
+	public function checkDuplicate(Request $request): JsonResponse
+	{
+		$applicationType = $request->input('application_type');
+		$organizationName = $request->input('organization_name');
+		$applicantNid = $request->input('applicant_nid');
+
+		$currentYear = \App\Models\EconomicYear::where('is_current', true)->first();
+		if (!$currentYear) {
+			return response()->json(['duplicate' => false, 'count' => 0]);
+		}
+
+		$query = ReliefApplication::query()
+			->where('status', 'approved')
+			->whereHas('project', function($q) use ($currentYear) {
+				$q->where('economic_year_id', $currentYear->id);
+			});
+
+		if ($applicationType === 'organization' && $organizationName) {
+			$query->where('application_type', 'organization')
+				->where('organization_name', $organizationName);
+		} elseif ($applicationType === 'individual' && $applicantNid) {
+			$query->where('application_type', 'individual')
+				->where('applicant_nid', $applicantNid);
+		} else {
+			return response()->json(['duplicate' => false, 'count' => 0]);
+		}
+
+		$count = $query->count();
+		return response()->json(['duplicate' => $count > 0, 'count' => $count]);
+	}
+
+	/**
 	 * Get available projects for a relief type.
 	 */
 	public function getProjectsByReliefType(Request $request): JsonResponse
