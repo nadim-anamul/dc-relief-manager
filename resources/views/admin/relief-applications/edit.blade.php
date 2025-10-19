@@ -11,6 +11,20 @@
 	</x-slot>
 
 	<div class="max-w-4xl mx-auto">
+		@if(!empty($hasDuplicate) && $hasDuplicate)
+			<div class="mb-6 p-4 bg-yellow-50 dark:bg-yellow-900/30 border border-yellow-200 dark:border-yellow-800 rounded-md">
+				<div class="flex items-start">
+					<svg class="w-5 h-5 text-yellow-700 dark:text-yellow-300 mt-0.5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M4.93 4.93a10 10 0 1114.14 14.14A10 10 0 014.93 4.93z"></path>
+					</svg>
+					<p class="text-sm text-yellow-800 dark:text-yellow-200">
+						{{ $reliefApplication->application_type === 'organization' 
+							? __('Approved application already exists this year for this organization') 
+							: __('Approved application already exists this year for this NID') }}
+					</p>
+				</div>
+			</div>
+		@endif
 		<div class="card">
 			<div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
                 <h3 class="text-lg font-medium text-gray-900 dark:text-white {{ app()->isLocale('bn') ? 'font-sans' : '' }}">{{ __('Application Review & Decision') }}</h3>

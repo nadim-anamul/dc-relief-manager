@@ -263,7 +263,9 @@ class ReliefApplicationController extends Controller
 	{
 		$reliefApplication->load(['organizationType', 'zilla', 'upazila', 'union', 'ward', 'reliefType', 'project', 'approvedBy', 'rejectedBy']);
 
-		return view('admin.relief-applications.show', compact('reliefApplication'));
+		[$hasDuplicate, $duplicateCount] = $this->getDuplicateApprovedInCurrentYear($reliefApplication);
+
+		return view('admin.relief-applications.show', compact('reliefApplication', 'hasDuplicate', 'duplicateCount'));
 	}
 
 	/**
@@ -273,7 +275,41 @@ class ReliefApplicationController extends Controller
 	{
 		$reliefApplication->load(['organizationType', 'zilla', 'upazila', 'union', 'ward', 'reliefType', 'project', 'approvedBy', 'rejectedBy']);
 
-		return view('admin.relief-applications.edit', compact('reliefApplication'));
+		[$hasDuplicate, $duplicateCount] = $this->getDuplicateApprovedInCurrentYear($reliefApplication);
+
+		return view('admin.relief-applications.edit', compact('reliefApplication', 'hasDuplicate', 'duplicateCount'));
+	}
+
+	/**
+	 * Determine if there are duplicate approved applications in the current economic year
+	 * for the same organization name (organization type) or same NID (individual type).
+	 */
+	private function getDuplicateApprovedInCurrentYear(ReliefApplication $application): array
+	{
+		$currentYear = \App\Models\EconomicYear::where('is_current', true)->first();
+		if (!$currentYear) {
+			return [false, 0];
+		}
+
+		$query = ReliefApplication::query()
+			->where('status', 'approved')
+			->whereKeyNot($application->getKey())
+			->whereHas('project', function($q) use ($currentYear) {
+				$q->where('economic_year_id', $currentYear->id);
+			});
+
+		if ($application->application_type === 'organization' && $application->organization_name) {
+			$query->where('application_type', 'organization')
+				->where('organization_name', $application->organization_name);
+		} elseif ($application->application_type === 'individual' && $application->applicant_nid) {
+			$query->where('application_type', 'individual')
+				->where('applicant_nid', $application->applicant_nid);
+		} else {
+			return [false, 0];
+		}
+
+		$count = $query->count();
+		return [$count > 0, $count];
 	}
 
 	/**
