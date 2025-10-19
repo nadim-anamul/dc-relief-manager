@@ -601,7 +601,13 @@
     "Update Economic Year": "অর্থবছর আপডেট করুন",
     "Setting this as current will unset any other current year": "চলতি বছর হিসেবে নির্ধারণ করলে অন্য চলতি বছর হিসেবে নির্ধারণ করা হবে না",
     "Relief Type Management": "ত্রানের খাত যোগ/পরিবর্তন",
-    "Theme": "থিম"
+    "Theme": "থিম",
+    "Application Type": "আবেদনের ধরন",
+    "Select whether you are applying as an individual or organization": "নির্বাচন করুন আপনি ব্যক্তি হিসেবে নাকি সংস্থা হিসেবে আবেদন করছেন",
+    "Select Application Type": "আবেদনের ধরন নির্বাচন করুন",
+    "Individual": "ব্যক্তি",
+    "NID (National ID)": "এনআইডি (জাতীয় পরিচয়পত্র)",
+    "Enter NID number": "এনআইডি নম্বর লিখুন"
 
 
 }

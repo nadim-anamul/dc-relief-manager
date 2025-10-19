@@ -106,6 +106,13 @@ class ReliefApplicationController extends Controller
 			}
 		}
 
+		// Set default values for individual applications
+		if ($validated['application_type'] === 'individual') {
+			$validated['organization_name'] = null;
+			$validated['organization_address'] = null;
+			$validated['organization_type_id'] = null;
+		}
+
 		// Create the relief application
 		$reliefApplication = ReliefApplication::create($validated);
 
@@ -181,6 +188,13 @@ class ReliefApplicationController extends Controller
 			if ($project) {
 				$validated['relief_type_id'] = $project->relief_type_id;
 			}
+		}
+
+		// Set default values for individual applications
+		if ($validated['application_type'] === 'individual') {
+			$validated['organization_name'] = null;
+			$validated['organization_address'] = null;
+			$validated['organization_type_id'] = null;
 		}
 
 		// Update the relief application

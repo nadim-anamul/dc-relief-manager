@@ -15,6 +15,7 @@ class ReliefApplication extends Model
 	use HasFactory, SoftDeletes, Auditable;
 
 	protected $fillable = [
+		'application_type',
 		'organization_name',
 		'organization_type_id',
 		'date',
@@ -26,6 +27,7 @@ class ReliefApplication extends Model
 		'relief_type_id',
 		'project_id',
 		'applicant_name',
+		'applicant_nid',
 		'applicant_designation',
 		'applicant_phone',
 		'applicant_address',
@@ -190,6 +192,14 @@ class ReliefApplication extends Model
 	}
 
 	/**
+	 * Scope to filter by application type.
+	 */
+	public function scopeByApplicationType($query, $applicationType)
+	{
+		return $query->where('application_type', $applicationType);
+	}
+
+	/**
 	 * Get formatted amount requested.
 	 */
 	public function getFormattedAmountAttribute(): string
@@ -338,18 +348,29 @@ class ReliefApplication extends Model
 	}
 
 	/**
-	 * Get available projects for this relief type.
+	 * Check if application is for individual.
 	 */
-	public function getAvailableProjectsAttribute()
+	public function isIndividual(): bool
 	{
-		return Project::where('relief_type_id', $this->relief_type_id)
-			->whereHas('economicYear', function($query) {
-				$query->where('start_date', '<=', now())
-					->where('end_date', '>=', now())
-					->where('is_current', true);
-			})
-			->where('available_amount', '>', 0)
-			->orderBy('name')
-			->get();
+		return $this->application_type === 'individual';
 	}
-}
+
+	/**
+	 * Check if application is for organization.
+	 */
+	public function isOrganization(): bool
+	{
+		return $this->application_type === 'organization';
+	}
+
+	/**
+	 * Get application type display name.
+	 */
+	public function getApplicationTypeDisplayAttribute(): string
+	{
+		return match($this->application_type) {
+			'individual' => __('Individual'),
+			'organization' => __('Organization'),
+			default => __('Unknown'),
+		};
+	}

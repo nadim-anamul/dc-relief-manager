@@ -23,14 +23,26 @@ class ReliefApplicationRequest extends FormRequest
     public function rules(): array
     {
         $rules = [
-            'organization_name' => [
+            'application_type' => [
                 'required',
+                'in:individual,organization',
+            ],
+            'applicant_nid' => [
+                'required',
+                'string',
+                'max:20',
+                'min:10',
+                'regex:/^[0-9]{10,20}$/',
+            ],
+            'organization_name' => [
+                'required_if:application_type,organization',
+                'nullable',
                 'string',
                 'max:255',
                 'min:2',
             ],
             'organization_type_id' => [
-                'required',
+                'nullable',
                 'exists:organization_types,id',
             ],
             'date' => [
@@ -85,7 +97,8 @@ class ReliefApplicationRequest extends FormRequest
                 'min:10',
             ],
             'organization_address' => [
-                'required',
+                'required_if:application_type,organization',
+                'nullable',
                 'string',
                 'max:1000',
                 'min:10',
@@ -151,11 +164,18 @@ class ReliefApplicationRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'organization_name.required' => 'Organization name is required.',
+            'application_type.required' => 'Please select an application type.',
+            'application_type.in' => 'Application type must be individual or organization.',
+            
+            'applicant_nid.required' => 'NID (National ID) is required.',
+            'applicant_nid.regex' => 'Please enter a valid NID number (10-20 digits).',
+            'applicant_nid.min' => 'NID must be at least 10 digits.',
+            'applicant_nid.max' => 'NID cannot exceed 20 digits.',
+            
+            'organization_name.required_if' => 'Organization name is required for organization applications.',
             'organization_name.min' => 'Organization name must be at least 2 characters.',
             'organization_name.max' => 'Organization name cannot exceed 255 characters.',
             
-            'organization_type_id.required' => 'Please select an organization type.',
             'organization_type_id.exists' => 'Selected organization type is invalid.',
             
             'date.required' => 'Application date is required.',
@@ -188,7 +208,7 @@ class ReliefApplicationRequest extends FormRequest
             'applicant_address.min' => 'Address must be at least 10 characters.',
             'applicant_address.max' => 'Address cannot exceed 1000 characters.',
             
-            'organization_address.required' => 'Organization address is required.',
+            'organization_address.required_if' => 'Organization address is required for organization applications.',
             'organization_address.min' => 'Organization address must be at least 10 characters.',
             'organization_address.max' => 'Organization address cannot exceed 1000 characters.',
             
@@ -228,6 +248,8 @@ class ReliefApplicationRequest extends FormRequest
     public function attributes(): array
     {
         return [
+            'application_type' => 'application type',
+            'applicant_nid' => 'NID',
             'organization_name' => 'organization name',
             'organization_type_id' => 'organization type',
             'zilla_id' => 'district',
