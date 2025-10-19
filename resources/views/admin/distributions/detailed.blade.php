@@ -293,11 +293,7 @@
                                     @moneybn($row->total_approved)
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                                    <a href="{{ route('admin.relief-applications.index', array_filter([
-                                        'economic_year_id' => $selectedYear?->id,
-                                        'organization_name' => $row->organization_name,
-                                        'status' => 'approved'
-                                    ])) }}" 
+                                    <a href="{{ route('admin.relief-applications.index', ['search' => $row->organization_name], 'economic_year_id' => $selectedYear?->id) }}" 
                                        class="inline-flex items-center px-3 py-1 bg-orange-100 hover:bg-orange-200 dark:bg-orange-900 dark:hover:bg-orange-800 text-orange-700 dark:text-orange-300 text-sm font-medium rounded-lg transition-colors duration-200 hover:shadow-sm">
                                         {{ __('View Applications') }}
                                         <svg class="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
