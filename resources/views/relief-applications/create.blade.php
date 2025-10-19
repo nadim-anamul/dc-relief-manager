@@ -86,19 +86,46 @@
 						</div>
 						
 						<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+							<!-- Relief Type Selection -->
+							<div class="md:col-span-2">
+								<label for="relief_type_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+									{{ __('Relief Type') }} (ত্রাণের ধরন) <span class="text-red-500">*</span>
+								</label>
+								<select name="relief_type_id" 
+									id="relief_type_id" 
+									class="input-field @error('relief_type_id') border-red-500 dark:border-red-400 @enderror"
+									required
+									x-model="selectedReliefType"
+									@change="loadProjectsByReliefType()">
+									<option value="">{{ __('Select Relief Type') }} (ত্রাণের ধরন নির্বাচন করুন)</option>
+									@foreach($reliefTypes as $reliefType)
+										<option value="{{ $reliefType->id }}" {{ old('relief_type_id') == $reliefType->id ? 'selected' : '' }}>
+											{{ $reliefType->name_bn ?? $reliefType->name }}
+										</option>
+									@endforeach
+								</select>
+								<p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+									{{ __('Select the type of relief you are applying for') }}
+								</p>
+								@error('relief_type_id')
+									<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+								@enderror
+							</div>
+
 							<!-- Project Selection -->
 							<div class="md:col-span-2">
 								<label for="project_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-									{{ __('Project') }} <span class="text-red-500">*</span>
+									{{ __('Project') }} (প্রকল্প) <span class="text-red-500">*</span>
 								</label>
 								<select name="project_id" 
 									id="project_id" 
 									class="input-field @error('project_id') border-red-500 dark:border-red-400 @enderror"
 									required
 									x-model="selectedProject"
-									@change="updateProjectDetails()">
-									<option value="">{{ __('Select Project') }}</option>
-									<template x-for="project in projects" :key="project.id">
+									@change="updateProjectDetails()"
+									:disabled="!selectedReliefType">
+									<option value="">{{ __('Select Project') }} (প্রকল্প নির্বাচন করুন)</option>
+									<template x-for="project in filteredProjects" :key="project.id">
 										<option :value="project.id" 
 											:data-unit="project.relief_type_unit_bn || project.relief_type_unit"
 											:data-relief-type="project.relief_type_name_bn || project.relief_type_name"
@@ -106,7 +133,7 @@
 									</template>
 								</select>
 								<p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-									{{ __('Only current economic year active projects are shown') }}
+									{{ __('Select relief type first to see available projects') }}
 								</p>
 								@error('project_id')
 									<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
@@ -562,8 +589,9 @@
 				selectedFile: null,
 				selectedProject: '{{ old('project_id') }}',
 				projectUnit: '',
-				selectedReliefType: '',
+				selectedReliefType: '{{ old('relief_type_id') }}',
 				projects: @json($projects ?? []),
+				filteredProjects: [],
 				
 				loadUpazilas() {
 					if (this.selectedZilla) {
@@ -628,16 +656,41 @@
 					}
 				},
 				
+				loadProjectsByReliefType() {
+					if (this.selectedReliefType) {
+						// Filter projects by selected relief type (client-side filtering)
+						this.filteredProjects = this.projects.filter(project => 
+							project.relief_type_id == this.selectedReliefType
+						);
+						
+						// Alternative: Use API endpoint for server-side filtering (uncomment if needed)
+						// fetch(`/projects-by-relief-type?relief_type_id=${this.selectedReliefType}`)
+						// 	.then(response => response.json())
+						// 	.then(data => {
+						// 		this.filteredProjects = data;
+						// 	})
+						// 	.catch(error => {
+						// 		console.error('Error loading projects:', error);
+						// 	});
+						
+						// Reset selected project when relief type changes
+						this.selectedProject = '';
+						this.projectUnit = '';
+					} else {
+						this.filteredProjects = [];
+						this.selectedProject = '';
+						this.projectUnit = '';
+					}
+				},
+				
 				updateProjectDetails() {
 					const selectElement = document.getElementById('project_id');
 					const selectedOption = selectElement.options[selectElement.selectedIndex];
 					
 					if (selectedOption.value) {
 						this.projectUnit = selectedOption.dataset.unit;
-						this.selectedReliefType = selectedOption.dataset.reliefType;
 					} else {
 						this.projectUnit = '';
-						this.selectedReliefType = '';
 					}
 				},
 				
@@ -659,6 +712,11 @@
 					}
 					if (this.selectedUnion) {
 						this.loadWards();
+					}
+					
+					// Initialize projects by relief type if already selected
+					if (this.selectedReliefType) {
+						this.loadProjectsByReliefType();
 					}
 					
 					// Initialize project details if already selected

@@ -109,6 +109,10 @@ class ReliefApplicationRequest extends FormRequest
                 'min:0.01',
                 'max:999999999.99',
             ],
+            'relief_type_id' => [
+                'required',
+                'exists:relief_types,id',
+            ],
             'project_id' => [
                 'required',
                 'exists:projects,id',
@@ -233,6 +237,9 @@ class ReliefApplicationRequest extends FormRequest
             'approved_amount.min' => 'Approved amount cannot be negative.',
             'approved_amount.max' => 'Approved amount cannot exceed ৳1,00,00,000.',
             
+            'relief_type_id.required' => 'Relief type selection is required.',
+            'relief_type_id.exists' => 'Selected relief type is invalid.',
+            
             'project_id.required_if' => 'Project selection is required when approving.',
             'project_id.required' => 'Project selection is required.',
             'project_id.exists' => 'Selected project is invalid.',
@@ -262,6 +269,7 @@ class ReliefApplicationRequest extends FormRequest
             'applicant_address' => 'applicant address',
             'organization_address' => 'organization address',
             'amount_requested' => 'amount requested',
+            'relief_type_id' => 'relief type',
             'project_id' => 'project',
             'application_file' => 'application file',
             'approved_amount' => 'approved amount',

@@ -150,6 +150,7 @@ Route::get('/locale/{lang}', function (string $lang) {
     Route::get('upazilas-by-zilla/{zilla}', [App\Http\Controllers\ReliefApplicationController::class, 'getUpazilasByZilla'])->name('upazilas.by-zilla');
     Route::get('unions-by-upazila/{upazila}', [App\Http\Controllers\ReliefApplicationController::class, 'getUnionsByUpazila'])->name('unions.by-upazila');
     Route::get('wards-by-union/{union}', [App\Http\Controllers\ReliefApplicationController::class, 'getWardsByUnion'])->name('wards.by-union');
+    Route::get('projects-by-relief-type', [App\Http\Controllers\ReliefApplicationController::class, 'getProjectsByReliefType'])->name('projects.by-relief-type');
 });
 
 require __DIR__.'/auth.php';

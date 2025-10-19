@@ -54,12 +54,12 @@ class SearchController extends Controller
 			->map(function ($app) {
 				return [
 					'id' => 'app_' . $app->id,
-					'title' => $app->organization_name,
+					'title' => $app->application_type === 'individual' ? $app->applicant_name : $app->organization_name,
 					'subtitle' => ($app->zilla?->name ?? '') . ' - ' . ($app->reliefType?->name ?? ''),
 					'url' => route('admin.relief-applications.show', $app->id),
-					'icon_bg' => 'bg-blue-100 dark:bg-blue-900',
-					'icon_color' => 'text-blue-600 dark:text-blue-400',
-					'icon_path' => 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z',
+					'icon_bg' => $app->application_type === 'individual' ? 'bg-green-100 dark:bg-green-900' : 'bg-blue-100 dark:bg-blue-900',
+					'icon_color' => $app->application_type === 'individual' ? 'text-green-600 dark:text-green-400' : 'text-blue-600 dark:text-blue-400',
+					'icon_path' => $app->application_type === 'individual' ? 'M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z' : 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z',
 					'type' => 'application'
 				];
 			});

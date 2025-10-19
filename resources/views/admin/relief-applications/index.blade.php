@@ -71,7 +71,7 @@
 						   name="search" 
 						   id="search" 
 						   value="{{ request('search') }}"
-						   placeholder="{{ __('Search by organization name, subject, details, applicant info, location...') }}"
+						   placeholder="{{ __('Search by applicant name, organization name, subject, details, location...') }}"
 						   class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200 text-sm">
 				</div>
 
@@ -263,7 +263,7 @@
 				<table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
 					<thead class="bg-gray-50 dark:bg-gray-800">
 						<tr>
-                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider {{ app()->isLocale('bn') ? 'font-sans' : '' }}">{{ __('Organization') }}</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider {{ app()->isLocale('bn') ? 'font-sans' : '' }}">{{ __('Applicant') }}</th>
                             <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider {{ app()->isLocale('bn') ? 'font-sans' : '' }}">{{ __('Subject') }}</th>
                             <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider {{ app()->isLocale('bn') ? 'font-sans' : '' }}">{{ __('Relief Type') }}</th>
                             <th class="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider {{ app()->isLocale('bn') ? 'font-sans' : '' }}">{{ __('Amount') }}</th>
@@ -279,16 +279,27 @@
 								<td class="px-6 py-5 whitespace-nowrap">
 									<div class="flex items-center">
 										<div class="flex-shrink-0">
-											<div class="w-10 h-10 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center">
-												<svg class="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-													<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
-												</svg>
+											<div class="w-10 h-10 {{ $application->application_type === 'individual' ? 'bg-green-100 dark:bg-green-900' : 'bg-blue-100 dark:bg-blue-900' }} rounded-lg flex items-center justify-center">
+												@if($application->application_type === 'individual')
+													<svg class="w-5 h-5 {{ $application->application_type === 'individual' ? 'text-green-600 dark:text-green-400' : 'text-blue-600 dark:text-blue-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+														<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+													</svg>
+												@else
+													<svg class="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+														<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+													</svg>
+												@endif
 											</div>
 										</div>
 										<div class="ml-4">
-                                            <div class="text-sm font-semibold text-gray-900 dark:text-white">{{ $application->organization_name }}</div>
-											@if($application->organizationType)
-                                                <div class="text-xs text-gray-500 dark:text-gray-400">{{ $application->organizationType->name_display ?? localized_attr($application->organizationType,'name') }}</div>
+											@if($application->application_type === 'individual')
+												<div class="text-sm font-semibold text-gray-900 dark:text-white">{{ $application->applicant_name }}</div>
+												<div class="text-xs text-gray-500 dark:text-gray-400">{{ __('Individual') }}</div>
+											@else
+												<div class="text-sm font-semibold text-gray-900 dark:text-white">{{ $application->organization_name }}</div>
+												@if($application->organizationType)
+													<div class="text-xs text-gray-500 dark:text-gray-400">{{ $application->organizationType->name_display ?? localized_attr($application->organizationType,'name') }}</div>
+												@endif
 											@endif
 										</div>
 									</div>

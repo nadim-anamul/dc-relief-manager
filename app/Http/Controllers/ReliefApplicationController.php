@@ -15,6 +15,7 @@ use App\Http\Requests\ReliefApplicationRequest;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Storage;
 
 class ReliefApplicationController extends Controller
@@ -98,13 +99,8 @@ class ReliefApplicationController extends Controller
 			$validated['application_file'] = $filePath;
 		}
 
-		// Get relief_type_id from selected project
-		if (isset($validated['project_id'])) {
-			$project = \App\Models\Project::find($validated['project_id']);
-			if ($project) {
-				$validated['relief_type_id'] = $project->relief_type_id;
-			}
-		}
+		// relief_type_id is now directly provided from the form
+		// No need to get it from project since it's selected first
 
 		// Set default values for individual applications
 		if ($validated['application_type'] === 'individual') {
@@ -182,13 +178,8 @@ class ReliefApplicationController extends Controller
 			$validated['application_file'] = $filePath;
 		}
 
-		// Get relief_type_id from selected project
-		if (isset($validated['project_id'])) {
-			$project = \App\Models\Project::find($validated['project_id']);
-			if ($project) {
-				$validated['relief_type_id'] = $project->relief_type_id;
-			}
-		}
+		// relief_type_id is now directly provided from the form
+		// No need to get it from project since it's selected first
 
 		// Set default values for individual applications
 		if ($validated['application_type'] === 'individual') {
@@ -245,5 +236,45 @@ class ReliefApplicationController extends Controller
 	{
 		$wards = $union->wards()->where('is_active', true)->orderBy('name')->get(['id', 'name', 'name_bn']);
 		return response()->json($wards);
+	}
+
+	/**
+	 * Get available projects for a relief type.
+	 */
+	public function getProjectsByReliefType(Request $request): JsonResponse
+	{
+		$reliefTypeId = $request->input('relief_type_id');
+		
+		if (!$reliefTypeId) {
+			return response()->json([]);
+		}
+
+		$projects = \App\Models\Project::where('relief_type_id', $reliefTypeId)
+			->whereHas('economicYear', function($query) {
+				$query->where('start_date', '<=', now())
+					->where('end_date', '>=', now())
+					->where('is_current', true);
+			})
+			->where('allocated_amount', '>', 0)
+			->with(['reliefType'])
+			->orderBy('name')
+			->get()
+			->map(function($project) {
+				return [
+					'id' => $project->id,
+					'name' => $project->name,
+					'name_bn' => $project->name_bn,
+					'relief_type_id' => $project->relief_type_id,
+					'relief_type_name' => $project->reliefType->name ?? 'N/A',
+					'relief_type_name_bn' => $project->reliefType->name_bn ?? 'N/A',
+					'relief_type_unit' => $project->reliefType->unit ?? 'Unit',
+					'relief_type_unit_bn' => $project->reliefType->unit_bn ?? $project->reliefType->unit ?? 'Unit',
+					'allocated_amount' => $project->allocated_amount,
+					'available_amount' => $project->available_amount,
+					'economic_year' => $project->economicYear->name ?? 'N/A'
+				];
+			});
+
+		return response()->json($projects);
 	}
 }
