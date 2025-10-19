@@ -374,3 +374,4 @@ class ReliefApplication extends Model
 			default => __('Unknown'),
 		};
 	}
+}
