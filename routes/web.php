@@ -145,7 +145,9 @@ Route::get('/locale/{lang}', function (string $lang) {
         });
     });
 
-    // Data Entry specific routes (accessible to data-entry role)
+    // Data Entry specific routes removed - all admin routes are now handled by super-admin group
+    // Data entry users will need to be assigned super-admin or district-admin role to access admin functions
+    /*
     Route::prefix('admin')->name('admin.')->middleware(['role:data-entry'])->group(function () {
         // Project management (data entry users can view, create, update projects)
         Route::resource('projects', App\Http\Controllers\Admin\ProjectController::class)->only(['index', 'create', 'store', 'show', 'edit', 'update']);
@@ -168,16 +170,9 @@ Route::get('/locale/{lang}', function (string $lang) {
         Route::resource('wards', App\Http\Controllers\Admin\WardController::class);
         Route::get('wards-by-union/{union}', [App\Http\Controllers\Admin\WardController::class, 'getByUnion'])->name('wards.by-union');
         
-        // Distribution Analysis Pages (data entry users can view reports)
-        Route::prefix('distributions')->name('distributions.')->group(function () {
-            Route::get('consolidated', [App\Http\Controllers\Admin\DistributionController::class, 'consolidated'])->name('consolidated');
-            Route::get('project-upazila-union', [App\Http\Controllers\Admin\DistributionController::class, 'projectUpazilaUnion'])->name('project-upazila-union');
-            Route::get('project-upazila', [App\Http\Controllers\Admin\DistributionController::class, 'projectUpazila'])->name('project-upazila');
-            Route::get('union-summary', [App\Http\Controllers\Admin\DistributionController::class, 'unionSummary'])->name('union-summary');
-            Route::get('area-summary', [App\Http\Controllers\Admin\DistributionController::class, 'areaSummary'])->name('area-summary');
-            Route::get('detailed/{type}', [App\Http\Controllers\Admin\DistributionController::class, 'detailed'])->name('detailed');
-        });
+        // Distribution Analysis Pages removed from data-entry group to avoid conflicts with super-admin group
     });
+    */
 
     // Relief Application routes (accessible to authenticated users)
     Route::get('relief-applications/check-duplicate', [App\Http\Controllers\ReliefApplicationController::class, 'checkDuplicate'])->name('relief-applications.check-duplicate');

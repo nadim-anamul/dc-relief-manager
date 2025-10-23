@@ -609,7 +609,8 @@
     "NID (National ID)": "এনআইডি (জাতীয় পরিচয়পত্র)",
     "Enter NID number": "এনআইডি নম্বর লিখুন",
     "Approved application already exists this year for this organization": "এই সংস্থার জন্য এই বছরে ইতিমধ্যে অনুমোদিত আবেদন রয়েছে",
-    "Approved application already exists this year for this NID": "এই এনআইডির জন্য এই বছরে ইতিমধ্যে অনুমোদিত আবেদন রয়েছে"
+    "Approved application already exists this year for this NID": "এই এনআইডির জন্য এই বছরে ইতিমধ্যে অনুমোদিত আবেদন রয়েছে",
+    "All Application Types": "সব আবেদনের ধরন"
 
 
 }

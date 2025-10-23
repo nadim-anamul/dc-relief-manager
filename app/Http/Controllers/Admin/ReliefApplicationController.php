@@ -49,6 +49,11 @@ class ReliefApplicationController extends Controller
 			$query->where('organization_type_id', $request->organization_type_id);
 		}
 
+		// Filter by application type if provided
+		if ($request->filled('application_type')) {
+			$query->where('application_type', $request->application_type);
+		}
+
 		// Filter by zilla if provided
 		if ($request->filled('zilla_id')) {
 			$query->where('zilla_id', $request->zilla_id);
@@ -173,6 +178,9 @@ class ReliefApplicationController extends Controller
 		}
 		if ($request->filled('organization_type_id')) {
 			$statsQuery->where('organization_type_id', $request->organization_type_id);
+		}
+		if ($request->filled('application_type')) {
+			$statsQuery->where('application_type', $request->application_type);
 		}
 		if ($request->filled('economic_year_id') && !$request->filled('project_id')) {
 			$statsQuery->whereHas('project', function($q) use ($request) {
