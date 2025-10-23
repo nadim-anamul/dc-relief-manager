@@ -167,8 +167,9 @@
                     @endif
                 </div>
 
-                @if(auth()->user()->hasAnyRole(['super-admin', 'district-admin']))
+                @if(auth()->user()->hasAnyRole(['super-admin', 'district-admin', 'data-entry']))
                 <!-- Projects top-level after Applications -->
+                @if(auth()->user()->hasAnyPermission(['projects.view', 'projects.create', 'projects.update']))
                 <a href="{{ route('admin.projects.index') }}" 
                    class="group flex items-center px-2 py-2 text-base font-medium rounded-md {{ request()->routeIs('admin.projects.*') ? 'bg-blue-100 dark:bg-blue-900 text-blue-900 dark:text-blue-100' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white' }}">
                     <svg class="mr-3 h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -176,8 +177,10 @@
                     </svg>
                     {{ __('Projects Management') }}
                 </a>
+                @endif
 
                 <!-- System Management -->
+                @if(auth()->user()->hasAnyPermission(['relief-types.manage', 'economic-years.manage', 'organization-types.manage']))
                 <div class="space-y-1">
                     <div class="px-2 py-1 text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
                         {{ __('System Management') }}
@@ -202,6 +205,7 @@
                     
                     
                 </div>
+                @endif
                 @endif
 
                 <!-- User Management Group -->
