@@ -206,6 +206,55 @@
                     
                 </div>
                 @endif
+                
+                <!-- Analytics & Reports Group -->
+                @if(auth()->user()->hasAnyPermission(['exports.access']))
+                <div class="space-y-1">
+                    <div class="px-2 py-1 text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
+                        {{ __('Analytics & Reports') }}
+                    </div>
+                    
+                    <a href="{{ route('admin.distributions.consolidated') }}" 
+                       class="group flex items-center px-2 py-2 text-base font-medium rounded-md {{ request()->routeIs('admin.distributions.consolidated') ? 'bg-blue-100 dark:bg-blue-900 text-blue-900 dark:text-blue-100' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white' }}">
+                        <svg class="mr-3 h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                        </svg>
+                        <span class="{{ app()->isLocale('bn') ? 'font-sans' : '' }}">{{ __('Consolidated Analysis') }}</span>
+                    </a>
+                    
+                    <a href="{{ route('admin.distributions.detailed', ['type' => 'upazila']) }}" 
+                       class="group flex items-center px-2 py-2 text-base font-medium rounded-md {{ request()->routeIs('admin.distributions.detailed') && request('type') === 'upazila' ? 'bg-blue-100 dark:bg-blue-900 text-blue-900 dark:text-blue-100' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white' }}">
+                        <svg class="mr-3 h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                        </svg>
+                        <span class="{{ app()->isLocale('bn') ? 'font-sans' : '' }}">{{ __('Upazila Distribution') }}</span>
+                    </a>
+                    
+                    <a href="{{ route('admin.distributions.detailed', ['type' => 'union']) }}" 
+                       class="group flex items-center px-2 py-2 text-base font-medium rounded-md {{ request()->routeIs('admin.distributions.detailed') && request('type') === 'union' ? 'bg-blue-100 dark:bg-blue-900 text-blue-900 dark:text-blue-100' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white' }}">
+                        <svg class="mr-3 h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                        </svg>
+                        <span class="{{ app()->isLocale('bn') ? 'font-sans' : '' }}">{{ __('Union Distribution') }}</span>
+                    </a>
+                    
+                    <a href="{{ route('admin.distributions.detailed', ['type' => 'duplicates']) }}" 
+                       class="group flex items-center px-2 py-2 text-base font-medium rounded-md {{ request()->routeIs('admin.distributions.detailed') && request('type') === 'duplicates' ? 'bg-blue-100 dark:bg-blue-900 text-blue-900 dark:text-blue-100' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white' }}">
+                        <svg class="mr-3 h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                        </svg>
+                        <span class="{{ app()->isLocale('bn') ? 'font-sans' : '' }}">{{ __('Duplicate Allocations') }}</span>
+                    </a>
+                    
+                    <a href="{{ route('admin.distributions.detailed', ['type' => 'projects']) }}" 
+                       class="group flex items-center px-2 py-2 text-base font-medium rounded-md {{ request()->routeIs('admin.distributions.detailed') && request('type') === 'projects' ? 'bg-blue-100 dark:bg-blue-900 text-blue-900 dark:text-blue-100' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white' }}">
+                        <svg class="mr-3 h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                        </svg>
+                        <span class="{{ app()->isLocale('bn') ? 'font-sans' : '' }}">{{ __('Project Allocations') }}</span>
+                    </a>
+                </div>
+                @endif
                 @endif
 
                 <!-- User Management Group -->

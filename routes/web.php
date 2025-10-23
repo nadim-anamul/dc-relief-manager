@@ -145,6 +145,40 @@ Route::get('/locale/{lang}', function (string $lang) {
         });
     });
 
+    // Data Entry specific routes (accessible to data-entry role)
+    Route::prefix('admin')->name('admin.')->middleware(['role:data-entry'])->group(function () {
+        // Project management (data entry users can view, create, update projects)
+        Route::resource('projects', App\Http\Controllers\Admin\ProjectController::class)->only(['index', 'create', 'store', 'show', 'edit', 'update']);
+        
+        // Economic Year management
+        Route::resource('economic-years', App\Http\Controllers\Admin\EconomicYearController::class);
+        
+        // Relief Type management
+        Route::resource('relief-types', App\Http\Controllers\Admin\ReliefTypeController::class);
+        
+        // Organization Type management
+        Route::resource('organization-types', App\Http\Controllers\Admin\OrganizationTypeController::class);
+        
+        // Administrative Divisions (data entry users can manage these)
+        Route::resource('zillas', App\Http\Controllers\Admin\ZillaController::class);
+        Route::resource('upazilas', App\Http\Controllers\Admin\UpazilaController::class);
+        Route::get('upazilas-by-zilla/{zilla}', [App\Http\Controllers\Admin\UpazilaController::class, 'getByZilla'])->name('upazilas.by-zilla');
+        Route::resource('unions', App\Http\Controllers\Admin\UnionController::class);
+        Route::get('unions-by-upazila/{upazila}', [App\Http\Controllers\Admin\UnionController::class, 'getByUpazila'])->name('unions.by-upazila');
+        Route::resource('wards', App\Http\Controllers\Admin\WardController::class);
+        Route::get('wards-by-union/{union}', [App\Http\Controllers\Admin\WardController::class, 'getByUnion'])->name('wards.by-union');
+        
+        // Distribution Analysis Pages (data entry users can view reports)
+        Route::prefix('distributions')->name('distributions.')->group(function () {
+            Route::get('consolidated', [App\Http\Controllers\Admin\DistributionController::class, 'consolidated'])->name('consolidated');
+            Route::get('project-upazila-union', [App\Http\Controllers\Admin\DistributionController::class, 'projectUpazilaUnion'])->name('project-upazila-union');
+            Route::get('project-upazila', [App\Http\Controllers\Admin\DistributionController::class, 'projectUpazila'])->name('project-upazila');
+            Route::get('union-summary', [App\Http\Controllers\Admin\DistributionController::class, 'unionSummary'])->name('union-summary');
+            Route::get('area-summary', [App\Http\Controllers\Admin\DistributionController::class, 'areaSummary'])->name('area-summary');
+            Route::get('detailed/{type}', [App\Http\Controllers\Admin\DistributionController::class, 'detailed'])->name('detailed');
+        });
+    });
+
     // Relief Application routes (accessible to authenticated users)
     Route::get('relief-applications/check-duplicate', [App\Http\Controllers\ReliefApplicationController::class, 'checkDuplicate'])->name('relief-applications.check-duplicate');
     Route::resource('relief-applications', App\Http\Controllers\ReliefApplicationController::class)->middleware(['permission:relief-applications.create-own,relief-applications.view-own']);
