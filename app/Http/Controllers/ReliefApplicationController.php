@@ -239,7 +239,7 @@ class ReliefApplicationController extends Controller
 	}
 
 	/**
-	 * Check for duplicate approved applications within current economic year.
+	 * Check for duplicate approved applications across all economic years.
 	 */
 	public function checkDuplicate(Request $request): JsonResponse
 	{
@@ -247,16 +247,8 @@ class ReliefApplicationController extends Controller
 		$organizationName = $request->input('organization_name');
 		$applicantNid = $request->input('applicant_nid');
 
-		$currentYear = \App\Models\EconomicYear::where('is_current', true)->first();
-		if (!$currentYear) {
-			return response()->json(['duplicate' => false, 'count' => 0]);
-		}
-
 		$query = ReliefApplication::query()
-			->where('status', 'approved')
-			->whereHas('project', function($q) use ($currentYear) {
-				$q->where('economic_year_id', $currentYear->id);
-			});
+			->where('status', 'approved');
 
 		if ($applicationType === 'organization' && $organizationName) {
 			$query->where('application_type', 'organization')

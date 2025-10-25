@@ -735,8 +735,8 @@
 							this.duplicateCount = data.count || 0;
 							if (this.duplicateExists) {
 								this.duplicateMessage = this.applicationType === 'organization'
-									? `{{ __('Approved application already exists this year for this organization') }}`
-									: `{{ __('Approved application already exists this year for this NID') }}`;
+									? `{{ __('Approved applications already exist for this organization') }} (${this.duplicateCount} {{ __('applications') }})`
+									: `{{ __('Approved applications already exist for this NID') }} (${this.duplicateCount} {{ __('applications') }})`;
 							} else {
 								this.duplicateMessage = '';
 							}
@@ -775,8 +775,8 @@
 							this.duplicateCount = data.count || 0;
 							if (this.duplicateExists) {
 								this.duplicateMessage = this.applicationType === 'organization'
-									? `{{ __('Approved application already exists this year for this organization') }}`
-									: `{{ __('Approved application already exists this year for this NID') }}`;
+									? `{{ __('Approved applications already exist for this organization') }} (${this.duplicateCount} {{ __('applications') }})`
+									: `{{ __('Approved applications already exist for this NID') }} (${this.duplicateCount} {{ __('applications') }})`;
 							} else {
 								this.duplicateMessage = '';
 							}

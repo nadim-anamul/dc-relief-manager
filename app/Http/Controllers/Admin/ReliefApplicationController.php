@@ -59,13 +59,13 @@ class ReliefApplicationController extends Controller
 			$query->where('zilla_id', $request->zilla_id);
 		}
 
-		// Filter by economic year if provided (but not if project_id is also provided, as project determines economic year)
-		if ($request->filled('economic_year_id') && !$request->filled('project_id')) {
+		// Filter by economic year if provided and not empty
+		if ($request->filled('economic_year_id') && $request->economic_year_id !== '') {
 			$query->whereHas('project', function($q) use ($request) {
 				$q->where('economic_year_id', $request->economic_year_id);
 			});
-		} elseif (!$request->filled('project_id')) {
-			// Default to current economic year only if no specific project is selected
+		} elseif (!$request->has('economic_year_id')) {
+			// Only default to current economic year when economic_year_id parameter is not present at all
 			$currentYear = \App\Models\EconomicYear::where('is_current', true)->first();
 			if ($currentYear) {
 				$query->whereHas('project', function($q) use ($currentYear) {
@@ -73,6 +73,7 @@ class ReliefApplicationController extends Controller
 				});
 			}
 		}
+		// If economic_year_id is present but empty, show all years (no additional filter)
 
 		// Filter by upazila if provided
 		if ($request->filled('upazila_id')) {
@@ -182,11 +183,11 @@ class ReliefApplicationController extends Controller
 		if ($request->filled('application_type')) {
 			$statsQuery->where('application_type', $request->application_type);
 		}
-		if ($request->filled('economic_year_id') && !$request->filled('project_id')) {
+		if ($request->filled('economic_year_id') && $request->economic_year_id !== '') {
 			$statsQuery->whereHas('project', function($q) use ($request) {
 				$q->where('economic_year_id', $request->economic_year_id);
 			});
-		} elseif (!$request->filled('project_id')) {
+		} elseif (!$request->has('economic_year_id')) {
 			$currentYear = \App\Models\EconomicYear::where('is_current', true)->first();
 			if ($currentYear) {
 				$statsQuery->whereHas('project', function($q) use ($currentYear) {
@@ -194,6 +195,7 @@ class ReliefApplicationController extends Controller
 				});
 			}
 		}
+		// If economic_year_id is present but empty, show all years (no additional filter)
 		if ($request->filled('upazila_id')) {
 			$statsQuery->where('upazila_id', $request->upazila_id);
 		}

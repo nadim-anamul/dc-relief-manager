@@ -20,16 +20,17 @@ class ProjectController extends Controller
 	{
 		$query = Project::with(['economicYear', 'reliefType']);
 
-		// Filter by economic year if provided, otherwise default to current year
-		if ($request->filled('economic_year_id')) {
+		// Filter by economic year if provided and not empty
+		if ($request->filled('economic_year_id') && $request->economic_year_id !== '') {
 			$query->where('economic_year_id', $request->economic_year_id);
-		} else {
-			// Default to current economic year
+		} elseif (!$request->has('economic_year_id')) {
+			// Only default to current economic year when economic_year_id parameter is not present at all
 			$currentYear = EconomicYear::where('is_current', true)->first();
 			if ($currentYear) {
 				$query->where('economic_year_id', $currentYear->id);
 			}
 		}
+		// If economic_year_id is present but empty, show all years (no additional filter)
 
 		// Filter by relief type if provided
 		if ($request->filled('relief_type_id')) {
@@ -80,14 +81,17 @@ class ProjectController extends Controller
 
 		// Calculate summary statistics based on relief type allocation
 		$baseQuery = Project::query()
-			->when($request->filled('economic_year_id'), function($q) use ($request) {
+			->when($request->filled('economic_year_id') && $request->economic_year_id !== '', function($q) use ($request) {
 				$q->where('economic_year_id', $request->economic_year_id);
 			}, function($q) use ($request) {
-				// Default to current economic year if no year specified
-				$currentYear = EconomicYear::where('is_current', true)->first();
-				if ($currentYear) {
-					$q->where('economic_year_id', $currentYear->id);
+				// Only default to current economic year when economic_year_id parameter is not present at all
+				if (!$request->has('economic_year_id')) {
+					$currentYear = EconomicYear::where('is_current', true)->first();
+					if ($currentYear) {
+						$q->where('economic_year_id', $currentYear->id);
+					}
 				}
+				// If economic_year_id is present but empty, show all years (no additional filter)
 			})
 			->when($request->filled('relief_type_id'), function($q) use ($request) {
 				$q->where('relief_type_id', $request->relief_type_id);
@@ -117,14 +121,17 @@ class ProjectController extends Controller
 
 		// Calculate relief type allocation statistics with proper unit handling
 		$reliefTypeStats = Project::query()
-			->when($request->filled('economic_year_id'), function($q) use ($request) {
+			->when($request->filled('economic_year_id') && $request->economic_year_id !== '', function($q) use ($request) {
 				$q->where('economic_year_id', $request->economic_year_id);
 			}, function($q) use ($request) {
-				// Default to current economic year if no year specified
-				$currentYear = EconomicYear::where('is_current', true)->first();
-				if ($currentYear) {
-					$q->where('economic_year_id', $currentYear->id);
+				// Only default to current economic year when economic_year_id parameter is not present at all
+				if (!$request->has('economic_year_id')) {
+					$currentYear = EconomicYear::where('is_current', true)->first();
+					if ($currentYear) {
+						$q->where('economic_year_id', $currentYear->id);
+					}
 				}
+				// If economic_year_id is present but empty, show all years (no additional filter)
 			})
 			->when($request->filled('relief_type_id'), function($q) use ($request) {
 				$q->where('relief_type_id', $request->relief_type_id);

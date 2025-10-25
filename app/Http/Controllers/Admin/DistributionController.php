@@ -692,7 +692,14 @@ class DistributionController extends Controller
         if ($yearId) {
             return $years->firstWhere('id', $yearId) ?? EconomicYear::find($yearId);
         }
-        return $years->firstWhere('is_current', true) ?? $years->first();
+        
+        // Only default to current year when economic_year_id parameter is not present at all
+        if (!$request->has('economic_year_id')) {
+            return $years->firstWhere('is_current', true) ?? $years->first();
+        }
+        
+        // If economic_year_id is present but empty (0), return null to show all years
+        return null;
     }
 
     /**
@@ -842,7 +849,14 @@ class DistributionController extends Controller
     public function detailed(Request $request, string $type): View
     {
         $years = EconomicYear::orderByDesc('start_date')->get();
-        $selectedYear = $this->resolveSelectedYear($request, $years);
+        
+        // For duplicates, don't default to current year - show all years
+        if ($type === 'duplicates') {
+            $selectedYear = $request->integer('economic_year_id') ? 
+                $years->firstWhere('id', $request->integer('economic_year_id')) : null;
+        } else {
+            $selectedYear = $this->resolveSelectedYear($request, $years);
+        }
         
         $zillas = Zilla::orderBy('name')->get(['id', 'name', 'name_bn']);
         $selectedZillaId = $this->resolveSelectedZilla($request, $zillas);
@@ -866,7 +880,7 @@ class DistributionController extends Controller
         } elseif ($type === 'duplicates') {
             $data = $this->getDuplicateAllocationsData($selectedYear, $search, $pageSize, $currentPage);
             $title = __('Duplicate Allocations');
-            $description = __('Organizations with multiple allocations in the same year');
+            $description = __('Organizations with multiple allocations across all economic years');
         } elseif ($type === 'projects') {
             $data = $this->getProjectAllocationsData($selectedYear, $search, $pageSize, $currentPage);
             $title = __('Active Project Allocations');
@@ -1067,37 +1081,45 @@ class DistributionController extends Controller
     }
 
     /**
-     * Get duplicate allocations data with pagination and search.
+     * Get duplicate allocations data for the selected economic year or all years.
      */
     private function getDuplicateAllocationsData($selectedYear, $search, $pageSize, $currentPage)
     {
-        $start = $selectedYear?->start_date;
-        $end = $selectedYear?->end_date;
+        // Get organizations with multiple approved applications
+        $query = DB::table('relief_applications as ra')
+            ->join('projects as p', 'ra.project_id', '=', 'p.id')
+            ->join('economic_years as ey', 'p.economic_year_id', '=', 'ey.id')
+            ->where('ra.status', 'approved')
+            ->whereNotNull('ra.organization_name')
+            ->where('ra.organization_name', '!=', '');
         
-        $applyDateRange = function ($query, $column = 'created_at') use ($start, $end) {
-            if ($start && $end) {
-                $s = $start instanceof \Carbon\Carbon ? $start->copy()->startOfDay() : \Carbon\Carbon::parse((string) $start)->startOfDay();
-                $e = $end instanceof \Carbon\Carbon ? $end->copy()->endOfDay() : \Carbon\Carbon::parse((string) $end)->endOfDay();
-                $query->whereBetween($column, [$s, $e]);
-            }
-            return $query;
-        };
-
-        $query = $applyDateRange(ReliefApplication::where('status', 'approved'), 'approved_at')
-            ->selectRaw('organization_name, COUNT(*) as allocations, SUM(approved_amount) as total_approved')
-            ->groupBy('organization_name')
-            ->havingRaw('COUNT(*) > 1')
+        // Filter by economic year if specified
+        if ($selectedYear) {
+            $query->where('p.economic_year_id', $selectedYear->id);
+        }
+        
+        $query->selectRaw('
+                ra.organization_name,
+                COUNT(DISTINCT ra.id) as allocations,
+                SUM(ra.approved_amount) as total_approved,
+                GROUP_CONCAT(DISTINCT ey.name ORDER BY ey.start_date DESC) as economic_years,
+                GROUP_CONCAT(DISTINCT ey.id ORDER BY ey.start_date DESC) as economic_year_ids
+            ')
+            ->groupBy('ra.organization_name')
+            ->having('allocations', '>', 1)
             ->orderByDesc('allocations');
 
+        // Apply search filter
         if ($search) {
-            $query->where('organization_name', 'LIKE', "%{$search}%");
+            $query->where('ra.organization_name', 'LIKE', "%{$search}%");
         }
 
         $totalItems = $query->count();
         $totalPages = ceil($totalItems / $pageSize);
-        $offset = ($currentPage - 1) * $pageSize;
-
-        $results = $query->offset($offset)->limit($pageSize)->get();
+        
+        $results = $query->skip(($currentPage - 1) * $pageSize)
+            ->take($pageSize)
+            ->get();
 
         return [
             'results' => $results,
