@@ -14,6 +14,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'role' => \App\Http\Middleware\CheckRole::class,
             'permission' => \App\Http\Middleware\PermissionMiddleware::class,
+            'user.approved' => \App\Http\Middleware\CheckUserApproval::class,
         ]);
 
         // Apply locale after session is started (web group)

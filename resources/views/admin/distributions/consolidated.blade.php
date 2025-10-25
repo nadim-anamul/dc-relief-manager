@@ -424,7 +424,7 @@
                         </div>
                         <div>
                             <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ __('Upazila Distribution') }}</h3>
-                            <p class="text-sm text-gray-500 dark:text-gray-400">{{ __('Relief by upazila') }}</p>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">{{ __('Approved applications by upazila') }}</p>
                         </div>
                     </div>
                 </div>
@@ -810,14 +810,39 @@
             data: {
                 labels: @json($chartData['upazilaData']['labels']),
                 datasets: [{
-                    label: '{{ __('Amount (৳)') }}',
+                    label: '{{ __('Approved Applications') }}',
                     data: @json($chartData['upazilaData']['data']),
                     backgroundColor: 'rgba(34, 197, 94, 0.8)',
                     borderColor: 'rgba(34, 197, 94, 1)',
                     borderWidth: 1
                 }]
             },
-            options: { ...commonOptions, scales: { y: { beginAtZero: true, ticks: { color: textColor, callback: (val) => '৳' + val.toLocaleString() }, grid: { color: gridColor } }, x: { ticks: { color: textColor }, grid: { color: gridColor } } }, plugins: { ...commonOptions.plugins, tooltip: { callbacks: { label: (ctx) => ctx.dataset.label + ': ৳' + ctx.parsed.y.toLocaleString() } } } }
+            options: { 
+                ...commonOptions, 
+                scales: { 
+                    y: { 
+                        beginAtZero: true, 
+                        ticks: { 
+                            color: textColor, 
+                            callback: (val) => Number.isInteger(val) ? val.toLocaleString() : '',
+                            stepSize: 1
+                        }, 
+                        grid: { color: gridColor } 
+                    }, 
+                    x: { 
+                        ticks: { color: textColor }, 
+                        grid: { color: gridColor } 
+                    } 
+                }, 
+                plugins: { 
+                    ...commonOptions.plugins, 
+                    tooltip: { 
+                        callbacks: { 
+                            label: (ctx) => ctx.dataset.label + ': ' + Math.round(ctx.parsed.y).toLocaleString() 
+                        } 
+                    } 
+                } 
+            }
         });
         @endif
         

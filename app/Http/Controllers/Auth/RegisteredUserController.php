@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use App\Models\OrganizationType;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -20,8 +19,7 @@ class RegisteredUserController extends Controller
      */
     public function create(): View
     {
-        $organizationTypes = OrganizationType::ordered()->get();
-        return view('auth.register', compact('organizationTypes'));
+        return view('auth.register');
     }
 
     /**
@@ -34,21 +32,51 @@ class RegisteredUserController extends Controller
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
+            'phone' => ['required', 'string', 'regex:/^(\+88)?01[3-9]\d{8}$/'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'organization_type_id' => ['nullable', 'exists:organization_types,id'],
         ]);
 
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
+            'phone' => $request->phone,
             'password' => Hash::make($request->password),
-            'organization_type_id' => $request->organization_type_id,
+            'is_approved' => false, // Require admin approval
         ]);
+
+        // Send notification to admins about new user registration
+        $this->notifyAdminsOfNewUser($user);
+
+        // Send notification to user about pending approval
+        $this->notifyUserOfPendingApproval($user);
 
         event(new Registered($user));
 
         Auth::login($user);
 
         return redirect(route('dashboard', absolute: false));
+    }
+
+    /**
+     * Notify admins about new user registration.
+     */
+    private function notifyAdminsOfNewUser(User $user): void
+    {
+        // Get all super-admin and district-admin users
+        $admins = User::whereHas('roles', function ($query) {
+            $query->whereIn('name', ['super-admin', 'district-admin']);
+        })->where('is_approved', true)->get();
+
+        foreach ($admins as $admin) {
+            $admin->notify(new \App\Notifications\NewUserRegistrationNotification($user));
+        }
+    }
+
+    /**
+     * Notify user about pending approval.
+     */
+    private function notifyUserOfPendingApproval(User $user): void
+    {
+        $user->notify(new \App\Notifications\UserPendingApprovalNotification());
     }
 }

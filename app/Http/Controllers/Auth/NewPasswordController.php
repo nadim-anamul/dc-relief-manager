@@ -48,6 +48,9 @@ class NewPasswordController extends Controller
                 ])->save();
 
                 event(new PasswordReset($user));
+                
+                // Send success notification
+                $user->notify(new \App\Notifications\PasswordResetSuccessNotification());
             }
         );
 

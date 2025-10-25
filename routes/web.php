@@ -19,7 +19,7 @@ Route::get('/locale/{lang}', function (string $lang) {
 })->name('locale.switch');
 
     // All authenticated routes
-    Route::middleware(['auth', 'verified'])->group(function () {
+    Route::middleware(['auth', 'verified', 'user.approved'])->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
         Route::get('/dashboard/data', [DashboardController::class, 'getDashboardData'])->name('dashboard.data');
         
@@ -100,8 +100,9 @@ Route::get('/locale/{lang}', function (string $lang) {
         Route::resource('permissions', App\Http\Controllers\Admin\PermissionController::class)->middleware(['permission:permissions.manage']);
         
         // Audit Log management
-        Route::resource('audit-logs', App\Http\Controllers\Admin\AuditLogController::class)->only(['index', 'show', 'destroy']);
+        Route::get('audit-logs/export', [App\Http\Controllers\Admin\AuditLogController::class, 'export'])->name('audit-logs.export');
         Route::post('audit-logs/clear', [App\Http\Controllers\Admin\AuditLogController::class, 'clear'])->name('audit-logs.clear');
+        Route::resource('audit-logs', App\Http\Controllers\Admin\AuditLogController::class)->only(['index', 'show', 'destroy']);
         
         // Distribution Analysis Pages
         Route::prefix('distributions')->name('distributions.')->group(function () {

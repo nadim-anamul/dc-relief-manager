@@ -1,4 +1,4 @@
-<x-app-layout>
+<x-main-layout>
     <x-slot name="header">
         <div class="flex flex-col lg:flex-row lg:justify-between lg:items-center space-y-4 lg:space-y-0">
             <div class="flex items-center space-x-3">
@@ -8,8 +8,8 @@
                     </svg>
                 </div>
                 <div>
-                    <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Profile Settings</h1>
-                    <p class="text-sm text-gray-500 dark:text-gray-400">Manage your account information and preferences</p>
+                    <h1 class="text-2xl font-bold text-gray-900 dark:text-white">{{ __('Profile Settings') }}</h1>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">{{ __('Manage your account information and preferences') }}</p>
                 </div>
             </div>
         </div>
@@ -27,8 +27,8 @@
                             </svg>
                         </div>
                         <div>
-                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Profile Information</h3>
-                            <p class="text-sm text-gray-500 dark:text-gray-400">Update your account's profile information and email address</p>
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ __('Profile Information') }}</h3>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">{{ __('Update your account\'s profile information and email address') }}</p>
                         </div>
                     </div>
                 </div>
@@ -47,8 +47,8 @@
                             </svg>
                         </div>
                         <div>
-                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Update Password</h3>
-                            <p class="text-sm text-gray-500 dark:text-gray-400">Ensure your account is using a long, random password to stay secure</p>
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ __('Update Password') }}</h3>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">{{ __('Ensure your account is using a long, random password to stay secure') }}</p>
                         </div>
                     </div>
                 </div>
@@ -67,8 +67,8 @@
                             </svg>
                         </div>
                         <div>
-                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Delete Account</h3>
-                            <p class="text-sm text-gray-500 dark:text-gray-400">Once your account is deleted, all of its resources and data will be permanently deleted</p>
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ __('Delete Account') }}</h3>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">{{ __('Once your account is deleted, all of its resources and data will be permanently deleted') }}</p>
                         </div>
                     </div>
                 </div>
@@ -78,4 +78,4 @@
             </div>
         </div>
     </div>
-</x-app-layout>
+</x-main-layout>

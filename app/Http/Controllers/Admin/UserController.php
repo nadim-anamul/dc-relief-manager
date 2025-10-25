@@ -8,6 +8,7 @@ use App\Models\Role;
 use App\Models\OrganizationType;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 
 class UserController extends Controller
@@ -17,7 +18,7 @@ class UserController extends Controller
      */
     public function index()
     {
-        $users = User::with(['roles', 'organizationType'])
+        $users = User::with(['roles'])
             ->orderBy('created_at', 'desc')
             ->paginate(15);
 
@@ -84,10 +85,9 @@ class UserController extends Controller
     public function edit(User $user)
     {
         $roles = Role::all();
-        $organizationTypes = OrganizationType::all();
         $user->load('roles');
         
-        return view('admin.users.edit', compact('user', 'roles', 'organizationTypes'));
+        return view('admin.users.edit', compact('user', 'roles'));
     }
 
     /**
@@ -100,7 +100,6 @@ class UserController extends Controller
             'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
             'phone' => 'required|string|regex:/^(\+88)?01[3-9]\d{8}$/',
             'password' => 'nullable|string|min:8|confirmed',
-            'organization_type_id' => 'nullable|exists:organization_types,id',
             'roles' => 'required|array|min:1',
             'roles.*' => 'exists:roles,name',
             'is_approved' => 'boolean',
@@ -110,7 +109,6 @@ class UserController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'phone' => $request->phone,
-            'organization_type_id' => $request->organization_type_id,
             'is_approved' => $request->boolean('is_approved'),
         ];
 
@@ -141,7 +139,7 @@ class UserController extends Controller
         }
 
         // Prevent self-deletion
-        if ($user->id === auth()->id()) {
+        if ($user->id === Auth::id()) {
             return redirect()->route('admin.users.index')
                 ->with('error', __('আপনার নিজের অ্যাকাউন্ট মুছে ফেলা যাবে না।'));
         }
@@ -158,6 +156,9 @@ class UserController extends Controller
     public function approve(User $user)
     {
         $user->update(['is_approved' => true]);
+
+        // Send notification to user about approval
+        $user->notify(new \App\Notifications\UserApprovedNotification());
 
         return redirect()->route('admin.users.index')
             ->with('success', __('ব্যবহারকারী সফলভাবে অনুমোদিত হয়েছে।'));

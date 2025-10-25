@@ -47,7 +47,7 @@
 		<div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
 			<div class="flex items-center justify-between mb-4">
                 <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ __('Filter Projects') }}</h3>
-				@if(request('economic_year_id') || request('relief_type_id') || request('status'))
+				@if(request('economic_year_id') || request('relief_type_id') || request('status') || request('project_id'))
 					<a href="{{ route('admin.projects.index') }}" 
 						class="inline-flex items-center px-3 py-1.5 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 text-sm font-medium rounded-md transition-colors duration-200">
 						<svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -57,44 +57,64 @@
 					</a>
 				@endif
 			</div>
-			<form method="GET" action="{{ route('admin.projects.index') }}" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-				<div>
-					<label for="status" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        {{ __('Status') }}
-					</label>
-					<select name="status" id="status" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors duration-200">
-                        <option value="">{{ __('All Statuses') }}</option>
-                        <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>{{ __('Active Distribution') }} </option>
-                        <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}>{{ __('Completed Projects') }}</option>
-					</select>
+			<form method="GET" action="{{ route('admin.projects.index') }}" class="space-y-6">
+				<!-- Filters Row - 4 items per row -->
+				<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+					<div>
+						<label for="status" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            {{ __('Status') }}
+						</label>
+						<select name="status" id="status" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors duration-200">
+                            <option value="">{{ __('All Statuses') }}</option>
+                            <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>{{ __('Active Distribution') }} </option>
+                            <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}>{{ __('Completed Projects') }}</option>
+						</select>
+					</div>
+					<div>
+						<label for="economic_year_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            {{ __('Economic Year') }}
+						</label>
+						<select name="economic_year_id" id="economic_year_id" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors duration-200">
+                            <option value="">{{ __('All Economic Years') }}</option>
+							@foreach($economicYears as $economicYear)
+								<option value="{{ $economicYear->id }}" {{ (request('economic_year_id') == $economicYear->id || (!request()->filled('economic_year_id') && $economicYear->is_current)) ? 'selected' : '' }}>
+                                    {{ localized_attr($economicYear,'name') }}
+								</option>
+							@endforeach
+						</select>
+					</div>
+					<div>
+						<label for="relief_type_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            {{ __('Relief Type') }}
+						</label>
+						<select name="relief_type_id" id="relief_type_id" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors duration-200">
+                            <option value="">{{ __('All Relief Types') }}</option>
+							@foreach($reliefTypes as $reliefType)
+								<option value="{{ $reliefType->id }}" {{ request('relief_type_id') == $reliefType->id ? 'selected' : '' }}>
+                                    {{ $reliefType->display_name ?? localized_attr($reliefType,'name') }}
+								</option>
+							@endforeach
+						</select>
+					</div>
+					<div>
+						<label for="project_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            {{ __('Select Project') }}
+						</label>
+						<select name="project_id" id="project_id" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors duration-200">
+                            <option value="">{{ __('All Projects') }}</option>
+							@foreach($projectsForDropdown as $project)
+								@if(!request()->filled('relief_type_id') || $project['relief_type_id'] == request('relief_type_id'))
+									<option value="{{ $project['id'] }}" {{ request('project_id') == $project['id'] ? 'selected' : '' }}>
+										{{ $project['name'] }}
+									</option>
+								@endif
+							@endforeach
+						</select>
+					</div>
 				</div>
-				<div>
-					<label for="economic_year_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        {{ __('Economic Year') }}
-					</label>
-					<select name="economic_year_id" id="economic_year_id" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors duration-200">
-                        <option value="">{{ __('All Economic Years') }}</option>
-						@foreach($economicYears as $economicYear)
-							<option value="{{ $economicYear->id }}" {{ (request('economic_year_id') == $economicYear->id || (!request()->filled('economic_year_id') && $economicYear->is_current)) ? 'selected' : '' }}>
-                                {{ localized_attr($economicYear,'name') }}
-							</option>
-						@endforeach
-					</select>
-				</div>
-				<div>
-					<label for="relief_type_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        {{ __('Relief Type') }}
-					</label>
-					<select name="relief_type_id" id="relief_type_id" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors duration-200">
-                        <option value="">{{ __('All Relief Types') }}</option>
-						@foreach($reliefTypes as $reliefType)
-							<option value="{{ $reliefType->id }}" {{ request('relief_type_id') == $reliefType->id ? 'selected' : '' }}>
-                                {{ $reliefType->display_name ?? localized_attr($reliefType,'name') }}
-							</option>
-						@endforeach
-					</select>
-				</div>
-				<div class="md:col-span-2 lg:col-span-3 flex justify-end">
+
+				<!-- Submit Button -->
+				<div class="flex justify-end">
 					<button type="submit" class="inline-flex items-center px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-lg transition-colors duration-200 shadow-sm hover:shadow-md">
 						<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.207A1 1 0 013 6.5V4z"></path>
@@ -104,6 +124,58 @@
 				</div>
 			</form>
 		</div>
+
+		<script>
+			// Auto-submit form when project is selected
+			document.addEventListener('DOMContentLoaded', function() {
+				const projectSelect = document.getElementById('project_id');
+				const reliefTypeSelect = document.getElementById('relief_type_id');
+				
+				if (projectSelect) {
+					projectSelect.addEventListener('change', function() {
+						// Submit the form when a project is selected
+						this.closest('form').submit();
+					});
+				}
+				
+				if (reliefTypeSelect) {
+					reliefTypeSelect.addEventListener('change', function() {
+						// Update project dropdown dynamically without page refresh
+						updateProjectDropdown(this.value);
+					});
+				}
+			});
+			
+			function updateProjectDropdown(reliefTypeId) {
+				const projectSelect = document.getElementById('project_id');
+				const currentValue = projectSelect.value;
+				
+				// Clear existing options except the first one
+				projectSelect.innerHTML = '<option value="">{{ __("All Projects") }}</option>';
+				
+				// Get all projects from the server data
+				const allProjects = @json($projectsForDropdown);
+				
+				// Filter projects based on relief type
+				const filteredProjects = reliefTypeId ? 
+					allProjects.filter(project => project.relief_type_id == reliefTypeId) : 
+					allProjects;
+				
+				// Add filtered projects to dropdown
+				filteredProjects.forEach(project => {
+					const option = document.createElement('option');
+					option.value = project.id;
+					option.textContent = project.name;
+					
+					// Restore previous selection if it still exists
+					if (project.id == currentValue) {
+						option.selected = true;
+					}
+					
+					projectSelect.appendChild(option);
+				});
+			}
+		</script>
 
 		<!-- Stats Cards -->
 		<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">

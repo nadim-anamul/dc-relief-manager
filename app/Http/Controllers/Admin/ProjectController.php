@@ -36,6 +36,11 @@ class ProjectController extends Controller
 			$query->where('relief_type_id', $request->relief_type_id);
 		}
 
+		// Filter by specific project if provided
+		if ($request->filled('project_id')) {
+			$query->where('id', $request->project_id);
+		}
+
 		// Filter by status if provided
 		if ($request->filled('status')) {
 			switch ($request->status) {
@@ -55,6 +60,24 @@ class ProjectController extends Controller
 		$economicYears = EconomicYear::where('is_active', true)->orderBy('start_date', 'desc')->get();
 		$reliefTypes = ReliefType::where('is_active', true)->ordered()->get();
 
+		// Get all projects for current economic year (for the dropdown filter)
+		$currentYear = EconomicYear::where('is_current', true)->first();
+		$projectsForDropdown = collect();
+		if ($currentYear) {
+			$projectsForDropdown = Project::where('economic_year_id', $currentYear->id)
+				->with('reliefType')
+				->orderBy('name')
+				->get()
+				->map(function($project) {
+					return [
+						'id' => $project->id,
+						'name' => $project->name,
+						'relief_type_id' => $project->relief_type_id,
+						'relief_type_name' => $project->reliefType->display_name ?? localized_attr($project->reliefType, 'name'),
+					];
+				});
+		}
+
 		// Calculate summary statistics based on relief type allocation
 		$baseQuery = Project::query()
 			->when($request->filled('economic_year_id'), function($q) use ($request) {
@@ -68,6 +91,22 @@ class ProjectController extends Controller
 			})
 			->when($request->filled('relief_type_id'), function($q) use ($request) {
 				$q->where('relief_type_id', $request->relief_type_id);
+			})
+			->when($request->filled('project_id'), function($q) use ($request) {
+				$q->where('id', $request->project_id);
+			})
+			->when($request->filled('status'), function($q) use ($request) {
+				switch ($request->status) {
+					case 'active':
+						$q->active();
+						break;
+					case 'completed':
+						$q->completed();
+						break;
+					case 'upcoming':
+						$q->upcoming();
+						break;
+				}
 			});
 
 		$stats = [
@@ -89,6 +128,9 @@ class ProjectController extends Controller
 			})
 			->when($request->filled('relief_type_id'), function($q) use ($request) {
 				$q->where('relief_type_id', $request->relief_type_id);
+			})
+			->when($request->filled('project_id'), function($q) use ($request) {
+				$q->where('id', $request->project_id);
 			})
 			->when($request->filled('status'), function($q) use ($request) {
 				switch ($request->status) {
@@ -124,7 +166,7 @@ class ProjectController extends Controller
 
 		$stats['reliefTypeStats'] = $reliefTypeStats;
 
-		return view('admin.projects.index', compact('projects', 'economicYears', 'reliefTypes', 'stats'));
+		return view('admin.projects.index', compact('projects', 'economicYears', 'reliefTypes', 'stats', 'projectsForDropdown'));
 	}
 
 	/**

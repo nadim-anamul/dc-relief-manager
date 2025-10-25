@@ -33,7 +33,7 @@ class DistributionController extends Controller
         $currentPage = $request->integer('page', 1);
 
         $data = $this->getConsolidatedData($selectedYear, $selectedZillaId, $selectedUpazilaId, $selectedUnionId, $selectedProjectId);
-        $chartData = $this->getConsolidatedChartData($data['distribution'], $selectedZillaId, $selectedUpazilaId, $selectedUnionId);
+        $chartData = $this->getConsolidatedChartData($data['distribution'], $selectedZillaId, $selectedUpazilaId, $selectedUnionId, $selectedZillaId);
         $projectBudgetBreakdown = $this->getProjectBudgetBreakdown($selectedYear, $selectedZillaId, $selectedUpazilaId, $selectedProjectId);
 
         $upazilas = $selectedZillaId ? Upazila::where('zilla_id', $selectedZillaId)->orderBy('name')->get(['id', 'name', 'name_bn']) : collect();
@@ -752,7 +752,7 @@ class DistributionController extends Controller
     /**
      * Get consolidated chart data based on active filters.
      */
-    private function getConsolidatedChartData($distribution, ?int $zillaId, ?int $upazilaId, ?int $unionId): array
+    private function getConsolidatedChartData($distribution, ?int $zillaId, ?int $upazilaId, ?int $unionId, ?int $selectedZillaId = null): array
     {
         $chartData = [];
 
@@ -779,14 +779,35 @@ class DistributionController extends Controller
         }
 
         if (!$upazilaId) {
-            $upazilaData = $distribution->groupBy(function ($item) {
-                return $item->upazila?->name ?? 'Unknown Upazila';
-            })->map(function ($items) {
-                return $items->sum('approved_amount');
+            // Get all upazilas (like dashboard does)
+            $allUpazilas = $selectedZillaId ? 
+                Upazila::where('zilla_id', $selectedZillaId)->get() : 
+                Upazila::all();
+            
+            // Get upazila names mapping
+            $upazilaNames = $allUpazilas->mapWithKeys(function ($upazila) {
+                return [$upazila->id => $upazila->name_bn ?: $upazila->name];
             });
+            
+            // Get distribution data grouped by upazila (count applications instead of amount)
+            $upazilaDistributionData = $distribution->groupBy(function ($item) {
+                return $item->upazila_id;
+            })->map(function ($items) {
+                return $items->count(); // Count applications instead of summing amounts
+            });
+            
+            // Create chart data with all upazilas (including those with 0)
+            $chartLabels = [];
+            $chartDataValues = [];
+            
+            foreach ($allUpazilas as $upazila) {
+                $chartLabels[] = $upazilaNames[$upazila->id] ?? "Upazila #{$upazila->id}";
+                $chartDataValues[] = $upazilaDistributionData[$upazila->id] ?? 0;
+            }
+            
             $chartData['upazilaData'] = [
-                'labels' => $upazilaData->keys()->toArray(),
-                'data' => $upazilaData->values()->toArray(),
+                'labels' => $chartLabels,
+                'data' => $chartDataValues,
             ];
         }
 

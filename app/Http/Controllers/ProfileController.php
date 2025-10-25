@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 
@@ -29,14 +30,12 @@ class ProfileController extends Controller
             'name' => 'required|string|max:255',
             'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
             'phone' => 'required|string|regex:/^(\+88)?01[3-9]\d{8}$/',
-            'organization_type_id' => 'nullable|exists:organization_types,id',
         ]);
 
         $user->update([
             'name' => $request->name,
             'email' => $request->email,
             'phone' => $request->phone,
-            'organization_type_id' => $request->organization_type_id,
         ]);
 
         return redirect()->route('profile.edit')
@@ -114,5 +113,26 @@ class ProfileController extends Controller
 
         return redirect()->route('dashboard')
             ->with('success', 'Password changed successfully.');
+    }
+
+    /**
+     * Delete the user's account.
+     */
+    public function destroy(Request $request)
+    {
+        $user = $request->user();
+
+        $request->validate([
+            'password' => 'required|current_password',
+        ]);
+
+        Auth::logout();
+
+        $user->delete();
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect('/');
     }
 }

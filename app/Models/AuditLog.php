@@ -85,11 +85,11 @@ class AuditLog extends Model
 	public function getEventDisplayAttribute(): string
 	{
 		return match ($this->event) {
-			'created' => 'Created',
-			'updated' => 'Updated',
-			'deleted' => 'Deleted',
-			'restored' => 'Restored',
-			default => ucfirst($this->event),
+			'created' => __('Created'),
+			'updated' => __('Updated'),
+			'deleted' => __('Deleted'),
+			'restored' => __('Restored'),
+			default => __('' . ucfirst($this->event)),
 		};
 	}
 

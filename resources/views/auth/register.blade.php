@@ -36,20 +36,18 @@
 			<x-input-error :messages="$errors->get('email')" class="mt-2 text-sm text-red-600 dark:text-red-400" />
 		</div>
 
-		<!-- Organization Type -->
+		<!-- Phone Number -->
 		<div>
-			<x-input-label for="organization_type_id" :value="__('Organization Type')" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" />
-			<select name="organization_type_id" 
-				id="organization_type_id" 
-				class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white">
-				<option value="">Select Organization Type (Optional)</option>
-				@foreach($organizationTypes as $organizationType)
-					<option value="{{ $organizationType->id }}" {{ old('organization_type_id') == $organizationType->id ? 'selected' : '' }}>
-						{{ $organizationType->name }}
-					</option>
-				@endforeach
-			</select>
-			<x-input-error :messages="$errors->get('organization_type_id')" class="mt-2 text-sm text-red-600 dark:text-red-400" />
+			<x-input-label for="phone" :value="__('Phone Number')" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" />
+			<x-text-input id="phone" 
+				class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white" 
+				type="tel" 
+				name="phone" 
+				:value="old('phone')" 
+				required 
+				autocomplete="tel" 
+				placeholder="Enter your phone number" />
+			<x-input-error :messages="$errors->get('phone')" class="mt-2 text-sm text-red-600 dark:text-red-400" />
 		</div>
 
 		<!-- Password -->

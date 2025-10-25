@@ -5,8 +5,11 @@
                 {{ __('Edit Role') }}
             </h2>
             <a href="{{ route('admin.roles.index') }}" 
-               class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
-                Back to Roles
+               class="inline-flex items-center px-6 py-2 bg-gray-600 hover:bg-gray-700 text-white text-sm font-medium rounded-lg transition-colors duration-200 shadow-sm hover:shadow-md">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                </svg>
+                {{ __('Back to Roles') }}
             </a>
         </div>
     </x-slot>
@@ -34,7 +37,7 @@
                             <!-- Role Name -->
                             <div>
                                 <label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Role Name *
+                                    {{ __('Role Name') }} *
                                 </label>
                                 <input type="text" 
                                        name="name" 
@@ -44,14 +47,14 @@
                                        class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                                        required>
                                 <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                                    Use lowercase letters and hyphens (e.g., content-manager)
+                                    {{ __('Use lowercase letters and hyphens (e.g., content-manager)') }}
                                 </p>
                             </div>
 
                             <!-- Guard Name -->
                             <div>
                                 <label for="guard_name" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Guard Name *
+                                    {{ __('Guard Name') }} *
                                 </label>
                                 <select name="guard_name" 
                                         id="guard_name"
@@ -66,7 +69,7 @@
                         <!-- Permissions -->
                         <div class="mt-6">
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
-                                Permissions
+                                {{ __('Permissions') }}
                             </label>
                             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-h-96 overflow-y-auto border border-gray-300 dark:border-gray-600 rounded-md p-4">
                                 @foreach($permissions as $permission)
@@ -91,8 +94,11 @@
                         <!-- Submit Button -->
                         <div class="mt-6 flex justify-end">
                             <button type="submit" 
-                                    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                                Update Role
+                                    class="inline-flex items-center px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors duration-200 shadow-sm hover:shadow-md">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                {{ __('Update Role') }}
                             </button>
                         </div>
                     </form>

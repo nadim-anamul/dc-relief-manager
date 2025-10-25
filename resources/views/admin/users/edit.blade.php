@@ -5,8 +5,11 @@
                 {{ __('Edit User: ') . $user->name }}
             </h2>
             <a href="{{ route('admin.users.index') }}" 
-               class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
-                Back to Users
+               class="inline-flex items-center px-6 py-2 bg-gray-600 hover:bg-gray-700 text-white text-sm font-medium rounded-lg transition-colors duration-200 shadow-sm hover:shadow-md">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                </svg>
+                {{ __('Back to Users') }}
             </a>
         </div>
     </x-slot>
@@ -34,7 +37,7 @@
                             <!-- Name -->
                             <div>
                                 <label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Full Name *
+                                    {{ __('Full Name') }} *
                                 </label>
                                 <input type="text" 
                                        name="name" 
@@ -47,7 +50,7 @@
                             <!-- Email -->
                             <div>
                                 <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Email Address *
+                                    {{ __('Email Address') }} *
                                 </label>
                                 <input type="email" 
                                        name="email" 
@@ -57,10 +60,36 @@
                                        required>
                             </div>
 
+                            <!-- Phone -->
+                            <div>
+                                <label for="phone" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    {{ __('Phone Number') }} *
+                                </label>
+                                <input type="tel" 
+                                       name="phone" 
+                                       id="phone" 
+                                       value="{{ old('phone', $user->phone) }}"
+                                       class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                       required>
+                            </div>
+
+                            <!-- Approval Status -->
+                            <div>
+                                <label for="is_approved" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    {{ __('Approval Status') }}
+                                </label>
+                                <select name="is_approved" 
+                                        id="is_approved"
+                                        class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                    <option value="1" {{ old('is_approved', $user->is_approved) ? 'selected' : '' }}>{{ __('Approved') }}</option>
+                                    <option value="0" {{ !old('is_approved', $user->is_approved) ? 'selected' : '' }}>{{ __('Pending') }}</option>
+                                </select>
+                            </div>
+
                             <!-- Password -->
                             <div>
                                 <label for="password" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    New Password (leave blank to keep current)
+                                    {{ __('New Password') }} ({{ __('leave blank to keep current') }})
                                 </label>
                                 <input type="password" 
                                        name="password" 
@@ -71,37 +100,19 @@
                             <!-- Password Confirmation -->
                             <div>
                                 <label for="password_confirmation" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Confirm New Password
+                                    {{ __('Confirm New Password') }}
                                 </label>
                                 <input type="password" 
                                        name="password_confirmation" 
                                        id="password_confirmation"
                                        class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                             </div>
-
-                            <!-- Organization Type -->
-                            <div>
-                                <label for="organization_type_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    Organization Type
-                                </label>
-                                <select name="organization_type_id" 
-                                        id="organization_type_id"
-                                        class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                                    <option value="">Select Organization Type</option>
-                                    @foreach($organizationTypes as $orgType)
-                                        <option value="{{ $orgType->id }}" 
-                                                {{ old('organization_type_id', $user->organization_type_id) == $orgType->id ? 'selected' : '' }}>
-                                            {{ $orgType->name }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
                         </div>
 
                         <!-- Roles -->
                         <div class="mt-6">
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
-                                Roles *
+                                {{ __('Roles') }} *
                             </label>
                             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                                 @foreach($roles as $role)
@@ -126,8 +137,11 @@
                         <!-- Submit Button -->
                         <div class="mt-6 flex justify-end">
                             <button type="submit" 
-                                    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                                Update User
+                                    class="inline-flex items-center px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors duration-200 shadow-sm hover:shadow-md">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                {{ __('Update User') }}
                             </button>
                         </div>
                     </form>

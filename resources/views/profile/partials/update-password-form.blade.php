@@ -11,7 +11,7 @@
                 <input id="update_password_current_password" name="current_password" type="password" 
                        class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors duration-200 @error('updatePassword.current_password') border-red-500 @enderror" 
                        autocomplete="current-password" 
-                       placeholder="Enter your current password">
+                       placeholder="{{ __('Enter your current password') }}">
                 @error('updatePassword.current_password')
                     <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                 @enderror
@@ -25,7 +25,7 @@
                     <input id="update_password_password" name="password" type="password" 
                            class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors duration-200 @error('updatePassword.password') border-red-500 @enderror" 
                            autocomplete="new-password" 
-                           placeholder="Enter your new password">
+                           placeholder="{{ __('Enter your new password') }}">
                     @error('updatePassword.password')
                         <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                     @enderror
@@ -38,7 +38,7 @@
                     <input id="update_password_password_confirmation" name="password_confirmation" type="password" 
                            class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors duration-200 @error('updatePassword.password_confirmation') border-red-500 @enderror" 
                            autocomplete="new-password" 
-                           placeholder="Confirm your new password">
+                           placeholder="{{ __('Confirm your new password') }}">
                     @error('updatePassword.password_confirmation')
                         <p class="mt-2 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
                     @enderror

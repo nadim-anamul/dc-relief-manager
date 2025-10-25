@@ -31,10 +31,12 @@ trait Auditable
 			}
 		});
 
-		// Log when a model is restored
-		static::restored(function (Model $model) {
-			$model->logAuditEvent('restored', null, $model->getAttributes());
-		});
+		// Log when a model is restored (only for soft delete models)
+		if (in_array('Illuminate\Database\Eloquent\SoftDeletes', class_uses_recursive(static::class))) {
+			static::restored(function (Model $model) {
+				$model->logAuditEvent('restored', null, $model->getAttributes());
+			});
+		}
 	}
 
 	/**
