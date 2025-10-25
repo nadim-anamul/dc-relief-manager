@@ -157,8 +157,17 @@ class UserController extends Controller
     {
         $user->update(['is_approved' => true]);
 
-        // Send notification to user about approval
-        $user->notify(new \App\Notifications\UserApprovedNotification());
+        // Send notification to user about approval (with error handling)
+        try {
+            $user->notify(new \App\Notifications\UserApprovedNotification());
+        } catch (\Exception $e) {
+            // Log the error but don't fail the approval
+            \Log::error('Failed to send approval notification to user: ' . $e->getMessage(), [
+                'user_id' => $user->id,
+                'user_email' => $user->email,
+                'error' => $e->getMessage()
+            ]);
+        }
 
         return redirect()->route('admin.users.index')
             ->with('success', __('ব্যবহারকারী সফলভাবে অনুমোদিত হয়েছে।'));

@@ -44,17 +44,18 @@ class RegisteredUserController extends Controller
             'is_approved' => false, // Require admin approval
         ]);
 
-        // Send notification to admins about new user registration
+        // Send notification to admins about new user registration (with error handling)
         $this->notifyAdminsOfNewUser($user);
 
-        // Send notification to user about pending approval
+        // Send notification to user about pending approval (with error handling)
         $this->notifyUserOfPendingApproval($user);
 
         event(new Registered($user));
 
-        Auth::login($user);
-
-        return redirect(route('dashboard', absolute: false));
+        // Don't auto-login since user needs admin approval
+        // Redirect to login page with success message
+        return redirect(route('login'))
+            ->with('success', __('Registration completed successfully! Your account is pending admin approval. You will receive an email notification once approved.'));
     }
 
     /**
@@ -62,13 +63,22 @@ class RegisteredUserController extends Controller
      */
     private function notifyAdminsOfNewUser(User $user): void
     {
-        // Get all super-admin and district-admin users
-        $admins = User::whereHas('roles', function ($query) {
-            $query->whereIn('name', ['super-admin', 'district-admin']);
-        })->where('is_approved', true)->get();
+        try {
+            // Get all super-admin and district-admin users
+            $admins = User::whereHas('roles', function ($query) {
+                $query->whereIn('name', ['super-admin', 'district-admin']);
+            })->where('is_approved', true)->get();
 
-        foreach ($admins as $admin) {
-            $admin->notify(new \App\Notifications\NewUserRegistrationNotification($user));
+            foreach ($admins as $admin) {
+                $admin->notify(new \App\Notifications\NewUserRegistrationNotification($user));
+            }
+        } catch (\Exception $e) {
+            // Log the error but don't fail the registration
+            \Log::error('Failed to send admin notification for new user registration: ' . $e->getMessage(), [
+                'user_id' => $user->id,
+                'user_email' => $user->email,
+                'error' => $e->getMessage()
+            ]);
         }
     }
 
@@ -77,6 +87,15 @@ class RegisteredUserController extends Controller
      */
     private function notifyUserOfPendingApproval(User $user): void
     {
-        $user->notify(new \App\Notifications\UserPendingApprovalNotification());
+        try {
+            $user->notify(new \App\Notifications\UserPendingApprovalNotification());
+        } catch (\Exception $e) {
+            // Log the error but don't fail the registration
+            \Log::error('Failed to send pending approval notification to user: ' . $e->getMessage(), [
+                'user_id' => $user->id,
+                'user_email' => $user->email,
+                'error' => $e->getMessage()
+            ]);
+        }
     }
 }
