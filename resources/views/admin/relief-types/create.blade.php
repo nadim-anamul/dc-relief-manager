@@ -8,15 +8,12 @@
 					</svg>
 				</a>
 				<div>
-					<h1 class="text-2xl font-bold text-gray-900 dark:text-white">{{ __('Create New Relief Type') }}</h1>
-					<p class="text-sm text-gray-600 dark:text-gray-400 mt-1">{{ __('Add a new relief type for disaster management') }}</p>
+					<h1 class="text-2xl font-bold text-gray-900 dark:text-white {{ app()->isLocale('bn') ? 'font-sans' : '' }}">{{ __('Create New Relief Type') }}</h1>
+					<p class="text-sm text-gray-600 dark:text-gray-400 mt-1 {{ app()->isLocale('bn') ? 'font-sans' : '' }}">{{ __('Add a new relief type for disaster management') }}</p>
 				</div>
 			</div>
 			<div class="flex space-x-3">
 				<a href="{{ route('admin.relief-types.index') }}" class="btn-secondary">
-					<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-					</svg>
 					{{ __('Cancel') }}
 				</a>
 			</div>
@@ -159,14 +156,14 @@
 					<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 						<!-- Unit -->
 						<div>
-								<label for="unit" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-									{{ __('Unit') }} <span class="text-red-500">*</span>
-								</label>
+							<label for="unit" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+								{{ __('Unit') }} <span class="text-red-500">*</span>
+							</label>
 							<select name="unit" 
 								id="unit" 
 								class="input-field @error('unit') border-red-500 dark:border-red-400 @enderror"
 								required>
-									<option value="">{{ __('Select a unit') }}</option>
+								<option value="">{{ __('Select a unit') }}</option>
 								<option value="Taka" {{ old('unit') == 'Taka' ? 'selected' : '' }}>Taka (৳)</option>
 								<option value="Metric Ton" {{ old('unit') == 'Metric Ton' ? 'selected' : '' }}>Metric Ton</option>
 								<option value="Kg" {{ old('unit') == 'Kg' ? 'selected' : '' }}>Kilogram</option>
@@ -175,7 +172,19 @@
 								<option value="Bundle" {{ old('unit') == 'Bundle' ? 'selected' : '' }}>Bundle</option>
 								<option value="Box" {{ old('unit') == 'Box' ? 'selected' : '' }}>Box</option>
 								<option value="Set" {{ old('unit') == 'Set' ? 'selected' : '' }}>Set</option>
+								<option value="CUSTOM">{{ __('Custom Unit') }}</option>
 							</select>
+							<div id="custom-unit-wrapper" class="mt-2" style="display: none;">
+								<input type="text" 
+									name="unit_custom" 
+									id="unit_custom" 
+									value="{{ old('unit_custom') }}"
+									class="input-field @error('unit_custom') border-red-500 dark:border-red-400 @enderror"
+									placeholder="{{ __('Enter custom unit') }}">
+								@error('unit_custom')
+									<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+								@enderror
+							</div>
 							@error('unit')
 								<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
 							@enderror
@@ -183,9 +192,9 @@
 
 						<!-- Bengali Unit -->
 						<div>
-								<label for="unit_bn" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-									{{ __('Bengali Unit') }} <span class="text-red-500">*</span>
-								</label>
+							<label for="unit_bn" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+								{{ __('Bengali Unit') }} <span class="text-red-500">*</span>
+							</label>
 							<select name="unit_bn" 
 								id="unit_bn" 
 								class="input-field @error('unit_bn') border-red-500 dark:border-red-400 @enderror"
@@ -199,7 +208,19 @@
 								<option value="বান্ডিল" {{ old('unit_bn') == 'বান্ডিল' ? 'selected' : '' }}>বান্ডিল</option>
 								<option value="বক্স" {{ old('unit_bn') == 'বক্স' ? 'selected' : '' }}>বক্স</option>
 								<option value="সেট" {{ old('unit_bn') == 'সেট' ? 'selected' : '' }}>সেট</option>
+								<option value="CUSTOM_BN">কাস্টম একক</option>
 							</select>
+							<div id="custom-unit-bn-wrapper" class="mt-2" style="display: none;">
+								<input type="text" 
+									name="unit_bn_custom" 
+									id="unit_bn_custom" 
+									value="{{ old('unit_bn_custom') }}"
+									class="input-field @error('unit_bn_custom') border-red-500 dark:border-red-400 @enderror"
+									placeholder="কাস্টম একক লিখুন">
+								@error('unit_bn_custom')
+									<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+								@enderror
+							</div>
 							@error('unit_bn')
 								<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
 							@enderror
@@ -280,21 +301,15 @@
 				</div>
 			</div>
 
-			<!-- Submit Buttons -->
-			<div class="flex justify-end space-x-3 pt-6">
-				<a href="{{ route('admin.relief-types.index') }}" class="btn-secondary">
-					<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-					</svg>
-					{{ __('Cancel') }}
-				</a>
-				<button type="submit" class="btn-primary">
-					<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-					</svg>
-						{{ __('Create Relief Type') }}
-				</button>
-			</div>
+		<!-- Submit Buttons -->
+		<div class="flex justify-end space-x-3 mt-8">
+			<a href="{{ route('admin.relief-types.index') }}" class="btn-secondary">
+				{{ __('Cancel') }}
+			</a>
+			<button type="submit" class="btn-primary">
+				{{ __('Create Relief Type') }}
+			</button>
+		</div>
 		</form>
 	</div>
 
@@ -311,25 +326,106 @@
 			'Set': 'সেট'
 		};
 
+		// Show/hide custom unit inputs
+		function toggleCustomUnitInputs() {
+			const unitSelect = document.getElementById('unit');
+			const unitBnSelect = document.getElementById('unit_bn');
+			const customUnitWrapper = document.getElementById('custom-unit-wrapper');
+			const customUnitBnWrapper = document.getElementById('custom-unit-bn-wrapper');
+			const customUnitInput = document.getElementById('unit_custom');
+			const customUnitBnInput = document.getElementById('unit_bn_custom');
+			
+			// Handle English unit
+			if (unitSelect.value === 'CUSTOM') {
+				customUnitWrapper.style.display = 'block';
+				customUnitInput.required = true;
+			} else {
+				customUnitWrapper.style.display = 'none';
+				customUnitInput.required = false;
+			}
+			
+			// Handle Bengali unit
+			if (unitBnSelect.value === 'CUSTOM_BN') {
+				customUnitBnWrapper.style.display = 'block';
+				customUnitBnInput.required = true;
+			} else {
+				customUnitBnWrapper.style.display = 'none';
+				customUnitBnInput.required = false;
+			}
+		}
+
 		// Auto-sync unit selections
 		document.getElementById('unit').addEventListener('change', function() {
 			const unitBnSelect = document.getElementById('unit_bn');
+			const customUnitInput = document.getElementById('unit_custom');
 			const englishUnit = this.value;
-			if (unitMapping[englishUnit]) {
+			
+			if (englishUnit === 'CUSTOM') {
+				unitBnSelect.value = 'CUSTOM_BN';
+			} else if (unitMapping[englishUnit]) {
 				unitBnSelect.value = unitMapping[englishUnit];
 			}
+			
+			toggleCustomUnitInputs();
 			updatePreview();
 		});
 
-		document.getElementById('unit_bn').addEventListener('change', updatePreview);
+		document.getElementById('unit_bn').addEventListener('change', function() {
+			toggleCustomUnitInputs();
+			updatePreview();
+		});
+
+		// Handle form submission to set proper unit values
+		document.getElementById('relief-type-form').addEventListener('submit', function(e) {
+			const unitSelect = document.getElementById('unit');
+			const unitBnSelect = document.getElementById('unit_bn');
+			const customUnitInput = document.getElementById('unit_custom');
+			const customUnitBnInput = document.getElementById('unit_bn_custom');
+			
+			if (unitSelect.value === 'CUSTOM' && customUnitInput.value) {
+				// Temporarily change the select value to the custom input value
+				const originalValue = customUnitInput.value;
+				unitSelect.removeAttribute('required');
+				const hiddenInput = document.createElement('input');
+				hiddenInput.type = 'hidden';
+				hiddenInput.name = 'unit';
+				hiddenInput.value = originalValue;
+				unitSelect.insertAdjacentElement('afterend', hiddenInput);
+				unitSelect.disabled = true;
+			}
+			
+			if (unitBnSelect.value === 'CUSTOM_BN' && customUnitBnInput.value) {
+				const originalValue = customUnitBnInput.value;
+				unitBnSelect.removeAttribute('required');
+				const hiddenInput = document.createElement('input');
+				hiddenInput.type = 'hidden';
+				hiddenInput.name = 'unit_bn';
+				hiddenInput.value = originalValue;
+				unitBnSelect.insertAdjacentElement('afterend', hiddenInput);
+				unitBnSelect.disabled = true;
+			}
+		});
 
 		// Update preview in real-time
 		function updatePreview() {
 			const name = document.getElementById('name').value || '{{ __('Relief Type Name') }}';
 			const nameBn = document.getElementById('name_bn').value || 'ত্রাণের ধরন';
-			const unit = document.getElementById('unit').value || '{{ __('Unit') }}';
-			const unitBn = document.getElementById('unit_bn').value || '{{ __('Unit') }}';
+			const unitSelect = document.getElementById('unit');
+			const unitBnSelect = document.getElementById('unit_bn');
+			const customUnitInput = document.getElementById('unit_custom');
+			const customUnitBnInput = document.getElementById('unit_bn_custom');
 			const description = document.getElementById('description').value || '{{ __('Description will appear here') }}';
+			
+			let unit = unitSelect.value || '{{ __('Unit') }}';
+			let unitBn = unitBnSelect.value || '{{ __('Unit') }}';
+			
+			if (unit === 'CUSTOM' && customUnitInput.value) {
+				unit = customUnitInput.value;
+			}
+			if (unitBn === 'CUSTOM_BN' && customUnitBnInput.value) {
+				unitBn = customUnitBnInput.value;
+			}
+			
 			document.getElementById('preview-name').textContent = name;
 			document.getElementById('preview-name-bn').textContent = nameBn;
 			document.getElementById('preview-unit').textContent = unit;
@@ -338,10 +434,12 @@
 		}
 
 		// Add event listeners for real-time preview
-		['name', 'name_bn', 'description'].forEach(id => {
-			document.getElementById(id).addEventListener('input', updatePreview);
+		['name', 'name_bn', 'description', 'unit_custom', 'unit_bn_custom'].forEach(id => {
+			const element = document.getElementById(id);
+			if (element) {
+				element.addEventListener('input', updatePreview);
+			}
 		});
-
 
 		// Form validation and progress
 		const form = document.getElementById('relief-type-form');
@@ -351,8 +449,25 @@
 		function updateProgress() {
 			const name = document.getElementById('name').value;
 			const nameBn = document.getElementById('name_bn').value;
-			const unit = document.getElementById('unit').value;
-			const unitBn = document.getElementById('unit_bn').value;
+			const unitSelect = document.getElementById('unit');
+			const unitBnSelect = document.getElementById('unit_bn');
+			const customUnitInput = document.getElementById('unit_custom');
+			const customUnitBnInput = document.getElementById('unit_bn_custom');
+			
+			let hasUnit = false;
+			let hasUnitBn = false;
+			
+			if (unitSelect.value === 'CUSTOM' && customUnitInput.value) {
+				hasUnit = true;
+			} else if (unitSelect.value && unitSelect.value !== 'CUSTOM') {
+				hasUnit = true;
+			}
+			
+			if (unitBnSelect.value === 'CUSTOM_BN' && customUnitBnInput.value) {
+				hasUnitBn = true;
+			} else if (unitBnSelect.value && unitBnSelect.value !== 'CUSTOM_BN') {
+				hasUnitBn = true;
+			}
 
 			if (name && nameBn) {
 				progressBar.style.width = '66%';
@@ -360,16 +475,21 @@
 				step2Icon.classList.add('bg-blue-100', 'dark:bg-blue-900', 'text-blue-600', 'dark:text-blue-400');
 			}
 
-			if (name && nameBn && unit && unitBn) {
+			if (name && nameBn && hasUnit && hasUnitBn) {
 				progressBar.style.width = '100%';
 			}
 		}
 
-		['name', 'name_bn', 'unit', 'unit_bn'].forEach(id => {
-			document.getElementById(id).addEventListener('input', updateProgress);
+		['name', 'name_bn', 'unit', 'unit_bn', 'unit_custom', 'unit_bn_custom'].forEach(id => {
+			const element = document.getElementById(id);
+			if (element) {
+				element.addEventListener('input', updateProgress);
+				element.addEventListener('change', updateProgress);
+			}
 		});
 
-		// Initialize preview
+		// Initialize preview and custom inputs
+		toggleCustomUnitInputs();
 		updatePreview();
 		updateProgress();
 	</script>

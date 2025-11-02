@@ -8,23 +8,16 @@
 					</svg>
 				</a>
 				<div>
-					<h1 class="text-2xl font-bold text-gray-900 dark:text-white">Edit Relief Type</h1>
-					<p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Update relief type: {{ $reliefType->display_name }}</p>
+					<h1 class="text-2xl font-bold text-gray-900 dark:text-white {{ app()->isLocale('bn') ? 'font-sans' : '' }}">{{ __('Edit Relief Type') }}</h1>
+					<p class="text-sm text-gray-600 dark:text-gray-400 mt-1 {{ app()->isLocale('bn') ? 'font-sans' : '' }}">{{ __('Update relief type:') }} {{ $reliefType->display_name }}</p>
 				</div>
 			</div>
 			<div class="flex space-x-3">
 				<a href="{{ route('admin.relief-types.show', $reliefType) }}" class="btn-secondary">
-					<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-					</svg>
-					View
+					{{ __('View') }}
 				</a>
 				<a href="{{ route('admin.relief-types.index') }}" class="btn-secondary">
-					<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-					</svg>
-					Cancel
+					{{ __('Cancel') }}
 				</a>
 			</div>
 		</div>
@@ -45,8 +38,8 @@
 							</svg>
 						</div>
 						<div>
-							<h3 class="text-lg font-medium text-gray-900 dark:text-white">Basic Information</h3>
-							<p class="text-sm text-gray-500 dark:text-gray-400">Update the basic details for the relief type</p>
+							<h3 class="text-lg font-medium text-gray-900 dark:text-white">{{ __('Basic Information') }}</h3>
+							<p class="text-sm text-gray-500 dark:text-gray-400">{{ __('Update the basic details for the relief type') }}</p>
 						</div>
 					</div>
 				</div>
@@ -55,14 +48,14 @@
 						<!-- English Name -->
 						<div>
 							<label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-								English Name <span class="text-red-500">*</span>
+								{{ __('English Name') }} <span class="text-red-500">*</span>
 							</label>
 							<input type="text" 
 								name="name" 
 								id="name" 
 								value="{{ old('name', $reliefType->name) }}"
 								class="input-field @error('name') border-red-500 dark:border-red-400 @enderror"
-								placeholder="e.g., Rice, Wheat, Cash"
+								placeholder="{{ __('e.g., Rice, Wheat, Cash') }}"
 								required>
 							@error('name')
 								<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
@@ -72,7 +65,7 @@
 						<!-- Bengali Name -->
 						<div>
 							<label for="name_bn" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-								Bengali Name <span class="text-red-500">*</span>
+								{{ __('Bengali Name') }} <span class="text-red-500">*</span>
 							</label>
 							<input type="text" 
 								name="name_bn" 
@@ -87,35 +80,35 @@
 						</div>
 					</div>
 
-					<!-- Description -->
-					<div>
-						<label for="description" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-							English Description
-						</label>
-						<textarea name="description" 
-							id="description" 
-							rows="3"
-							class="input-field @error('description') border-red-500 dark:border-red-400 @enderror"
-							placeholder="Describe this relief type and its purpose">{{ old('description', $reliefType->description) }}</textarea>
-						@error('description')
-							<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-						@enderror
-					</div>
+				<!-- Description -->
+				<div>
+					<label for="description" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+						{{ __('English Description') }}
+					</label>
+					<textarea name="description" 
+						id="description" 
+						rows="3"
+						class="input-field @error('description') border-red-500 dark:border-red-400 @enderror"
+						placeholder="{{ __('Describe this relief type and its purpose') }}">{{ old('description', $reliefType->description) }}</textarea>
+					@error('description')
+						<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+					@enderror
+				</div>
 
-					<!-- Bengali Description -->
-					<div>
-						<label for="description_bn" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-							Bengali Description
-						</label>
-						<textarea name="description_bn" 
-							id="description_bn" 
-							rows="3"
-							class="input-field @error('description_bn') border-red-500 dark:border-red-400 @enderror"
-							placeholder="এই ত্রাণের ধরন এবং এর উদ্দেশ্য বর্ণনা করুন">{{ old('description_bn', $reliefType->description_bn) }}</textarea>
-						@error('description_bn')
-							<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-						@enderror
-					</div>
+				<!-- Bengali Description -->
+				<div>
+					<label for="description_bn" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+						{{ __('Bengali Description') }}
+					</label>
+					<textarea name="description_bn" 
+						id="description_bn" 
+						rows="3"
+						class="input-field @error('description_bn') border-red-500 dark:border-red-400 @enderror"
+						placeholder="এই ত্রাণের ধরন এবং এর উদ্দেশ্য বর্ণনা করুন">{{ old('description_bn', $reliefType->description_bn) }}</textarea>
+					@error('description_bn')
+						<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+					@enderror
+				</div>
 				</div>
 			</div>
 
@@ -129,8 +122,8 @@
 							</svg>
 						</div>
 						<div>
-							<h3 class="text-lg font-medium text-gray-900 dark:text-white">Unit & Display Settings</h3>
-							<p class="text-sm text-gray-500 dark:text-gray-400">Configure measurement units and visual appearance</p>
+							<h3 class="text-lg font-medium text-gray-900 dark:text-white">{{ __('Unit & Display Settings') }}</h3>
+							<p class="text-sm text-gray-500 dark:text-gray-400">{{ __('Configure measurement units and visual appearance') }}</p>
 						</div>
 					</div>
 				</div>
@@ -139,13 +132,13 @@
 						<!-- Unit -->
 						<div>
 							<label for="unit" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-								Unit <span class="text-red-500">*</span>
+								{{ __('Unit') }} <span class="text-red-500">*</span>
 							</label>
 							<select name="unit" 
 								id="unit" 
 								class="input-field @error('unit') border-red-500 dark:border-red-400 @enderror"
 								required>
-								<option value="">Select a unit</option>
+								<option value="">{{ __('Select a unit') }}</option>
 								<option value="Taka" {{ old('unit', $reliefType->unit) == 'Taka' ? 'selected' : '' }}>Taka (৳)</option>
 								<option value="Metric Ton" {{ old('unit', $reliefType->unit) == 'Metric Ton' ? 'selected' : '' }}>Metric Ton</option>
 								<option value="Kg" {{ old('unit', $reliefType->unit) == 'Kg' ? 'selected' : '' }}>Kilogram</option>
@@ -154,7 +147,19 @@
 								<option value="Bundle" {{ old('unit', $reliefType->unit) == 'Bundle' ? 'selected' : '' }}>Bundle</option>
 								<option value="Box" {{ old('unit', $reliefType->unit) == 'Box' ? 'selected' : '' }}>Box</option>
 								<option value="Set" {{ old('unit', $reliefType->unit) == 'Set' ? 'selected' : '' }}>Set</option>
+								<option value="CUSTOM" {{ (!in_array(old('unit', $reliefType->unit), ['Taka', 'Metric Ton', 'Kg', 'Liter', 'Piece', 'Bundle', 'Box', 'Set'])) ? 'selected' : '' }}>{{ __('Custom Unit') }}</option>
 							</select>
+							<div id="custom-unit-wrapper" class="mt-2" style="display: none;">
+								<input type="text" 
+									name="unit_custom" 
+									id="unit_custom" 
+									value="{{ (!in_array(old('unit', $reliefType->unit), ['Taka', 'Metric Ton', 'Kg', 'Liter', 'Piece', 'Bundle', 'Box', 'Set'])) ? old('unit', $reliefType->unit) : '' }}"
+									class="input-field @error('unit_custom') border-red-500 dark:border-red-400 @enderror"
+									placeholder="{{ __('Enter custom unit') }}">
+								@error('unit_custom')
+									<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+								@enderror
+							</div>
 							@error('unit')
 								<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
 							@enderror
@@ -163,7 +168,7 @@
 						<!-- Bengali Unit -->
 						<div>
 							<label for="unit_bn" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-								Bengali Unit <span class="text-red-500">*</span>
+								{{ __('Bengali Unit') }} <span class="text-red-500">*</span>
 							</label>
 							<select name="unit_bn" 
 								id="unit_bn" 
@@ -178,7 +183,19 @@
 								<option value="বান্ডিল" {{ old('unit_bn', $reliefType->unit_bn) == 'বান্ডিল' ? 'selected' : '' }}>বান্ডিল</option>
 								<option value="বক্স" {{ old('unit_bn', $reliefType->unit_bn) == 'বক্স' ? 'selected' : '' }}>বক্স</option>
 								<option value="সেট" {{ old('unit_bn', $reliefType->unit_bn) == 'সেট' ? 'selected' : '' }}>সেট</option>
+								<option value="CUSTOM_BN" {{ (!in_array(old('unit_bn', $reliefType->unit_bn), ['টাকা', 'মেট্রিক টন', 'কেজি', 'লিটার', 'টি', 'বান্ডিল', 'বক্স', 'সেট'])) ? 'selected' : '' }}>কাস্টম একক</option>
 							</select>
+							<div id="custom-unit-bn-wrapper" class="mt-2" style="display: none;">
+								<input type="text" 
+									name="unit_bn_custom" 
+									id="unit_bn_custom" 
+									value="{{ (!in_array(old('unit_bn', $reliefType->unit_bn), ['টাকা', 'মেট্রিক টন', 'কেজি', 'লিটার', 'টি', 'বান্ডিল', 'বক্স', 'সেট'])) ? old('unit_bn', $reliefType->unit_bn) : '' }}"
+									class="input-field @error('unit_bn_custom') border-red-500 dark:border-red-400 @enderror"
+									placeholder="কাস্টম একক লিখুন">
+								@error('unit_bn_custom')
+									<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+								@enderror
+							</div>
 							@error('unit_bn')
 								<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
 							@enderror
@@ -186,41 +203,41 @@
 					</div>
 
 
-					<!-- Sort Order -->
-					<div>
-						<label for="sort_order" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-							Display Order
-						</label>
-						<input type="number" 
-							name="sort_order" 
-							id="sort_order" 
-							value="{{ old('sort_order', $reliefType->sort_order) }}"
-							class="input-field @error('sort_order') border-red-500 dark:border-red-400 @enderror"
-							placeholder="0"
-							min="0">
-						@error('sort_order')
-							<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
-						@enderror
-						<p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Lower numbers appear first in lists (0 = highest priority)</p>
-					</div>
+				<!-- Sort Order -->
+				<div>
+					<label for="sort_order" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+						{{ __('Display Order') }}
+					</label>
+					<input type="number" 
+						name="sort_order" 
+						id="sort_order" 
+						value="{{ old('sort_order', $reliefType->sort_order) }}"
+						class="input-field @error('sort_order') border-red-500 dark:border-red-400 @enderror"
+						placeholder="0"
+						min="0">
+					@error('sort_order')
+						<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+					@enderror
+					<p class="mt-1 text-xs text-gray-500 dark:text-gray-400">{{ __('Lower numbers appear first in lists (0 = highest priority)') }}</p>
+				</div>
 
-					<!-- Status -->
-					<div class="flex items-start">
-						<div class="flex items-center h-5">
-							<input type="checkbox" 
-								name="is_active" 
-								id="is_active"
-								value="1"
-								{{ old('is_active', $reliefType->is_active) ? 'checked' : '' }}
-								class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 dark:border-gray-600 rounded dark:bg-gray-700">
-						</div>
-						<div class="ml-3 text-sm">
-							<label for="is_active" class="font-medium text-gray-700 dark:text-gray-300">
-								Active Status
-							</label>
-							<p class="text-gray-500 dark:text-gray-400">Enable this relief type for use in projects and applications</p>
-						</div>
+				<!-- Status -->
+				<div class="flex items-start">
+					<div class="flex items-center h-5">
+						<input type="checkbox" 
+							name="is_active" 
+							id="is_active"
+							value="1"
+							{{ old('is_active', $reliefType->is_active) ? 'checked' : '' }}
+							class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 dark:border-gray-600 rounded dark:bg-gray-700">
 					</div>
+					<div class="ml-3 text-sm">
+						<label for="is_active" class="font-medium text-gray-700 dark:text-gray-300">
+							{{ __('Active Status') }}
+						</label>
+						<p class="text-gray-500 dark:text-gray-400">{{ __('Enable this relief type for use in projects and applications') }}</p>
+					</div>
+				</div>
 				</div>
 			</div>
 
@@ -235,8 +252,8 @@
 							</svg>
 						</div>
 						<div>
-							<h3 class="text-lg font-medium text-gray-900 dark:text-white">Preview</h3>
-							<p class="text-sm text-gray-500 dark:text-gray-400">See how your relief type will appear</p>
+							<h3 class="text-lg font-medium text-gray-900 dark:text-white">{{ __('Preview') }}</h3>
+							<p class="text-sm text-gray-500 dark:text-gray-400">{{ __('See how your relief type will appear') }}</p>
 						</div>
 					</div>
 				</div>
@@ -248,32 +265,26 @@
 								<p class="text-sm text-gray-500 dark:text-gray-400" id="preview-name-bn">{{ $reliefType->name_bn }}</p>
 							</div>
 							<div class="text-right">
-								<p class="text-sm font-medium text-gray-900 dark:text-white">Unit: <span id="preview-unit">{{ $reliefType->unit }}</span></p>
+								<p class="text-sm font-medium text-gray-900 dark:text-white">{{ __('Unit:') }} <span id="preview-unit">{{ $reliefType->unit }}</span></p>
 								<p class="text-xs text-gray-500 dark:text-gray-400">(<span id="preview-unit-bn">{{ $reliefType->unit_bn }}</span>)</p>
 							</div>
 						</div>
 						<div class="mt-3">
-							<p class="text-sm text-gray-600 dark:text-gray-400" id="preview-description">{{ $reliefType->description ?: 'No description provided' }}</p>
+							<p class="text-sm text-gray-600 dark:text-gray-400" id="preview-description">{{ $reliefType->description ?: __('Description will appear here') }}</p>
 						</div>
 					</div>
 				</div>
 			</div>
 
-			<!-- Submit Buttons -->
-			<div class="flex justify-end space-x-3 pt-6">
-				<a href="{{ route('admin.relief-types.index') }}" class="btn-secondary">
-					<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-					</svg>
-					Cancel
-				</a>
-				<button type="submit" class="btn-primary">
-					<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-					</svg>
-					Update Relief Type
-				</button>
-			</div>
+		<!-- Submit Buttons -->
+		<div class="flex justify-end space-x-3 mt-8">
+			<a href="{{ route('admin.relief-types.index') }}" class="btn-secondary">
+				{{ __('Cancel') }}
+			</a>
+			<button type="submit" class="btn-primary">
+				{{ __('Update Relief Type') }}
+			</button>
+		</div>
 		</form>
 	</div>
 
@@ -290,25 +301,106 @@
 			'Set': 'সেট'
 		};
 
+		// Show/hide custom unit inputs
+		function toggleCustomUnitInputs() {
+			const unitSelect = document.getElementById('unit');
+			const unitBnSelect = document.getElementById('unit_bn');
+			const customUnitWrapper = document.getElementById('custom-unit-wrapper');
+			const customUnitBnWrapper = document.getElementById('custom-unit-bn-wrapper');
+			const customUnitInput = document.getElementById('unit_custom');
+			const customUnitBnInput = document.getElementById('unit_bn_custom');
+			
+			// Handle English unit
+			if (unitSelect.value === 'CUSTOM') {
+				customUnitWrapper.style.display = 'block';
+				customUnitInput.required = true;
+			} else {
+				customUnitWrapper.style.display = 'none';
+				customUnitInput.required = false;
+			}
+			
+			// Handle Bengali unit
+			if (unitBnSelect.value === 'CUSTOM_BN') {
+				customUnitBnWrapper.style.display = 'block';
+				customUnitBnInput.required = true;
+			} else {
+				customUnitBnWrapper.style.display = 'none';
+				customUnitBnInput.required = false;
+			}
+		}
+
 		// Auto-sync unit selections
 		document.getElementById('unit').addEventListener('change', function() {
 			const unitBnSelect = document.getElementById('unit_bn');
+			const customUnitInput = document.getElementById('unit_custom');
 			const englishUnit = this.value;
-			if (unitMapping[englishUnit]) {
+			
+			if (englishUnit === 'CUSTOM') {
+				unitBnSelect.value = 'CUSTOM_BN';
+			} else if (unitMapping[englishUnit]) {
 				unitBnSelect.value = unitMapping[englishUnit];
 			}
+			
+			toggleCustomUnitInputs();
 			updatePreview();
 		});
 
-		document.getElementById('unit_bn').addEventListener('change', updatePreview);
+		document.getElementById('unit_bn').addEventListener('change', function() {
+			toggleCustomUnitInputs();
+			updatePreview();
+		});
+
+		// Handle form submission to set proper unit values
+		document.getElementById('relief-type-form').addEventListener('submit', function(e) {
+			const unitSelect = document.getElementById('unit');
+			const unitBnSelect = document.getElementById('unit_bn');
+			const customUnitInput = document.getElementById('unit_custom');
+			const customUnitBnInput = document.getElementById('unit_bn_custom');
+			
+			if (unitSelect.value === 'CUSTOM' && customUnitInput.value) {
+				// Temporarily change the select value to the custom input value
+				const originalValue = customUnitInput.value;
+				unitSelect.removeAttribute('required');
+				const hiddenInput = document.createElement('input');
+				hiddenInput.type = 'hidden';
+				hiddenInput.name = 'unit';
+				hiddenInput.value = originalValue;
+				unitSelect.insertAdjacentElement('afterend', hiddenInput);
+				unitSelect.disabled = true;
+			}
+			
+			if (unitBnSelect.value === 'CUSTOM_BN' && customUnitBnInput.value) {
+				const originalValue = customUnitBnInput.value;
+				unitBnSelect.removeAttribute('required');
+				const hiddenInput = document.createElement('input');
+				hiddenInput.type = 'hidden';
+				hiddenInput.name = 'unit_bn';
+				hiddenInput.value = originalValue;
+				unitBnSelect.insertAdjacentElement('afterend', hiddenInput);
+				unitBnSelect.disabled = true;
+			}
+		});
 
 		// Update preview in real-time
 		function updatePreview() {
 			const name = document.getElementById('name').value || 'Relief Type Name';
 			const nameBn = document.getElementById('name_bn').value || 'ত্রাণের ধরন';
-			const unit = document.getElementById('unit').value || 'Unit';
-			const unitBn = document.getElementById('unit_bn').value || 'একক';
+			const unitSelect = document.getElementById('unit');
+			const unitBnSelect = document.getElementById('unit_bn');
+			const customUnitInput = document.getElementById('unit_custom');
+			const customUnitBnInput = document.getElementById('unit_bn_custom');
 			const description = document.getElementById('description').value || 'No description provided';
+			
+			let unit = unitSelect.value || 'Unit';
+			let unitBn = unitBnSelect.value || 'একক';
+			
+			if (unit === 'CUSTOM' && customUnitInput.value) {
+				unit = customUnitInput.value;
+			}
+			if (unitBn === 'CUSTOM_BN' && customUnitBnInput.value) {
+				unitBn = customUnitBnInput.value;
+			}
+			
 			document.getElementById('preview-name').textContent = name;
 			document.getElementById('preview-name-bn').textContent = nameBn;
 			document.getElementById('preview-unit').textContent = unit;
@@ -317,12 +409,15 @@
 		}
 
 		// Add event listeners for real-time preview
-		['name', 'name_bn', 'description'].forEach(id => {
-			document.getElementById(id).addEventListener('input', updatePreview);
+		['name', 'name_bn', 'description', 'unit_custom', 'unit_bn_custom'].forEach(id => {
+			const element = document.getElementById(id);
+			if (element) {
+				element.addEventListener('input', updatePreview);
+			}
 		});
 
-
-		// Initialize preview
+		// Initialize preview and custom inputs
+		toggleCustomUnitInputs();
 		updatePreview();
 	</script>
 </x-main-layout>

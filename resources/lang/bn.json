@@ -733,7 +733,14 @@
     "Manage administrative unions and their wards": "প্রশাসনিক ইউনিয়ন এবং তাদের ওয়ার্ড পরিচালনা করুন",
     "Add New Union": "নতুন ইউনিয়ন যোগ করুন",
     "Filter Unions": "ইউনিয়ন ফিল্টার করুন",
-    "Add New Relief Type": "নতুন ত্রানের খাত যোগ করুন"
+    "Add New Relief Type": "নতুন ত্রানের খাত যোগ করুন",
+    "Edit Relief Type": "ত্রাণের ধরন সম্পাদনা",
+    "Update relief type:": "ত্রাণের ধরন হালনাগাদ:",
+    "Update the basic details for the relief type": "ত্রাণের ধরনের মৌলিক বিবরণ হালনাগাদ করুন",
+    "Update Relief Type": "ত্রাণের ধরন হালনাগাদ",
+    "Unit:": "একক:",
+    "Custom Unit": "কাস্টম একক",
+    "Enter custom unit": "কাস্টম একক লিখুন"
 
 
 
