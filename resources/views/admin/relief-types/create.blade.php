@@ -159,6 +159,18 @@
 							<label for="unit" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
 								{{ __('Unit') }} <span class="text-red-500">*</span>
 							</label>
+							@php
+								$standardUnits = ['Taka', 'Metric Ton', 'Kg', 'Liter', 'Piece', 'Bundle', 'Box', 'Set'];
+								$customUnits = collect($existingUnits ?? [])->filter(function($item) use ($standardUnits) {
+									return !in_array($item['unit'], $standardUnits);
+								});
+							@endphp
+							{{-- DEBUG: Uncomment to see what's being loaded --}}
+							{{-- <div style="background:yellow;padding:10px;margin:10px 0;">
+								Existing Units: {{ json_encode($existingUnits) }}<br>
+								Custom Units Count: {{ $customUnits->count() }}<br>
+								Custom Units: {{ json_encode($customUnits->toArray()) }}
+							</div> --}}
 							<select name="unit" 
 								id="unit" 
 								class="input-field @error('unit') border-red-500 dark:border-red-400 @enderror"
@@ -172,6 +184,13 @@
 								<option value="Bundle" {{ old('unit') == 'Bundle' ? 'selected' : '' }}>Bundle</option>
 								<option value="Box" {{ old('unit') == 'Box' ? 'selected' : '' }}>Box</option>
 								<option value="Set" {{ old('unit') == 'Set' ? 'selected' : '' }}>Set</option>
+								@if($customUnits->isNotEmpty())
+									<optgroup label="{{ __('Previously Used Units') }}">
+										@foreach($customUnits as $unitPair)
+											<option value="{{ $unitPair['unit'] }}" {{ old('unit') == $unitPair['unit'] ? 'selected' : '' }}>{{ $unitPair['unit'] }}</option>
+										@endforeach
+									</optgroup>
+								@endif
 								<option value="CUSTOM">{{ __('Custom Unit') }}</option>
 							</select>
 							<div id="custom-unit-wrapper" class="mt-2" style="display: none;">
@@ -195,6 +214,12 @@
 							<label for="unit_bn" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
 								{{ __('Bengali Unit') }} <span class="text-red-500">*</span>
 							</label>
+							@php
+								$standardUnitsBn = ['টাকা', 'মেট্রিক টন', 'কেজি', 'লিটার', 'টি', 'বান্ডিল', 'বক্স', 'সেট'];
+								$customUnitsBn = collect($existingUnits ?? [])->filter(function($item) use ($standardUnitsBn) {
+									return !in_array($item['unit_bn'], $standardUnitsBn);
+								});
+							@endphp
 							<select name="unit_bn" 
 								id="unit_bn" 
 								class="input-field @error('unit_bn') border-red-500 dark:border-red-400 @enderror"
@@ -208,6 +233,13 @@
 								<option value="বান্ডিল" {{ old('unit_bn') == 'বান্ডিল' ? 'selected' : '' }}>বান্ডিল</option>
 								<option value="বক্স" {{ old('unit_bn') == 'বক্স' ? 'selected' : '' }}>বক্স</option>
 								<option value="সেট" {{ old('unit_bn') == 'সেট' ? 'selected' : '' }}>সেট</option>
+								@if($customUnitsBn->isNotEmpty())
+									<optgroup label="পূর্বে ব্যবহৃত একক">
+										@foreach($customUnitsBn as $unitPair)
+											<option value="{{ $unitPair['unit_bn'] }}" {{ old('unit_bn') == $unitPair['unit_bn'] ? 'selected' : '' }}>{{ $unitPair['unit_bn'] }}</option>
+										@endforeach
+									</optgroup>
+								@endif
 								<option value="CUSTOM_BN">কাস্টম একক</option>
 							</select>
 							<div id="custom-unit-bn-wrapper" class="mt-2" style="display: none;">
@@ -313,6 +345,19 @@
 		</form>
 	</div>
 
+	@php
+		// Prepare custom units mapping for JavaScript
+		$standardUnitsJs = ['Taka', 'Metric Ton', 'Kg', 'Liter', 'Piece', 'Bundle', 'Box', 'Set'];
+		$customUnitsMappingJs = collect($existingUnits ?? [])
+			->filter(function($item) use ($standardUnitsJs) {
+				return !in_array($item['unit'], $standardUnitsJs);
+			})
+			->mapWithKeys(function($item) {
+				return [$item['unit'] => $item['unit_bn']];
+			})
+			->toArray();
+	@endphp
+
 	<script>
 		// Unit mapping for auto-selection
 		const unitMapping = {
@@ -325,6 +370,9 @@
 			'Box': 'বক্স',
 			'Set': 'সেট'
 		};
+
+		// Custom units from database
+		const customUnitsMapping = @json($customUnitsMappingJs);
 
 		// Show/hide custom unit inputs
 		function toggleCustomUnitInputs() {
@@ -339,18 +387,24 @@
 			if (unitSelect.value === 'CUSTOM') {
 				customUnitWrapper.style.display = 'block';
 				customUnitInput.required = true;
+				unitSelect.removeAttribute('required');
 			} else {
 				customUnitWrapper.style.display = 'none';
 				customUnitInput.required = false;
+				customUnitInput.value = '';
+				unitSelect.setAttribute('required', 'required');
 			}
 			
 			// Handle Bengali unit
 			if (unitBnSelect.value === 'CUSTOM_BN') {
 				customUnitBnWrapper.style.display = 'block';
 				customUnitBnInput.required = true;
+				unitBnSelect.removeAttribute('required');
 			} else {
 				customUnitBnWrapper.style.display = 'none';
 				customUnitBnInput.required = false;
+				customUnitBnInput.value = '';
+				unitBnSelect.setAttribute('required', 'required');
 			}
 		}
 
@@ -364,6 +418,8 @@
 				unitBnSelect.value = 'CUSTOM_BN';
 			} else if (unitMapping[englishUnit]) {
 				unitBnSelect.value = unitMapping[englishUnit];
+			} else if (customUnitsMapping[englishUnit]) {
+				unitBnSelect.value = customUnitsMapping[englishUnit];
 			}
 			
 			toggleCustomUnitInputs();
@@ -375,36 +431,7 @@
 			updatePreview();
 		});
 
-		// Handle form submission to set proper unit values
-		document.getElementById('relief-type-form').addEventListener('submit', function(e) {
-			const unitSelect = document.getElementById('unit');
-			const unitBnSelect = document.getElementById('unit_bn');
-			const customUnitInput = document.getElementById('unit_custom');
-			const customUnitBnInput = document.getElementById('unit_bn_custom');
-			
-			if (unitSelect.value === 'CUSTOM' && customUnitInput.value) {
-				// Temporarily change the select value to the custom input value
-				const originalValue = customUnitInput.value;
-				unitSelect.removeAttribute('required');
-				const hiddenInput = document.createElement('input');
-				hiddenInput.type = 'hidden';
-				hiddenInput.name = 'unit';
-				hiddenInput.value = originalValue;
-				unitSelect.insertAdjacentElement('afterend', hiddenInput);
-				unitSelect.disabled = true;
-			}
-			
-			if (unitBnSelect.value === 'CUSTOM_BN' && customUnitBnInput.value) {
-				const originalValue = customUnitBnInput.value;
-				unitBnSelect.removeAttribute('required');
-				const hiddenInput = document.createElement('input');
-				hiddenInput.type = 'hidden';
-				hiddenInput.name = 'unit_bn';
-				hiddenInput.value = originalValue;
-				unitBnSelect.insertAdjacentElement('afterend', hiddenInput);
-				unitBnSelect.disabled = true;
-			}
-		});
+		// Form submission handled by controller - no JavaScript manipulation needed
 
 		// Update preview in real-time
 		function updatePreview() {

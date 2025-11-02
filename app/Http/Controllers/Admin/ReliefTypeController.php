@@ -26,7 +26,22 @@ class ReliefTypeController extends Controller
 	 */
 	public function create(): View
 	{
-		return view('admin.relief-types.create');
+		// Get unique units from existing relief types
+		$existingUnits = ReliefType::select('unit', 'unit_bn')
+			->whereNotNull('unit')
+			->whereNotNull('unit_bn')
+			->orderBy('unit')
+			->get()
+			->unique(function($item) {
+				return $item->unit . $item->unit_bn;
+			})
+			->values()
+			->map(function($item) {
+				return ['unit' => $item->unit, 'unit_bn' => $item->unit_bn];
+			})
+			->toArray();
+		
+		return view('admin.relief-types.create', compact('existingUnits'));
 	}
 
 	/**
@@ -41,10 +56,23 @@ class ReliefTypeController extends Controller
 			'description_bn' => 'nullable|string',
 			'unit' => 'nullable|string|max:50',
 			'unit_bn' => 'nullable|string|max:50',
+			'unit_custom' => 'nullable|string|max:50',
+			'unit_bn_custom' => 'nullable|string|max:50',
 			'color_code' => 'nullable|string|max:7|regex:/^#[0-9A-Fa-f]{6}$/',
 			'is_active' => 'boolean',
 			'sort_order' => 'nullable|integer|min:0',
 		]);
+
+		// Handle custom units
+		if ($validated['unit'] === 'CUSTOM' && !empty($validated['unit_custom'])) {
+			$validated['unit'] = $validated['unit_custom'];
+		}
+		unset($validated['unit_custom']);
+
+		if ($validated['unit_bn'] === 'CUSTOM_BN' && !empty($validated['unit_bn_custom'])) {
+			$validated['unit_bn'] = $validated['unit_bn_custom'];
+		}
+		unset($validated['unit_bn_custom']);
 
 		$validated['is_active'] = $request->has('is_active');
 		$validated['sort_order'] = $validated['sort_order'] ?? ReliefType::max('sort_order') + 1;
@@ -70,7 +98,23 @@ class ReliefTypeController extends Controller
 	 */
 	public function edit(ReliefType $reliefType): View
 	{
-		return view('admin.relief-types.edit', compact('reliefType'));
+		// Get unique units from existing relief types
+		$existingUnits = ReliefType::select('unit', 'unit_bn')
+			->whereNotNull('unit')
+			->whereNotNull('unit_bn')
+			->where('id', '!=', $reliefType->id)
+			->orderBy('unit')
+			->get()
+			->unique(function($item) {
+				return $item->unit . $item->unit_bn;
+			})
+			->values()
+			->map(function($item) {
+				return ['unit' => $item->unit, 'unit_bn' => $item->unit_bn];
+			})
+			->toArray();
+		
+		return view('admin.relief-types.edit', compact('reliefType', 'existingUnits'));
 	}
 
 	/**
@@ -85,10 +129,23 @@ class ReliefTypeController extends Controller
 			'description_bn' => 'nullable|string',
 			'unit' => 'nullable|string|max:50',
 			'unit_bn' => 'nullable|string|max:50',
+			'unit_custom' => 'nullable|string|max:50',
+			'unit_bn_custom' => 'nullable|string|max:50',
 			'color_code' => 'nullable|string|max:7|regex:/^#[0-9A-Fa-f]{6}$/',
 			'is_active' => 'boolean',
 			'sort_order' => 'nullable|integer|min:0',
 		]);
+
+		// Handle custom units
+		if ($validated['unit'] === 'CUSTOM' && !empty($validated['unit_custom'])) {
+			$validated['unit'] = $validated['unit_custom'];
+		}
+		unset($validated['unit_custom']);
+
+		if ($validated['unit_bn'] === 'CUSTOM_BN' && !empty($validated['unit_bn_custom'])) {
+			$validated['unit_bn'] = $validated['unit_bn_custom'];
+		}
+		unset($validated['unit_bn_custom']);
 
 		$validated['is_active'] = $request->has('is_active');
 
