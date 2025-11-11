@@ -742,8 +742,39 @@ class DistributionController extends Controller
         $distribution = $query->orderByDesc('approved_amount')->get();
         $totalItems = $distribution->count();
 
+        // Calculate totals by unit
+        $totalsByUnitQuery = DB::table('relief_applications as ra')
+            ->leftJoin('projects as p', 'ra.project_id', '=', 'p.id')
+            ->leftJoin('relief_types as rt', 'p.relief_type_id', '=', 'rt.id')
+            ->where('ra.status', 'approved')
+            ->when($start && $end, function ($q) use ($start, $end) {
+                $s = $start instanceof \Carbon\Carbon ? $start->copy()->startOfDay() : \Carbon\Carbon::parse((string) $start)->startOfDay();
+                $e = $end instanceof \Carbon\Carbon ? $end->copy()->endOfDay() : \Carbon\Carbon::parse((string) $end)->endOfDay();
+                return $q->whereBetween('ra.approved_at', [$s, $e]);
+            })
+            ->when($zillaId, fn($q) => $q->where('ra.zilla_id', $zillaId))
+            ->when($upazilaId, fn($q) => $q->where('ra.upazila_id', $upazilaId))
+            ->when($unionId, fn($q) => $q->where('ra.union_id', $unionId))
+            ->when($projectId, fn($q) => $q->where('ra.project_id', $projectId))
+            ->select([
+                DB::raw('COALESCE(rt.unit_bn, rt.unit, "") as unit'),
+                DB::raw('SUM(ra.approved_amount) as total_amount')
+            ])
+            ->groupBy('rt.id', 'rt.unit', 'rt.unit_bn')
+            ->get();
+
+        $totalsByUnit = [];
+        foreach ($totalsByUnitQuery as $row) {
+            $unit = $row->unit ?: '';
+            if (!isset($totalsByUnit[$unit])) {
+                $totalsByUnit[$unit] = 0;
+            }
+            $totalsByUnit[$unit] += (float)$row->total_amount;
+        }
+
         return [
             'distribution' => $distribution,
+            'totalsByUnit' => $totalsByUnit,
             'pagination' => [
                 'current_page' => 1,
                 'total_pages' => 1,
@@ -893,6 +924,18 @@ class DistributionController extends Controller
         $unions = $selectedUpazilaId ? Union::where('upazila_id', $selectedUpazilaId)->orderBy('name')->get(['id', 'name', 'name_bn']) : collect();
         $projects = Project::forEconomicYear($selectedYear?->id)->orderBy('name')->get(['id', 'name']);
 
+        // Project units (for formatting amounts based on project relief type)
+        $projectUnits = Project::with('reliefType')->get()->mapWithKeys(function ($p) {
+            $unit = $p->reliefType?->unit_bn ?? $p->reliefType?->unit ?? '';
+            $isMoney = in_array($unit, ['টাকা', 'Taka']);
+            return [
+                $p->id => [
+                    'unit' => $unit,
+                    'is_money' => $isMoney,
+                ]
+            ];
+        });
+
         return view('admin.distributions.detailed', compact(
             'type',
             'title',
@@ -909,7 +952,8 @@ class DistributionController extends Controller
             'selectedProjectId',
             'search',
             'pageSize',
-            'data'
+            'data',
+            'projectUnits'
         ));
     }
 
@@ -922,6 +966,7 @@ class DistributionController extends Controller
             ->join('projects as p', 'ra.project_id', '=', 'p.id')
             ->join('upazilas as u', 'ra.upazila_id', '=', 'u.id')
             ->join('zillas as z', 'u.zilla_id', '=', 'z.id')
+            ->leftJoin('relief_types as rt', 'p.relief_type_id', '=', 'rt.id')
             ->where('ra.status', 'approved');
 
         if ($selectedYear) {
@@ -946,7 +991,63 @@ class DistributionController extends Controller
             });
         }
 
-        $totalItems = $query->count();
+        // Calculate totals by unit from all applications matching the filters
+        // Use the same base query but join with relief_types to get units
+        $totalsQuery = DB::table('relief_applications as ra')
+            ->join('projects as p', 'ra.project_id', '=', 'p.id')
+            ->join('upazilas as u', 'ra.upazila_id', '=', 'u.id')
+            ->join('zillas as z', 'u.zilla_id', '=', 'z.id')
+            ->leftJoin('relief_types as rt', 'p.relief_type_id', '=', 'rt.id')
+            ->where('ra.status', 'approved');
+
+        if ($selectedYear) {
+            $totalsQuery->where('p.economic_year_id', $selectedYear->id);
+        }
+
+        if ($selectedZillaId) {
+            $totalsQuery->where('ra.zilla_id', $selectedZillaId);
+        }
+
+        if ($selectedUpazilaId) {
+            $totalsQuery->where('ra.upazila_id', $selectedUpazilaId);
+        }
+
+        if ($search) {
+            $totalsQuery->where(function ($q) use ($search) {
+                $q->where('p.name', 'LIKE', "%{$search}%")
+                  ->orWhere('u.name', 'LIKE', "%{$search}%")
+                  ->orWhere('u.name_bn', 'LIKE', "%{$search}%")
+                  ->orWhere('z.name', 'LIKE', "%{$search}%")
+                  ->orWhere('z.name_bn', 'LIKE', "%{$search}%");
+            });
+        }
+
+        // Get totals by unit
+        $totalsByUnitRaw = $totalsQuery->select([
+                DB::raw('COALESCE(rt.unit_bn, rt.unit, "") as unit'),
+                DB::raw('SUM(ra.approved_amount) as total_amount')
+            ])
+            ->groupBy('rt.id', 'rt.unit', 'rt.unit_bn')
+            ->get();
+
+        $totalsByUnit = [];
+        foreach ($totalsByUnitRaw as $row) {
+            $unit = $row->unit ?: '';
+            if (!isset($totalsByUnit[$unit])) {
+                $totalsByUnit[$unit] = 0;
+            }
+            $totalsByUnit[$unit] += $row->total_amount;
+        }
+
+        // Count total items for pagination (number of distinct groups)
+        $allGroupedResults = (clone $query)->select([
+                'ra.project_id',
+                'ra.upazila_id',
+                'ra.zilla_id'
+            ])
+            ->groupBy('ra.project_id', 'ra.upazila_id', 'ra.zilla_id')
+            ->get();
+        $totalItems = $allGroupedResults->count();
         $totalPages = ceil($totalItems / $pageSize);
         $offset = ($currentPage - 1) * $pageSize;
 
@@ -981,6 +1082,7 @@ class DistributionController extends Controller
             'projectNames' => $projectNames,
             'upazilaNames' => $upazilaNames,
             'zillaNames' => $zillaNames,
+            'totalsByUnit' => $totalsByUnit,
             'pagination' => [
                 'current_page' => $currentPage,
                 'total_pages' => $totalPages,
@@ -1000,6 +1102,7 @@ class DistributionController extends Controller
             ->join('unions as un', 'ra.union_id', '=', 'un.id')
             ->join('upazilas as u', 'un.upazila_id', '=', 'u.id')
             ->join('zillas as z', 'u.zilla_id', '=', 'z.id')
+            ->leftJoin('relief_types as rt', 'p.relief_type_id', '=', 'rt.id')
             ->where('ra.status', 'approved');
 
         if ($selectedYear) {
@@ -1030,7 +1133,70 @@ class DistributionController extends Controller
             });
         }
 
-        $totalItems = $query->count();
+        // Calculate totals by unit from all applications matching the filters
+        $totalsQuery = DB::table('relief_applications as ra')
+            ->join('projects as p', 'ra.project_id', '=', 'p.id')
+            ->join('unions as un', 'ra.union_id', '=', 'un.id')
+            ->join('upazilas as u', 'un.upazila_id', '=', 'u.id')
+            ->join('zillas as z', 'u.zilla_id', '=', 'z.id')
+            ->leftJoin('relief_types as rt', 'p.relief_type_id', '=', 'rt.id')
+            ->where('ra.status', 'approved');
+
+        if ($selectedYear) {
+            $totalsQuery->where('p.economic_year_id', $selectedYear->id);
+        }
+
+        if ($selectedZillaId) {
+            $totalsQuery->where('ra.zilla_id', $selectedZillaId);
+        }
+
+        if ($selectedUpazilaId) {
+            $totalsQuery->where('ra.upazila_id', $selectedUpazilaId);
+        }
+
+        if ($selectedUnionId) {
+            $totalsQuery->where('ra.union_id', $selectedUnionId);
+        }
+
+        if ($search) {
+            $totalsQuery->where(function ($q) use ($search) {
+                $q->where('p.name', 'LIKE', "%{$search}%")
+                  ->orWhere('un.name', 'LIKE', "%{$search}%")
+                  ->orWhere('un.name_bn', 'LIKE', "%{$search}%")
+                  ->orWhere('u.name', 'LIKE', "%{$search}%")
+                  ->orWhere('u.name_bn', 'LIKE', "%{$search}%")
+                  ->orWhere('z.name', 'LIKE', "%{$search}%")
+                  ->orWhere('z.name_bn', 'LIKE', "%{$search}%");
+            });
+        }
+
+        // Get totals by unit
+        $totalsByUnitRaw = $totalsQuery->select([
+                DB::raw('COALESCE(rt.unit_bn, rt.unit, "") as unit'),
+                DB::raw('SUM(ra.approved_amount) as total_amount')
+            ])
+            ->groupBy('rt.id', 'rt.unit', 'rt.unit_bn')
+            ->get();
+
+        $totalsByUnit = [];
+        foreach ($totalsByUnitRaw as $row) {
+            $unit = $row->unit ?: '';
+            if (!isset($totalsByUnit[$unit])) {
+                $totalsByUnit[$unit] = 0;
+            }
+            $totalsByUnit[$unit] += $row->total_amount;
+        }
+
+        // Count total items for pagination (number of distinct groups)
+        $allGroupedResults = (clone $query)->select([
+                'ra.project_id',
+                'ra.union_id',
+                'ra.upazila_id',
+                'ra.zilla_id'
+            ])
+            ->groupBy('ra.project_id', 'ra.union_id', 'ra.upazila_id', 'ra.zilla_id')
+            ->get();
+        $totalItems = $allGroupedResults->count();
         $totalPages = ceil($totalItems / $pageSize);
         $offset = ($currentPage - 1) * $pageSize;
 
@@ -1071,6 +1237,7 @@ class DistributionController extends Controller
             'unionNames' => $unionNames,
             'upazilaNames' => $upazilaNames,
             'zillaNames' => $zillaNames,
+            'totalsByUnit' => $totalsByUnit,
             'pagination' => [
                 'current_page' => $currentPage,
                 'total_pages' => $totalPages,
@@ -1088,6 +1255,7 @@ class DistributionController extends Controller
         // Get organizations with multiple approved applications
         $query = DB::table('relief_applications as ra')
             ->join('projects as p', 'ra.project_id', '=', 'p.id')
+            ->leftJoin('relief_types as rt', 'p.relief_type_id', '=', 'rt.id')
             ->join('economic_years as ey', 'p.economic_year_id', '=', 'ey.id')
             ->where('ra.status', 'approved')
             ->whereNotNull('ra.organization_name')
@@ -1121,8 +1289,33 @@ class DistributionController extends Controller
             ->take($pageSize)
             ->get();
 
+        // Calculate totals by unit for duplicates (based on approved amounts matching filters)
+        $totalsByUnitQuery = DB::table('relief_applications as ra')
+            ->leftJoin('projects as p', 'ra.project_id', '=', 'p.id')
+            ->leftJoin('relief_types as rt', 'p.relief_type_id', '=', 'rt.id')
+            ->when($selectedYear, function ($q) use ($selectedYear) {
+                return $q->where('p.economic_year_id', $selectedYear->id);
+            })
+            ->where('ra.status', 'approved')
+            ->select([
+                DB::raw('COALESCE(rt.unit_bn, rt.unit, "") as unit'),
+                DB::raw('SUM(ra.approved_amount) as total_amount')
+            ])
+            ->groupBy('rt.id', 'rt.unit', 'rt.unit_bn')
+            ->get();
+
+        $totalsByUnit = [];
+        foreach ($totalsByUnitQuery as $row) {
+            $unit = $row->unit ?: '';
+            if (!isset($totalsByUnit[$unit])) {
+                $totalsByUnit[$unit] = 0;
+            }
+            $totalsByUnit[$unit] += (float)$row->total_amount;
+        }
+
         return [
             'results' => $results,
+            'totalsByUnit' => $totalsByUnit,
             'pagination' => [
                 'current_page' => $currentPage,
                 'total_pages' => $totalPages,
@@ -1137,15 +1330,14 @@ class DistributionController extends Controller
      */
     private function getProjectAllocationsData($selectedYear, $search, $pageSize, $currentPage)
     {
-        $query = Project::with(['reliefType', 'economicYear'])
+        $baseQuery = Project::with(['reliefType', 'economicYear'])
             ->when($selectedYear, function ($q) use ($selectedYear) {
                 return $q->where('economic_year_id', $selectedYear->id);
             })
-            ->where('allocated_amount', '>', 0)
-            ->orderByDesc('allocated_amount');
+            ->where('allocated_amount', '>', 0);
 
         if ($search) {
-            $query->where(function ($q) use ($search) {
+            $baseQuery->where(function ($q) use ($search) {
                 $q->where('name', 'LIKE', "%{$search}%")
                   ->orWhereHas('reliefType', function ($reliefQuery) use ($search) {
                       $reliefQuery->where('name', 'LIKE', "%{$search}%")
@@ -1154,6 +1346,25 @@ class DistributionController extends Controller
             });
         }
 
+        // Calculate totals by unit based on allocated_amount
+        $totalsByUnitQuery = (clone $baseQuery)->leftJoin('relief_types as rt', 'projects.relief_type_id', '=', 'rt.id')
+            ->select([
+                DB::raw('COALESCE(rt.unit_bn, rt.unit, "") as unit'),
+                DB::raw('SUM(projects.allocated_amount) as total_amount')
+            ])
+            ->groupBy('rt.id', 'rt.unit', 'rt.unit_bn')
+            ->get();
+
+        $totalsByUnit = [];
+        foreach ($totalsByUnitQuery as $row) {
+            $unit = $row->unit ?: '';
+            if (!isset($totalsByUnit[$unit])) {
+                $totalsByUnit[$unit] = 0;
+            }
+            $totalsByUnit[$unit] += (float)$row->total_amount;
+        }
+
+        $query = (clone $baseQuery)->orderByDesc('allocated_amount');
         $totalItems = $query->count();
         $totalPages = ceil($totalItems / $pageSize);
         $offset = ($currentPage - 1) * $pageSize;
@@ -1176,6 +1387,7 @@ class DistributionController extends Controller
 
         return [
             'results' => $results,
+            'totalsByUnit' => $totalsByUnit,
             'pagination' => [
                 'current_page' => $currentPage,
                 'total_pages' => $totalPages,

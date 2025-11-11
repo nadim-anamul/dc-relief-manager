@@ -160,7 +160,23 @@
             </div>
             <div class="summary-item">
                 <div class="label">মোট পরিমাণ</div>
-                <div class="value">৳{{ bn_number(number_format($data['data']->sum('total_amount'), 2)) }}</div>
+                <div class="value">
+                    @if(isset($data['totalsByUnit']) && count($data['totalsByUnit']) > 0)
+                        @foreach($data['totalsByUnit'] as $unit => $total)
+                            @php
+                                $isMoney = in_array($unit, ['টাকা', 'Taka']) || empty($unit);
+                            @endphp
+                            @if($isMoney)
+                                ৳{{ bn_number(number_format($total, 2)) }}
+                            @else
+                                {{ bn_number(number_format($total, 2)) }} {{ $unit }}
+                            @endif
+                            @if(!$loop->last)<br>@endif
+                        @endforeach
+                    @else
+                        —
+                    @endif
+                </div>
             </div>
             <div class="summary-item">
                 <div class="label">মোট আবেদন</div>

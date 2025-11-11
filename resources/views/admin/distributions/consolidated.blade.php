@@ -212,17 +212,52 @@
                 </div>
             </div>
 
-            <div class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-xl p-6 border border-green-200 dark:border-green-800">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-sm font-medium text-green-700 dark:text-green-300">{{ __('Total Amount') }}</p>
-                        <p class="text-3xl font-bold text-green-800 dark:text-green-200">
-                            @moneybn($data['distribution']->sum('approved_amount'))
-                        </p>
-                        <p class="text-xs text-green-600 dark:text-green-400 mt-1">{{ __('Distributed') }}</p>
+            <div class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-xl p-4 sm:p-6 border border-green-200 dark:border-green-800">
+                <div class="flex items-start justify-between">
+                    <div class="flex-1 min-w-0">
+                        <p class="text-sm font-medium text-green-700 dark:text-green-300 mb-3">{{ __('Total Amount') }}</p>
+                        @if(isset($data['totalsByUnit']) && count($data['totalsByUnit']) > 0)
+                            @if(count($data['totalsByUnit']) === 1)
+                                @php
+                                    $unit = array_key_first($data['totalsByUnit']);
+                                    $total = $data['totalsByUnit'][$unit];
+                                    $isMoney = in_array($unit, ['টাকা', 'Taka']) || empty($unit);
+                                @endphp
+                                <div class="flex flex-wrap gap-2 items-center">
+                                    <span class="inline-flex items-center gap-2 px-4 py-2 rounded-2xl bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-100 text-sm sm:text-base font-semibold shadow-sm">
+                                        @if($isMoney)
+                                            <span class="font-bold">@moneybn($total)</span>
+                                        @else
+                                            <span class="font-bold">@bn(number_format($total, 2))</span>
+                                            <span class="text-xs sm:text-sm uppercase tracking-wide">{{ $unit }}</span>
+                                        @endif
+                                    </span>
+                                </div>
+                            @else
+                                <div class="flex flex-wrap gap-2 max-h-28 sm:max-h-32 overflow-y-auto pr-1">
+                                    @foreach($data['totalsByUnit'] as $unit => $total)
+                                        @php
+                                            $isMoney = in_array($unit, ['টাকা', 'Taka']) || empty($unit);
+                                        @endphp
+                                        <span class="inline-flex items-center gap-2 px-3 py-1.5 rounded-2xl bg-white/70 dark:bg-green-900/40 text-green-800 dark:text-green-100 text-xs sm:text-sm font-medium shadow-sm border border-green-200/60 dark:border-green-700/60">
+                                            @if($isMoney)
+                                                <span class="font-semibold">@moneybn($total)</span>
+                                                <span class="text-[10px] sm:text-xs uppercase tracking-wide text-green-500 dark:text-green-300">{{ __('Taka') }}</span>
+                                            @else
+                                                <span class="font-semibold">@bn(number_format($total, 2))</span>
+                                                <span class="text-[10px] sm:text-xs uppercase tracking-wide text-green-500 dark:text-green-300">{{ $unit }}</span>
+                                            @endif
+                                        </span>
+                                    @endforeach
+                                </div>
+                            @endif
+                        @else
+                            <p class="text-2xl sm:text-3xl font-bold text-green-800 dark:text-green-200">—</p>
+                        @endif
+                        <p class="text-xs text-green-600 dark:text-green-400 mt-3">{{ __('Distributed') }}</p>
                     </div>
-                    <div class="p-3 bg-green-500 rounded-xl">
-                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="p-2 sm:p-3 bg-green-500 rounded-xl flex-shrink-0 ml-2">
+                        <svg class="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8V7m0 10v1"></path>
                         </svg>
                     </div>

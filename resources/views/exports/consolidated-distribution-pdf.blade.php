@@ -228,7 +228,23 @@
             </div>
             <div class="summary-item">
                 <div class="label">মোট পরিমাণ</div>
-                <div class="value">৳{{ bn_number(number_format($data['distribution']->sum('approved_amount'), 2)) }}</div>
+                <div class="value">
+                    @if(isset($data['totalsByUnit']) && count($data['totalsByUnit']) > 0)
+                        @foreach($data['totalsByUnit'] as $unit => $total)
+                            @php
+                                $isMoney = in_array($unit, ['টাকা', 'Taka']) || empty($unit);
+                            @endphp
+                            @if($isMoney)
+                                ৳{{ bn_number(number_format($total, 2)) }}
+                            @else
+                                {{ bn_number(number_format($total, 2)) }} {{ $unit }}
+                            @endif
+                            @if(!$loop->last)<br>@endif
+                        @endforeach
+                    @else
+                        —
+                    @endif
+                </div>
             </div>
             <div class="summary-item">
                 <div class="label">অনন্য প্রকল্প</div>
@@ -249,9 +265,35 @@
             <div class="project-item">
                 <div class="name">{{ $budget['project']->name }}</div>
                 <div class="amounts">
-                    <span class="allocated">বরাদ্দ: ৳{{ bn_number(number_format($budget['allocated_amount'], 2)) }}</span>
-                    <span class="distributed">বিতরণ: ৳{{ bn_number(number_format($budget['distributed_amount'], 2)) }}</span>
-                    <span class="available">অবশিষ্ট: ৳{{ bn_number(number_format($budget['available_amount'], 2)) }}</span>
+                    @php
+                        $pu = $projectUnits[$budget['project']->id] ?? null;
+                        $isMoney = $pu['is_money'] ?? false;
+                        $unit = $pu['unit'] ?? '';
+                    @endphp
+                    <span class="allocated">
+                        বরাদ্দ:
+                        @if($isMoney)
+                            ৳{{ bn_number(number_format($budget['allocated_amount'], 2)) }}
+                        @else
+                            {{ bn_number(number_format($budget['allocated_amount'], 2)) }} {{ $unit }}
+                        @endif
+                    </span>
+                    <span class="distributed">
+                        বিতরণ:
+                        @if($isMoney)
+                            ৳{{ bn_number(number_format($budget['distributed_amount'], 2)) }}
+                        @else
+                            {{ bn_number(number_format($budget['distributed_amount'], 2)) }} {{ $unit }}
+                        @endif
+                    </span>
+                    <span class="available">
+                        অবশিষ্ট:
+                        @if($isMoney)
+                            ৳{{ bn_number(number_format($budget['available_amount'], 2)) }}
+                        @else
+                            {{ bn_number(number_format($budget['available_amount'], 2)) }} {{ $unit }}
+                        @endif
+                    </span>
                 </div>
                 <div class="progress-bar">
                     <div class="progress-fill" style="width: {{ $budget['utilization_percentage'] }}%"></div>
@@ -292,8 +334,25 @@
                 <td>{{ localized_attr($application->union, 'name') ?? 'উল্লেখ নেই' }}</td>
                 <td>{{ $application->project->name ?? 'উল্লেখ নেই' }}</td>
                 <td>{{ localized_attr($application->reliefType, 'name') ?? 'উল্লেখ নেই' }}</td>
-                <td class="amount">৳{{ bn_number(number_format($application->amount_requested, 2)) }}</td>
-                <td class="amount">৳{{ bn_number(number_format($application->approved_amount, 2)) }}</td>
+                @php
+                    $apu = $projectUnits[$application->project_id] ?? null;
+                    $aIsMoney = $apu['is_money'] ?? false;
+                    $aUnit = $apu['unit'] ?? '';
+                @endphp
+                <td class="amount">
+                    @if($aIsMoney)
+                        ৳{{ bn_number(number_format($application->amount_requested, 2)) }}
+                    @else
+                        {{ bn_number(number_format($application->amount_requested, 2)) }} {{ $aUnit }}
+                    @endif
+                </td>
+                <td class="amount">
+                    @if($aIsMoney)
+                        ৳{{ bn_number(number_format($application->approved_amount, 2)) }}
+                    @else
+                        {{ bn_number(number_format($application->approved_amount, 2)) }} {{ $aUnit }}
+                    @endif
+                </td>
             </tr>
             @endforeach
         </tbody>

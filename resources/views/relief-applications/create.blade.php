@@ -332,22 +332,17 @@
 							<!-- NID -->
 							<div>
 								<label for="applicant_nid" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-									{{ __('NID (National ID)') }} <span class="text-red-500">*</span>
+									{{ __('NID (National ID)') }}
 								</label>
 								<input type="text" 
 									name="applicant_nid" 
 									id="applicant_nid" 
 									value="{{ old('applicant_nid') }}"
 									class="input-field @error('applicant_nid') border-red-500 dark:border-red-400 @enderror"
-									placeholder="{{ __('Enter NID number') }}"
-						required
-						@input.debounce.500ms="checkDuplicate()">
+									placeholder="{{ __('Enter NID number') }}">
 								@error('applicant_nid')
 									<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
 								@enderror
-						<div x-show="duplicateExists && applicationType === 'individual'" class="mt-2 text-sm text-yellow-700 bg-yellow-50 dark:bg-yellow-900/30 dark:text-yellow-300 border border-yellow-200 dark:border-yellow-800 rounded-md p-2">
-							<span x-text="duplicateMessage"></span>
-						</div>
 							</div>
 
 							<!-- Applicant Designation (only for organizations, not mandatory) -->
@@ -377,10 +372,14 @@
 									value="{{ old('applicant_phone') }}"
 									class="input-field @error('applicant_phone') border-red-500 dark:border-red-400 @enderror"
 									placeholder="{{ __('Enter phone number') }}"
-									required>
+									required
+									@input.debounce.500ms="checkDuplicate()">
 								@error('applicant_phone')
 									<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
 								@enderror
+								<div x-show="duplicateExists && applicationType === 'individual'" class="mt-2 text-sm text-yellow-700 bg-yellow-50 dark:bg-yellow-900/30 dark:text-yellow-300 border border-yellow-200 dark:border-yellow-800 rounded-md p-2">
+									<span x-text="duplicateMessage"></span>
+								</div>
 							</div>
 
 							<!-- Applicant Address -->
@@ -604,9 +603,6 @@
 				duplicateExists: false,
 				duplicateCount: 0,
 				duplicateMessage: '',
-				duplicateExists: false,
-				duplicateCount: 0,
-				duplicateMessage: '',
 				
 				loadUpazilas() {
 					if (this.selectedZilla) {
@@ -711,53 +707,15 @@
 
 				checkDuplicate() {
 					const params = new URLSearchParams();
-					params.append('application_type', this.applicationType || '');
-					if (this.applicationType === 'organization') {
-						const orgName = document.getElementById('organization_name')?.value || '';
-						params.append('organization_name', orgName.trim());
-					}
-					if (this.applicationType === 'individual') {
-						const nid = document.getElementById('applicant_nid')?.value || '';
-						params.append('applicant_nid', nid.trim());
-					}
-
-					if (!this.applicationType) {
-						this.duplicateExists = false;
-						this.duplicateCount = 0;
-						this.duplicateMessage = '';
-						return;
-					}
-
-					fetch(`/relief-applications/check-duplicate?${params.toString()}`)
-						.then(r => r.json())
-						.then(data => {
-							this.duplicateExists = !!data.duplicate;
-							this.duplicateCount = data.count || 0;
-							if (this.duplicateExists) {
-								this.duplicateMessage = this.applicationType === 'organization'
-									? `{{ __('Approved applications already exist for this organization') }} (${this.duplicateCount} {{ __('applications') }})`
-									: `{{ __('Approved applications already exist for this NID') }} (${this.duplicateCount} {{ __('applications') }})`;
-							} else {
-								this.duplicateMessage = '';
-							}
-						})
-						.catch(() => {
-							this.duplicateExists = false;
-							this.duplicateMessage = '';
-						});
-				},
-
-				checkDuplicate() {
-					const params = new URLSearchParams();
 					params.set('application_type', this.applicationType || '');
 					if (this.applicationType === 'organization') {
 						const name = document.getElementById('organization_name')?.value || '';
 						if (!name || name.length < 2) { this.duplicateExists = false; return; }
 						params.set('organization_name', name);
 					} else if (this.applicationType === 'individual') {
-						const nid = document.getElementById('applicant_nid')?.value || '';
-						if (!nid || nid.length < 5) { this.duplicateExists = false; return; }
-						params.set('applicant_nid', nid);
+						const phone = document.getElementById('applicant_phone')?.value || '';
+						if (!phone || phone.length < 10) { this.duplicateExists = false; return; }
+						params.set('applicant_phone', phone);
 					} else {
 						this.duplicateExists = false; return;
 					}
@@ -776,7 +734,7 @@
 							if (this.duplicateExists) {
 								this.duplicateMessage = this.applicationType === 'organization'
 									? `{{ __('Approved applications already exist for this organization') }} (${this.duplicateCount} {{ __('applications') }})`
-									: `{{ __('Approved applications already exist for this NID') }} (${this.duplicateCount} {{ __('applications') }})`;
+									: `{{ __('Approved applications already exist for this phone number') }} (${this.duplicateCount} {{ __('applications') }})`;
 							} else {
 								this.duplicateMessage = '';
 							}

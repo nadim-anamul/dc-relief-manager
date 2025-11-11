@@ -245,7 +245,7 @@ class ReliefApplicationController extends Controller
 	{
 		$applicationType = $request->input('application_type');
 		$organizationName = $request->input('organization_name');
-		$applicantNid = $request->input('applicant_nid');
+		$applicantPhone = $request->input('applicant_phone');
 
 		$query = ReliefApplication::query()
 			->where('status', 'approved');
@@ -253,9 +253,9 @@ class ReliefApplicationController extends Controller
 		if ($applicationType === 'organization' && $organizationName) {
 			$query->where('application_type', 'organization')
 				->where('organization_name', $organizationName);
-		} elseif ($applicationType === 'individual' && $applicantNid) {
+		} elseif ($applicationType === 'individual' && $applicantPhone) {
 			$query->where('application_type', 'individual')
-				->where('applicant_nid', $applicantNid);
+				->where('applicant_phone', $applicantPhone);
 		} else {
 			return response()->json(['duplicate' => false, 'count' => 0]);
 		}

@@ -239,16 +239,48 @@
 		</div>
 
 		<!-- Total Approved Amount -->
-		<div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 hover:shadow-md transition-shadow duration-200 overflow-hidden">
-			<div class="flex items-start space-x-3">
-				<div class="p-3 bg-purple-100 dark:bg-purple-900 rounded-lg flex-shrink-0">
-					<svg class="w-6 h-6 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+		<div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4 sm:p-6 hover:shadow-md transition-shadow duration-200 overflow-hidden">
+			<div class="flex items-start space-x-2 sm:space-x-3">
+				<div class="p-2 sm:p-3 bg-purple-100 dark:bg-purple-900 rounded-lg flex-shrink-0">
+					<svg class="w-5 h-5 sm:w-6 sm:h-6 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
 					</svg>
 				</div>
 				<div class="min-w-0 flex-1 overflow-hidden">
-					<p class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">{{ __('Total Approved') }}</p>
-					<p class="text-base sm:text-lg lg:text-xl font-bold text-gray-900 dark:text-white break-all" style="word-break: break-all; overflow-wrap: anywhere;">{{ money_format_bn($totalApprovedAmount) }}</p>
+					<p class="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400 truncate mb-1 sm:mb-2">{{ __('Total Approved') }}</p>
+					@if(isset($totalsByUnit) && count($totalsByUnit) > 0)
+						@if(count($totalsByUnit) === 1)
+							@php
+								$unit = array_key_first($totalsByUnit);
+								$total = $totalsByUnit[$unit];
+								$isMoney = in_array($unit, ['টাকা', 'Taka']) || empty($unit);
+							@endphp
+							<p class="text-sm sm:text-base lg:text-lg xl:text-xl font-bold text-gray-900 dark:text-white truncate">
+								@if($isMoney)
+									{{ money_format_bn($total) }}
+								@else
+									@bn(number_format($total, 2)) {{ $unit }}
+								@endif
+							</p>
+						@else
+							<div class="space-y-0.5 sm:space-y-1 max-h-24 sm:max-h-32 overflow-y-auto">
+								@foreach($totalsByUnit as $unit => $total)
+									@php
+										$isMoney = in_array($unit, ['টাকা', 'Taka']) || empty($unit);
+									@endphp
+									<div class="text-xs sm:text-sm lg:text-base font-semibold text-gray-900 dark:text-white leading-tight">
+										@if($isMoney)
+											<span class="whitespace-nowrap">{{ money_format_bn($total) }}</span>
+										@else
+											<span class="whitespace-nowrap">@bn(number_format($total, 2)) <span class="text-xs">{{ $unit }}</span></span>
+										@endif
+									</div>
+								@endforeach
+							</div>
+						@endif
+					@else
+						<p class="text-sm sm:text-base lg:text-lg font-bold text-gray-900 dark:text-white">—</p>
+					@endif
 				</div>
 			</div>
 		</div>

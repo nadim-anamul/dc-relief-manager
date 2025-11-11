@@ -248,7 +248,38 @@ class ReliefApplicationController extends Controller
 		$pendingApplications = $statsQuery->clone()->where('status', 'pending')->count();
 		$approvedApplications = $statsQuery->clone()->where('status', 'approved')->count();
 		$rejectedApplications = $statsQuery->clone()->where('status', 'rejected')->count();
-		$totalApprovedAmount = $statsQuery->clone()->where('status', 'approved')->sum('approved_amount');
+		
+		// Calculate totals by unit for approved applications
+		$approvedQuery = $statsQuery->clone()->where('status', 'approved');
+		$totalsByUnitQuery = $approvedQuery->leftJoin('projects as p', 'relief_applications.project_id', '=', 'p.id')
+			->leftJoin('relief_types as rt', 'p.relief_type_id', '=', 'rt.id')
+			->select([
+				\Illuminate\Support\Facades\DB::raw('COALESCE(rt.unit_bn, rt.unit, "") as unit'),
+				\Illuminate\Support\Facades\DB::raw('SUM(relief_applications.approved_amount) as total_amount')
+			])
+			->groupBy('rt.id', 'rt.unit', 'rt.unit_bn')
+			->get();
+		
+		$totalsByUnit = [];
+		foreach ($totalsByUnitQuery as $row) {
+			$unit = $row->unit ?: '';
+			if (!isset($totalsByUnit[$unit])) {
+				$totalsByUnit[$unit] = 0;
+			}
+			$totalsByUnit[$unit] += (float)$row->total_amount;
+		}
+		
+		// Project units (for formatting amounts based on project relief type)
+		$projectUnits = \App\Models\Project::with('reliefType')->get()->mapWithKeys(function ($p) {
+			$unit = $p->reliefType?->unit_bn ?? $p->reliefType?->unit ?? '';
+			$isMoney = in_array($unit, ['টাকা', 'Taka']);
+			return [
+				$p->id => [
+					'unit' => $unit,
+					'is_money' => $isMoney,
+				]
+			];
+		});
 
 		return view('admin.relief-applications.index', compact(
 			'reliefApplications',
@@ -262,7 +293,8 @@ class ReliefApplicationController extends Controller
 			'pendingApplications',
 			'approvedApplications',
 			'rejectedApplications',
-			'totalApprovedAmount'
+			'totalsByUnit',
+			'projectUnits'
 		));
 	}
 

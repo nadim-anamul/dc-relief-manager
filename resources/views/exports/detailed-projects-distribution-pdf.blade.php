@@ -151,6 +151,19 @@
         <p>ডিসি ত্রাণ ব্যবস্থাপনা সিস্টেম</p>
     </div>
 
+    @php
+        $distributedTotalsByUnit = [];
+        foreach ($data['data'] as $item) {
+            $pu = $projectUnits[$item['project']->id] ?? null;
+            $unit = $pu['unit'] ?? '';
+            $key = $unit;
+            if (!isset($distributedTotalsByUnit[$key])) {
+                $distributedTotalsByUnit[$key] = 0;
+            }
+            $distributedTotalsByUnit[$key] += (float) $item['total_distributed'];
+        }
+    @endphp
+
     <div class="summary">
         <h3>সারসংক্ষেপ</h3>
         <div class="summary-grid">
@@ -160,11 +173,43 @@
             </div>
             <div class="summary-item">
                 <div class="label">মোট বরাদ্দ</div>
-                <div class="value">৳{{ bn_number(number_format($data['data']->sum(function($item) { return $item['project']->allocated_amount; }), 2)) }}</div>
+                <div class="value">
+                    @if(isset($data['totalsByUnit']) && count($data['totalsByUnit']) > 0)
+                        @foreach($data['totalsByUnit'] as $unit => $total)
+                            @php
+                                $isMoney = in_array($unit, ['টাকা', 'Taka']) || empty($unit);
+                            @endphp
+                            @if($isMoney)
+                                ৳{{ bn_number(number_format($total, 2)) }}
+                            @else
+                                {{ bn_number(number_format($total, 2)) }} {{ $unit }}
+                            @endif
+                            @if(!$loop->last)<br>@endif
+                        @endforeach
+                    @else
+                        —
+                    @endif
+                </div>
             </div>
             <div class="summary-item">
                 <div class="label">মোট বিতরণ</div>
-                <div class="value">৳{{ bn_number(number_format($data['data']->sum('total_distributed'), 2)) }}</div>
+                <div class="value">
+                    @if(count($distributedTotalsByUnit) > 0)
+                        @foreach($distributedTotalsByUnit as $unit => $total)
+                            @php
+                                $isMoney = in_array($unit, ['টাকা', 'Taka']) || empty($unit);
+                            @endphp
+                            @if($isMoney)
+                                ৳{{ bn_number(number_format($total, 2)) }}
+                            @else
+                                {{ bn_number(number_format($total, 2)) }} {{ $unit }}
+                            @endif
+                            @if(!$loop->last)<br>@endif
+                        @endforeach
+                    @else
+                        —
+                    @endif
+                </div>
             </div>
             <div class="summary-item">
                 <div class="label">মোট আবেদন</div>
@@ -195,9 +240,32 @@
                 <td>{{ $item['project']->name }}</td>
                 <td>{{ localized_attr($item['project']->reliefType, 'name') ?? 'উল্লেখ নেই' }}</td>
                 <td>{{ localized_attr($item['project']->economicYear, 'name') ?? 'উল্লেখ নেই' }}</td>
-                <td class="amount">৳{{ bn_number(number_format($item['project']->allocated_amount, 2)) }}</td>
-                <td class="amount">৳{{ bn_number(number_format($item['total_distributed'], 2)) }}</td>
-                <td class="amount">৳{{ bn_number(number_format($item['available_amount'], 2)) }}</td>
+                @php
+                    $pu = $projectUnits[$item['project']->id] ?? null;
+                    $isMoney = $pu['is_money'] ?? false;
+                    $unit = $pu['unit'] ?? '';
+                @endphp
+                <td class="amount">
+                    @if($isMoney)
+                        ৳{{ bn_number(number_format($item['project']->allocated_amount, 2)) }}
+                    @else
+                        {{ bn_number(number_format($item['project']->allocated_amount, 2)) }} {{ $unit }}
+                    @endif
+                </td>
+                <td class="amount">
+                    @if($isMoney)
+                        ৳{{ bn_number(number_format($item['total_distributed'], 2)) }}
+                    @else
+                        {{ bn_number(number_format($item['total_distributed'], 2)) }} {{ $unit }}
+                    @endif
+                </td>
+                <td class="amount">
+                    @if($isMoney)
+                        ৳{{ bn_number(number_format($item['available_amount'], 2)) }}
+                    @else
+                        {{ bn_number(number_format($item['available_amount'], 2)) }} {{ $unit }}
+                    @endif
+                </td>
                 <td class="text-center">{{ bn_number(number_format($item['utilization_percentage'], 1)) }}</td>
                 <td class="text-center">{{ bn_number($item['total_applications']) }}</td>
             </tr>

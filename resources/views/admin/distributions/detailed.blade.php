@@ -139,47 +139,148 @@
         <!-- Summary Cards (hidden for duplicates page) -->
         @if($type !== 'duplicates')
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4 sm:p-6">
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-sm font-medium text-gray-600 dark:text-gray-400">{{ __('Total Records') }}</p>
-                        <p class="text-2xl font-bold text-gray-900 dark:text-white">@bn($data['pagination']['total_items'])</p>
+                        <p class="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">@bn($data['pagination']['total_items'])</p>
                     </div>
-                    <div class="p-3 bg-blue-500/10 rounded-xl">
-                        <svg class="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="p-2 sm:p-3 bg-blue-500/10 rounded-xl flex-shrink-0">
+                        <svg class="w-5 h-5 sm:w-6 sm:h-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                         </svg>
                     </div>
                 </div>
             </div>
 
-            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4 sm:p-6">
                 <div class="flex items-center justify-between">
-                    <div>
-                        <p class="text-sm font-medium text-gray-600 dark:text-gray-400">{{ __('Total Amount') }}</p>
-                        <p class="text-2xl font-bold text-gray-900 dark:text-white">
-                            @moneybn($data['results']->sum('total_amount'))
+                    <div class="flex-1 min-w-0">
+                        <p class="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
+                            @if($type === 'projects')
+                                {{ __('Total Allocated') }}
+                            @else
+                                {{ __('Total Amount') }}
+                            @endif
                         </p>
+                        @if(isset($data['totalsByUnit']) && count($data['totalsByUnit']) > 0)
+                            @if(count($data['totalsByUnit']) === 1)
+                                @php
+                                    $unit = array_key_first($data['totalsByUnit']);
+                                    $total = $data['totalsByUnit'][$unit];
+                                    $isMoney = in_array($unit, ['টাকা', 'Taka']) || empty($unit);
+                                @endphp
+                                <p class="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white truncate">
+                                    @if($isMoney)
+                                        @moneybn($total)
+                                    @else
+                                        @bn(number_format($total, 2)) {{ $unit }}
+                                    @endif
+                                </p>
+                            @else
+                                <div class="space-y-1 max-h-32 sm:max-h-40 overflow-y-auto">
+                                    @foreach($data['totalsByUnit'] as $unit => $total)
+                                        @php
+                                            $isMoney = in_array($unit, ['টাকা', 'Taka']) || empty($unit);
+                                        @endphp
+                                        <div class="text-sm sm:text-base lg:text-lg font-semibold text-gray-900 dark:text-white leading-tight">
+                                            @if($isMoney)
+                                                <span class="whitespace-nowrap">@moneybn($total)</span>
+                                            @else
+                                                <span class="whitespace-nowrap">@bn(number_format($total, 2)) <span class="text-xs sm:text-sm">{{ $unit }}</span></span>
+                                            @endif
+                                        </div>
+                                    @endforeach
+                                </div>
+                            @endif
+                        @else
+                            <p class="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">—</p>
+                        @endif
                     </div>
-                    <div class="p-3 bg-green-500/10 rounded-xl">
-                        <svg class="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="p-2 sm:p-3 bg-green-500/10 rounded-xl flex-shrink-0 ml-2">
+                        <svg class="w-5 h-5 sm:w-6 sm:h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8V7m0 10v1"></path>
                         </svg>
                     </div>
                 </div>
             </div>
 
-            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+            @if($type !== 'projects')
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4 sm:p-6">
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-sm font-medium text-gray-600 dark:text-gray-400">{{ __('Total Applications') }}</p>
-                        <p class="text-2xl font-bold text-gray-900 dark:text-white">@bn($data['results']->sum('application_count'))</p>
+                        <p class="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">@bn($data['results']->sum('application_count'))</p>
                     </div>
-                    <div class="p-3 bg-purple-500/10 rounded-xl">
-                        <svg class="w-6 h-6 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="p-2 sm:p-3 bg-purple-500/10 rounded-xl flex-shrink-0">
+                        <svg class="w-5 h-5 sm:w-6 sm:h-6 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
                         </svg>
                     </div>
+                </div>
+            </div>
+            @else
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4 sm:p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-600 dark:text-gray-400">{{ __('Total Projects') }}</p>
+                        <p class="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">@bn($data['pagination']['total_items'])</p>
+                    </div>
+                    <div class="p-2 sm:p-3 bg-purple-500/10 rounded-xl flex-shrink-0">
+                        <svg class="w-5 h-5 sm:w-6 sm:h-6 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+            @endif
+        </div>
+        @endif
+
+        <!-- Totals for Duplicates -->
+        @if($type === 'duplicates')
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4 sm:p-6">
+            <div class="flex items-start justify-between">
+                <div class="flex-1 min-w-0">
+                    <p class="text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">{{ __('Total Amount') }}</p>
+                    @if(isset($data['totalsByUnit']) && count($data['totalsByUnit']) > 0)
+                        @if(count($data['totalsByUnit']) === 1)
+                            @php
+                                $unit = array_key_first($data['totalsByUnit']);
+                                $total = $data['totalsByUnit'][$unit];
+                                $isMoney = in_array($unit, ['টাকা', 'Taka']) || empty($unit);
+                            @endphp
+                            <p class="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white truncate">
+                                @if($isMoney)
+                                    @moneybn($total)
+                                @else
+                                    @bn(number_format($total, 2)) {{ $unit }}
+                                @endif
+                            </p>
+                        @else
+                            <div class="space-y-1 max-h-32 sm:max-h-40 overflow-y-auto">
+                                @foreach($data['totalsByUnit'] as $unit => $total)
+                                    @php
+                                        $isMoney = in_array($unit, ['টাকা', 'Taka']) || empty($unit);
+                                    @endphp
+                                    <div class="text-sm sm:text-base lg:text-lg font-semibold text-gray-900 dark:text-white leading-tight">
+                                        @if($isMoney)
+                                            <span class="whitespace-nowrap">@moneybn($total)</span>
+                                        @else
+                                            <span class="whitespace-nowrap">@bn(number_format($total, 2)) <span class="text-xs sm:text-sm">{{ $unit }}</span></span>
+                                        @endif
+                                    </div>
+                                @endforeach
+                            </div>
+                        @endif
+                    @else
+                        <p class="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">—</p>
+                    @endif
+                </div>
+                <div class="p-2 sm:p-3 bg-green-500/10 rounded-xl flex-shrink-0 ml-2">
+                    <svg class="w-5 h-5 sm:w-6 sm:h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8V7m0 10v1"></path>
+                    </svg>
                 </div>
             </div>
         </div>
@@ -365,7 +466,16 @@
                                     </span>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
-                                    @moneybn($project->allocated_amount)
+                                    @php
+                                        $pu = $projectUnits[$project->id] ?? null;
+                                        $isMoney = $pu['is_money'] ?? false;
+                                        $unit = $pu['unit'] ?? '';
+                                    @endphp
+                                    @if($isMoney)
+                                        @moneybn($project->allocated_amount)
+                                    @else
+                                        @bn(number_format($project->allocated_amount, 2)) {{ $unit }}
+                                    @endif
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                                     @if($project->application_count > 0)
@@ -448,7 +558,16 @@
                                         {{ $data['zillaNames'][$row->zilla_id] ?? ('Zilla #'.$row->zilla_id) }}
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900 dark:text-white">
-                                        @moneybn($row->total_amount)
+                                        @php
+                                            $pu = $projectUnits[$row->project_id] ?? null;
+                                            $isMoney = $pu['is_money'] ?? false;
+                                            $unit = $pu['unit'] ?? '';
+                                        @endphp
+                                        @if($isMoney)
+                                            @moneybn($row->total_amount)
+                                        @else
+                                            @bn(number_format($row->total_amount, 2)) {{ $unit }}
+                                        @endif
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                                         @if($row->application_count > 0)

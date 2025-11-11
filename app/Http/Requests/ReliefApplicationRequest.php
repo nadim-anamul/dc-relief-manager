@@ -28,7 +28,7 @@ class ReliefApplicationRequest extends FormRequest
                 'in:individual,organization',
             ],
             'applicant_nid' => [
-                'required',
+                'nullable',
                 'string',
                 'max:20',
                 'min:10',
@@ -171,7 +171,6 @@ class ReliefApplicationRequest extends FormRequest
             'application_type.required' => 'Please select an application type.',
             'application_type.in' => 'Application type must be individual or organization.',
             
-            'applicant_nid.required' => 'NID (National ID) is required.',
             'applicant_nid.regex' => 'Please enter a valid NID number (10-20 digits).',
             'applicant_nid.min' => 'NID must be at least 10 digits.',
             'applicant_nid.max' => 'NID cannot exceed 20 digits.',
