@@ -203,10 +203,21 @@
             <tr>
                 <td class="text-center">{{ bn_number($index + 1) }}</td>
                 <td>{{ $item->project_name }}</td>
-                <td>{{ $item->zilla_name }}</td>
+                <td>{{ $item->zilla_name_bn ?: $item->zilla_name }}</td>
                 <td>{{ $item->upazila_name_bn ?: $item->upazila_name }}</td>
-                <td>{{ $item->relief_type_name }}</td>
-                <td class="amount">৳{{ bn_number(number_format($item->total_amount, 2)) }}</td>
+                <td>{{ $item->relief_type_name_bn ?: $item->relief_type_name }}</td>
+                <td class="amount">
+                    @php
+                        $projectId = $item->project_id;
+                        $unit = isset($projectUnits[$projectId]) ? $projectUnits[$projectId]['unit'] : '';
+                        $isMoney = isset($projectUnits[$projectId]) && $projectUnits[$projectId]['is_money'];
+                    @endphp
+                    @if($isMoney)
+                        ৳{{ bn_number(number_format($item->total_amount, 2)) }}
+                    @else
+                        {{ bn_number(number_format($item->total_amount, 2)) }} {{ $unit }}
+                    @endif
+                </td>
                 <td class="text-center">{{ bn_number($item->application_count) }}</td>
             </tr>
             @endforeach

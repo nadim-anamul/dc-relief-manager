@@ -912,7 +912,8 @@ class ExportController extends Controller
 						->orWhere('z.name', 'LIKE', "%{$search}%")
 						->orWhere('rt.name', 'LIKE', "%{$search}%");
 				});
-			})
+			});
+
 		// Calculate totals by unit first (before counting)
 		$totalsQuery = \Illuminate\Support\Facades\DB::table('relief_applications as ra')
 			->join('projects as p', 'ra.project_id', '=', 'p.id')
@@ -972,11 +973,13 @@ class ExportController extends Controller
 				'u.name as upazila_name',
 				'u.name_bn as upazila_name_bn',
 				'z.name as zilla_name',
+				'z.name_bn as zilla_name_bn',
 				'rt.name as relief_type_name',
+				'rt.name_bn as relief_type_name_bn',
 				\Illuminate\Support\Facades\DB::raw('SUM(ra.approved_amount) as total_amount'),
 				\Illuminate\Support\Facades\DB::raw('COUNT(ra.id) as application_count')
 			])
-			->groupBy(['p.id', 'p.name', 'u.id', 'u.name', 'u.name_bn', 'z.name', 'rt.name'])
+			->groupBy(['p.id', 'p.name', 'u.id', 'u.name', 'u.name_bn', 'z.name', 'z.name_bn', 'rt.name', 'rt.name_bn'])
 			->orderBy('total_amount', 'desc')
 			->skip($offset)
 			->take($pageSize)
