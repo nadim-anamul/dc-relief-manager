@@ -246,8 +246,14 @@ class ReliefApplicationController extends Controller
 		$applicationType = $request->input('application_type');
 		$organizationName = $request->input('organization_name');
 		$applicantPhone = $request->input('applicant_phone');
+		$excludeId = $request->input('exclude_id');
 
 		$query = ReliefApplication::query();
+
+		// Exclude current application if editing
+		if ($excludeId) {
+			$query->where('id', '!=', $excludeId);
+		}
 
 		if ($applicationType === 'organization' && $organizationName) {
 			$query->where('application_type', 'organization')

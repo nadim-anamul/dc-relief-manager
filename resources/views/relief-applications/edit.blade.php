@@ -104,10 +104,17 @@
 									value="{{ old('organization_name', $reliefApplication->organization_name) }}"
 									class="input-field @error('organization_name') border-red-500 dark:border-red-400 @enderror"
 									placeholder="{{ __('Enter organization name') }}"
-									required>
+									required
+									@input.debounce.500ms="checkDuplicate()">
 								@error('organization_name')
 									<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
 								@enderror
+								<div x-show="duplicateExists && applicationType === 'organization'" class="mt-2 text-sm text-yellow-700 bg-yellow-50 dark:bg-yellow-900/30 dark:text-yellow-300 border border-yellow-200 dark:border-yellow-800 rounded-md p-2">
+									<span x-text="duplicateMessage"></span>
+								</div>
+								<div x-show="pendingDuplicateExists && applicationType === 'organization'" class="mt-2 text-sm text-blue-700 bg-blue-50 dark:bg-blue-900/30 dark:text-blue-300 border border-blue-200 dark:border-blue-800 rounded-md p-2">
+									<span x-text="pendingDuplicateMessage"></span>
+								</div>
 							</div>
 
 							<!-- Organization Type -->
@@ -166,15 +173,14 @@
 							<!-- NID (for both types) -->
 							<div>
 								<label for="applicant_nid" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 {{ app()->isLocale('bn') ? 'font-sans' : '' }}">
-									{{ __('NID') }} <span class="text-red-500">*</span>
+									{{ __('NID (National ID)') }}
 								</label>
 								<input type="text" 
 									name="applicant_nid" 
 									id="applicant_nid" 
 									value="{{ old('applicant_nid', $reliefApplication->applicant_nid) }}"
 									class="input-field @error('applicant_nid') border-red-500 dark:border-red-400 @enderror"
-									placeholder="{{ __('Enter NID number') }}"
-									required>
+									placeholder="{{ __('Enter NID number') }}">
 								@error('applicant_nid')
 									<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
 								@enderror
@@ -208,10 +214,17 @@
 									value="{{ old('applicant_phone', $reliefApplication->applicant_phone) }}"
 									class="input-field @error('applicant_phone') border-red-500 dark:border-red-400 @enderror"
 									placeholder="{{ __('Enter phone number') }}"
-									required>
+									required
+									@input.debounce.500ms="checkDuplicate()">
 								@error('applicant_phone')
 									<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
 								@enderror
+								<div x-show="duplicateExists && applicationType === 'individual'" class="mt-2 text-sm text-yellow-700 bg-yellow-50 dark:bg-yellow-900/30 dark:text-yellow-300 border border-yellow-200 dark:border-yellow-800 rounded-md p-2">
+									<span x-text="duplicateMessage"></span>
+								</div>
+								<div x-show="pendingDuplicateExists && applicationType === 'individual'" class="mt-2 text-sm text-blue-700 bg-blue-50 dark:bg-blue-900/30 dark:text-blue-300 border border-blue-200 dark:border-blue-800 rounded-md p-2">
+									<span x-text="pendingDuplicateMessage"></span>
+								</div>
 							</div>
 
 							<!-- Applicant Designation (for organizations) -->
@@ -574,6 +587,7 @@
 	<script>
 		function reliefApplicationForm() {
 			return {
+				applicationType: '{{ $reliefApplication->application_type }}',
 				selectedZilla: '{{ old('zilla_id', $reliefApplication->zilla_id) }}',
 				selectedUpazila: '{{ old('upazila_id', $reliefApplication->upazila_id) }}',
 				selectedUnion: '{{ old('union_id', $reliefApplication->union_id) }}',
@@ -591,6 +605,13 @@
 				selectedReliefType: '{{ old('relief_type_id', $reliefApplication->relief_type_id) }}',
 				projects: @json($projects ?? []),
 				filteredProjects: [],
+				duplicateExists: false,
+				duplicateCount: 0,
+				duplicateMessage: '',
+				pendingDuplicateExists: false,
+				pendingDuplicateCount: 0,
+				pendingDuplicateMessage: '',
+				currentApplicationId: {{ $reliefApplication->id }},
 				
 				loadUpazilas() {
 					if (this.selectedZilla) {
@@ -709,6 +730,68 @@
 						this.projectUnit = '';
 					}
 				},
+
+				checkDuplicate() {
+					const params = new URLSearchParams();
+					params.set('application_type', this.applicationType || '');
+					params.set('exclude_id', this.currentApplicationId);
+					
+					if (this.applicationType === 'organization') {
+						const name = document.getElementById('organization_name')?.value || '';
+						if (!name || name.length < 2) { 
+							this.duplicateExists = false; 
+							this.pendingDuplicateExists = false; 
+							return; 
+						}
+						params.set('organization_name', name);
+					} else if (this.applicationType === 'individual') {
+						const phone = document.getElementById('applicant_phone')?.value || '';
+						if (!phone || phone.length < 10) { 
+							this.duplicateExists = false; 
+							this.pendingDuplicateExists = false; 
+							return; 
+						}
+						params.set('applicant_phone', phone);
+					} else {
+						this.duplicateExists = false; 
+						this.pendingDuplicateExists = false; 
+						return;
+					}
+
+					fetch(`/relief-applications/check-duplicate?${params.toString()}`, {
+						headers: {
+							'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+							'Accept': 'application/json',
+							'Content-Type': 'application/json'
+						}
+					})
+						.then(r => r.json())
+						.then(data => {
+							this.duplicateExists = !!data.duplicate;
+							this.duplicateCount = data.count || 0;
+							if (this.duplicateExists) {
+								this.duplicateMessage = this.applicationType === 'organization'
+									? `{{ __('Approved applications already exist for this organization') }} (${this.duplicateCount} {{ __('applications') }})`
+									: `{{ __('Approved applications already exist for this phone number') }} (${this.duplicateCount} {{ __('applications') }})`;
+							} else {
+								this.duplicateMessage = '';
+							}
+
+							this.pendingDuplicateExists = !!data.pending_duplicate;
+							this.pendingDuplicateCount = data.pending_count || 0;
+							if (this.pendingDuplicateExists) {
+								this.pendingDuplicateMessage = this.applicationType === 'organization'
+									? `{{ __('Pending applications already exist for this organization') }} (${this.pendingDuplicateCount} {{ __('applications') }})`
+									: `{{ __('Pending applications already exist for this phone number') }} (${this.pendingDuplicateCount} {{ __('applications') }})`;
+							} else {
+								this.pendingDuplicateMessage = '';
+							}
+						})
+						.catch(() => {
+							this.duplicateExists = false;
+							this.pendingDuplicateExists = false;
+						});
+				},
 				
 				handleFileChange(event) {
 					const file = event.target.files[0];
@@ -729,6 +812,9 @@
 					if (this.selectedProject) {
 						this.updateProjectDetails();
 					}
+
+					// Initial duplicate check if values prefilled
+					this.checkDuplicate();
 				}
 			}
 		}
