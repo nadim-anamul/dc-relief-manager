@@ -247,6 +247,16 @@
 							</div>
 						</dd>
 					</div>
+					@if($reliefApplication->general_comment)
+						<div class="sm:col-span-2">
+							<dt class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ __('General Comment') }}@if(!app()->isLocale('bn')) (সাধারণ মন্তব্য)@endif</dt>
+							<dd class="mt-1 text-sm text-gray-900 dark:text-white {{ app()->isLocale('bn') ? 'font-sans' : '' }}">
+								<div class="prose dark:prose-invert max-w-none">
+									<p class="whitespace-pre-wrap">{{ $reliefApplication->general_comment }}</p>
+								</div>
+							</dd>
+						</div>
+					@endif
 				</dl>
 			</div>
 		</div>

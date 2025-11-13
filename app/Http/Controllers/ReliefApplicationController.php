@@ -247,8 +247,7 @@ class ReliefApplicationController extends Controller
 		$organizationName = $request->input('organization_name');
 		$applicantPhone = $request->input('applicant_phone');
 
-		$query = ReliefApplication::query()
-			->where('status', 'approved');
+		$query = ReliefApplication::query();
 
 		if ($applicationType === 'organization' && $organizationName) {
 			$query->where('application_type', 'organization')
@@ -257,11 +256,23 @@ class ReliefApplicationController extends Controller
 			$query->where('application_type', 'individual')
 				->where('applicant_phone', $applicantPhone);
 		} else {
-			return response()->json(['duplicate' => false, 'count' => 0]);
+			return response()->json([
+				'duplicate' => false,
+				'count' => 0,
+				'pending_duplicate' => false,
+				'pending_count' => 0,
+			]);
 		}
 
-		$count = $query->count();
-		return response()->json(['duplicate' => $count > 0, 'count' => $count]);
+		$approvedCount = (clone $query)->where('status', 'approved')->count();
+		$pendingCount = (clone $query)->where('status', 'pending')->count();
+
+		return response()->json([
+			'duplicate' => $approvedCount > 0,
+			'count' => $approvedCount,
+			'pending_duplicate' => $pendingCount > 0,
+			'pending_count' => $pendingCount,
+		]);
 	}
 
 	/**

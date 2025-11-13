@@ -229,16 +229,19 @@
 									name="organization_name" 
 									id="organization_name" 
 									value="{{ old('organization_name') }}"
-							class="input-field @error('organization_name') border-red-500 dark:border-red-400 @enderror"
+						class="input-field @error('organization_name') border-red-500 dark:border-red-400 @enderror"
 									placeholder="{{ __('Enter organization name') }}"
-							x-bind:required="applicationType === 'organization'"
-							@input.debounce.500ms="checkDuplicate()">
+						x-bind:required="applicationType === 'organization'"
+						@input.debounce.500ms="checkDuplicate()">
 								@error('organization_name')
 									<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
 								@enderror
-						<div x-show="duplicateExists && applicationType === 'organization'" class="mt-2 text-sm text-yellow-700 bg-yellow-50 dark:bg-yellow-900/30 dark:text-yellow-300 border border-yellow-200 dark:border-yellow-800 rounded-md p-2">
-							<span x-text="duplicateMessage"></span>
-						</div>
+					<div x-show="duplicateExists && applicationType === 'organization'" class="mt-2 text-sm text-yellow-700 bg-yellow-50 dark:bg-yellow-900/30 dark:text-yellow-300 border border-yellow-200 dark:border-yellow-800 rounded-md p-2">
+						<span x-text="duplicateMessage"></span>
+					</div>
+					<div x-show="pendingDuplicateExists && applicationType === 'organization'" class="mt-2 text-sm text-blue-700 bg-blue-50 dark:bg-blue-900/30 dark:text-blue-300 border border-blue-200 dark:border-blue-800 rounded-md p-2">
+						<span x-text="pendingDuplicateMessage"></span>
+					</div>
 							</div>
 
 							<!-- Organization Type -->
@@ -380,6 +383,9 @@
 								<div x-show="duplicateExists && applicationType === 'individual'" class="mt-2 text-sm text-yellow-700 bg-yellow-50 dark:bg-yellow-900/30 dark:text-yellow-300 border border-yellow-200 dark:border-yellow-800 rounded-md p-2">
 									<span x-text="duplicateMessage"></span>
 								</div>
+								<div x-show="pendingDuplicateExists && applicationType === 'individual'" class="mt-2 text-sm text-blue-700 bg-blue-50 dark:bg-blue-900/30 dark:text-blue-300 border border-blue-200 dark:border-blue-800 rounded-md p-2">
+									<span x-text="pendingDuplicateMessage"></span>
+								</div>
 							</div>
 
 							<!-- Applicant Address -->
@@ -507,6 +513,37 @@
 						</div>
 					</div>
 
+					<!-- General Comment Section -->
+					<div class="border-b border-gray-200 dark:border-gray-700 pb-8">
+						<div class="flex items-center mb-6">
+							<div class="flex-shrink-0">
+								<div class="w-8 h-8 bg-gradient-to-r from-teal-400 to-teal-600 rounded-lg flex items-center justify-center">
+									<svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"></path>
+									</svg>
+								</div>
+							</div>
+							<div class="ml-3">
+								<h4 class="text-lg font-semibold text-gray-900 dark:text-white {{ app()->isLocale('bn') ? 'font-sans' : '' }}">{{ __('General Comment') }}@if(!app()->isLocale('bn')) (সাধারণ মন্তব্য)@endif</h4>
+								<p class="text-sm text-gray-500 dark:text-gray-400 {{ app()->isLocale('bn') ? 'font-sans' : '' }}">{{ __('Add any additional comments (optional)') }}@if(!app()->isLocale('bn')) (যেকোনো অতিরিক্ত মন্তব্য যোগ করুন (ঐচ্ছিক))@endif</p>
+							</div>
+						</div>
+						
+						<div>
+							<label for="general_comment" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 {{ app()->isLocale('bn') ? 'font-sans' : '' }}">
+								{{ __('General Comment') }}@if(!app()->isLocale('bn')) (সাধারণ মন্তব্য)@endif
+							</label>
+							<textarea name="general_comment" 
+								id="general_comment" 
+								rows="4"
+								class="input-field @error('general_comment') border-red-500 dark:border-red-400 @enderror"
+								placeholder="{{ __('Enter any additional comments or notes') }}@if(!app()->isLocale('bn')) (যেকোনো অতিরিক্ত মন্তব্য বা নোট লিখুন)@endif">{{ old('general_comment') }}</textarea>
+							@error('general_comment')
+								<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+							@enderror
+						</div>
+					</div>
+
 					<!-- 6. File Upload Section -->
 					<div class="pb-8">
 						<div class="flex items-center mb-6">
@@ -603,6 +640,9 @@
 				duplicateExists: false,
 				duplicateCount: 0,
 				duplicateMessage: '',
+				pendingDuplicateExists: false,
+				pendingDuplicateCount: 0,
+				pendingDuplicateMessage: '',
 				
 				loadUpazilas() {
 					if (this.selectedZilla) {
@@ -710,14 +750,14 @@
 					params.set('application_type', this.applicationType || '');
 					if (this.applicationType === 'organization') {
 						const name = document.getElementById('organization_name')?.value || '';
-						if (!name || name.length < 2) { this.duplicateExists = false; return; }
+						if (!name || name.length < 2) { this.duplicateExists = false; this.pendingDuplicateExists = false; return; }
 						params.set('organization_name', name);
 					} else if (this.applicationType === 'individual') {
 						const phone = document.getElementById('applicant_phone')?.value || '';
-						if (!phone || phone.length < 10) { this.duplicateExists = false; return; }
+						if (!phone || phone.length < 10) { this.duplicateExists = false; this.pendingDuplicateExists = false; return; }
 						params.set('applicant_phone', phone);
 					} else {
-						this.duplicateExists = false; return;
+						this.duplicateExists = false; this.pendingDuplicateExists = false; return;
 					}
 
 					fetch(`/relief-applications/check-duplicate?${params.toString()}`, {
@@ -738,8 +778,21 @@
 							} else {
 								this.duplicateMessage = '';
 							}
+
+							this.pendingDuplicateExists = !!data.pending_duplicate;
+							this.pendingDuplicateCount = data.pending_count || 0;
+							if (this.pendingDuplicateExists) {
+								this.pendingDuplicateMessage = this.applicationType === 'organization'
+									? `{{ __('Pending applications already exist for this organization') }} (${this.pendingDuplicateCount} {{ __('applications') }})`
+									: `{{ __('Pending applications already exist for this phone number') }} (${this.pendingDuplicateCount} {{ __('applications') }})`;
+							} else {
+								this.pendingDuplicateMessage = '';
+							}
 						})
-						.catch(() => { this.duplicateExists = false; });
+						.catch(() => {
+							this.duplicateExists = false;
+							this.pendingDuplicateExists = false;
+						});
 				},
 				
 				handleFileChange(event) {

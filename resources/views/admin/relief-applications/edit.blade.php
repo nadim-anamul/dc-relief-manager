@@ -129,6 +129,18 @@
 						</div>
 					</div>
 
+					<!-- General Comment Section -->
+					@if($reliefApplication->general_comment)
+						<div class="border-b border-gray-200 dark:border-gray-700 pb-8">
+							<h4 class="text-lg font-medium text-gray-900 dark:text-white mb-6 {{ app()->isLocale('bn') ? 'font-sans' : '' }}">{{ __('General Comment') }}@if(!app()->isLocale('bn')) (সাধারণ মন্তব্য)@endif</h4>
+							<div class="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+								<div class="prose dark:prose-invert max-w-none">
+									<p class="whitespace-pre-wrap text-sm text-gray-900 dark:text-white {{ app()->isLocale('bn') ? 'font-sans' : '' }}">{{ $reliefApplication->general_comment }}</p>
+								</div>
+							</div>
+						</div>
+					@endif
+
 					<!-- Decision Section -->
 					<div class="border-b border-gray-200 dark:border-gray-700 pb-8">
 						<div class="flex items-center justify-between mb-6">

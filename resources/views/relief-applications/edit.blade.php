@@ -466,8 +466,24 @@
 						</div>
 					</div>
 
-
-
+					<!-- General Comment Section -->
+					<div class="border-b border-gray-200 dark:border-gray-700 pb-8">
+						<h4 class="text-lg font-medium text-gray-900 dark:text-white mb-6 {{ app()->isLocale('bn') ? 'font-sans' : '' }}">{{ __('General Comment') }}@if(!app()->isLocale('bn')) (সাধারণ মন্তব্য)@endif</h4>
+						
+						<div>
+							<label for="general_comment" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 {{ app()->isLocale('bn') ? 'font-sans' : '' }}">
+								{{ __('General Comment') }}@if(!app()->isLocale('bn')) (সাধারণ মন্তব্য)@endif
+							</label>
+							<textarea name="general_comment" 
+								id="general_comment" 
+								rows="4"
+								class="input-field @error('general_comment') border-red-500 dark:border-red-400 @enderror"
+								placeholder="{{ __('Enter any additional comments or notes') }}@if(!app()->isLocale('bn')) (যেকোনো অতিরিক্ত মন্তব্য বা নোট লিখুন)@endif">{{ old('general_comment', $reliefApplication->general_comment) }}</textarea>
+							@error('general_comment')
+								<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
+							@enderror
+						</div>
+					</div>
 
 					<!-- File Upload Section -->
 					<div class="pb-8">

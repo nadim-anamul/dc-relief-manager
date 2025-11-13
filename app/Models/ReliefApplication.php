@@ -35,6 +35,7 @@ class ReliefApplication extends Model
 		'amount_requested',
 		'approved_amount',
 		'details',
+		'general_comment',
 		'admin_remarks',
 		'status',
 		'application_file',

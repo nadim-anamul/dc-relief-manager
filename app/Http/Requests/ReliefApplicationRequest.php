@@ -123,6 +123,11 @@ class ReliefApplicationRequest extends FormRequest
                 'min:50',
                 'max:2000',
             ],
+            'general_comment' => [
+                'nullable',
+                'string',
+                'max:2000',
+            ],
             'application_file' => [
                 'nullable',
                 'file',
@@ -223,6 +228,8 @@ class ReliefApplicationRequest extends FormRequest
             'details.required' => 'Details are required.',
             'details.min' => 'Details must be at least 50 characters.',
             'details.max' => 'Details cannot exceed 2000 characters.',
+            
+            'general_comment.max' => 'General comment cannot exceed 2000 characters.',
             
             'application_file.file' => 'Please upload a valid file.',
             'application_file.mimes' => 'File must be a PDF, DOC, DOCX, JPG, JPEG, or PNG.',
