@@ -379,22 +379,36 @@ class ReliefApplicationController extends Controller
 						->withInput();
 				}
 
-				// Check if project has sufficient budget
 				$project = $reliefApplication->project;
-				if ($project->available_amount < $validated['approved_amount']) {
+				$oldApprovedAmount = $reliefApplication->approved_amount ?? 0;
+				$newApprovedAmount = $validated['approved_amount'];
+				$wasAlreadyApproved = $reliefApplication->status === 'approved' && $oldApprovedAmount > 0;
+				
+				// Calculate effective available amount: if already approved, add back the old amount
+				$effectiveAvailableAmount = $project->available_amount;
+				if ($wasAlreadyApproved) {
+					$effectiveAvailableAmount += $oldApprovedAmount;
+				}
+				
+				// Check if project has sufficient budget
+				if ($effectiveAvailableAmount < $newApprovedAmount) {
 					return redirect()->back()
-						->withErrors(['error' => 'Insufficient project budget. Available: ' . $project->formatted_available_amount])
+						->withErrors(['error' => 'Insufficient project budget. Available: ' . number_format($effectiveAvailableAmount, 2)])
 						->withInput();
 				}
 
-				$reliefApplication->approve(
-					$validated['approved_amount'],
+				// Update approved amount (handles both new approval and amount change)
+				$reliefApplication->updateApprovedAmount(
+					$newApprovedAmount,
 					$reliefApplication->project_id,
 					$validated['admin_remarks'],
-					auth()->id()
+					auth()->id(),
+					$oldApprovedAmount
 				);
 
-				$message = 'Application approved successfully. Budget deducted from project.';
+				$message = $wasAlreadyApproved 
+					? 'Application approved amount updated successfully.' 
+					: 'Application approved successfully. Budget deducted from project.';
 			} elseif ($validated['status'] === 'rejected') {
 				$reliefApplication->reject(
 					$validated['admin_remarks'],
@@ -404,6 +418,15 @@ class ReliefApplicationController extends Controller
 				$message = 'Application rejected successfully.';
 			} else {
 				// Reset to pending
+				// If was approved, return the approved amount to the project
+				$wasApproved = $reliefApplication->status === 'approved' && $reliefApplication->approved_amount > 0 && $reliefApplication->project_id;
+				if ($wasApproved) {
+					$project = $reliefApplication->project;
+					if ($project) {
+						$project->increment('available_amount', $reliefApplication->approved_amount);
+					}
+				}
+				
 				$reliefApplication->update([
 					'status' => 'pending',
 					'approved_amount' => null,

@@ -257,7 +257,11 @@
 											class="input-field @error('approved_amount') border-red-500 dark:border-red-400 @enderror"
                                             placeholder="০.০০"
 											min="0"
-											max="{{ $reliefApplication->project ? $reliefApplication->project->available_amount : 0 }}"
+											max="{{ 
+												$reliefApplication->project 
+													? ($reliefApplication->project->available_amount + ($reliefApplication->status === 'approved' && $reliefApplication->approved_amount > 0 ? $reliefApplication->approved_amount : 0))
+													: 0 
+											}}"
 											step="0.01"
 											@input="validateApprovalAmount()"
 											required>
@@ -389,7 +393,11 @@
 			return {
 				status: '{{ old('status', $reliefApplication->status) }}',
 				insufficientFunds: false,
-				availableBudget: {{ $reliefApplication->project ? $reliefApplication->project->available_amount : 0 }},
+				availableBudget: {{ 
+					$reliefApplication->project 
+						? ($reliefApplication->project->available_amount + ($reliefApplication->status === 'approved' && $reliefApplication->approved_amount > 0 ? $reliefApplication->approved_amount : 0))
+						: 0 
+				}},
 				
 				updateFormVisibility() {
 					// Reset validation when changing status

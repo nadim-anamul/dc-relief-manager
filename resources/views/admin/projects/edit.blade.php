@@ -6,14 +6,14 @@
 					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
 				</svg>
 			</a>
-			<h1 class="text-2xl font-bold text-gray-900 dark:text-white">Edit Project: {{ $project->name }}</h1>
+			<h1 class="text-2xl font-bold text-gray-900 dark:text-white {{ app()->isLocale('bn') ? 'font-sans' : '' }}">{{ __('Edit Project') }}: {{ $project->name }}</h1>
 		</div>
 	</x-slot>
 
 	<div class="max-w-2xl mx-auto">
 		<div class="card">
 			<div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-				<h3 class="text-lg font-medium text-gray-900 dark:text-white">Project Information</h3>
+				<h3 class="text-lg font-medium text-gray-900 dark:text-white {{ app()->isLocale('bn') ? 'font-sans' : '' }}">{{ __('Project Information') }}</h3>
 			</div>
 			<div class="p-6">
 				<form action="{{ route('admin.projects.update', $project) }}" method="POST" class="space-y-6">
@@ -22,15 +22,15 @@
 
 					<!-- Project Name -->
 					<div>
-						<label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-							Project Name <span class="text-red-500">*</span>
+						<label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 {{ app()->isLocale('bn') ? 'font-sans' : '' }}">
+							{{ __('Distribution Name') }} <span class="text-red-500">*</span>
 						</label>
 						<input type="text" 
 							name="name" 
 							id="name" 
 							value="{{ old('name', $project->name) }}"
 							class="input-field @error('name') border-red-500 dark:border-red-400 @enderror"
-							placeholder="Enter project name"
+							placeholder="{{ __('Enter project name') }}"
 							required>
 						@error('name')
 							<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
@@ -39,18 +39,18 @@
 
 					<!-- Economic Year Selection -->
 					<div>
-						<label for="economic_year_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-							Economic Year <span class="text-red-500">*</span>
+						<label for="economic_year_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 {{ app()->isLocale('bn') ? 'font-sans' : '' }}">
+							{{ __('Economic Year') }} <span class="text-red-500">*</span>
 						</label>
 						<select name="economic_year_id" 
 							id="economic_year_id" 
 							class="input-field @error('economic_year_id') border-red-500 dark:border-red-400 @enderror"
 							required>
-							<option value="">Select an Economic Year</option>
+							<option value="">{{ __('Select an Economic Year') }}</option>
 							@foreach($economicYears as $economicYear)
 								<option value="{{ $economicYear->id }}" {{ old('economic_year_id', $project->economic_year_id) == $economicYear->id ? 'selected' : '' }}>
-									{{ $economicYear->name }} ({{ $economicYear->name_bn }})
-									@if($economicYear->is_current) - Current @endif
+									{{ $economicYear->name_bn }}
+									@if($economicYear->is_current) - {{ __('Current') }} @endif
 								</option>
 							@endforeach
 						</select>
@@ -61,17 +61,17 @@
 
 					<!-- Relief Type Selection -->
 					<div>
-						<label for="relief_type_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-							Relief Type <span class="text-red-500">*</span>
+						<label for="relief_type_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 {{ app()->isLocale('bn') ? 'font-sans' : '' }}">
+							{{ __('Relief Type') }} <span class="text-red-500">*</span>
 						</label>
 						<select name="relief_type_id" 
 							id="relief_type_id" 
 							class="input-field @error('relief_type_id') border-red-500 dark:border-red-400 @enderror"
 							required>
-							<option value="">Select a Relief Type</option>
+							<option value="">{{ __('Select a Relief Type') }}</option>
 							@foreach($reliefTypes as $reliefType)
 								<option value="{{ $reliefType->id }}" {{ old('relief_type_id', $project->relief_type_id) == $reliefType->id ? 'selected' : '' }}>
-									{{ $reliefType->name }} ({{ $reliefType->name_bn }})
+									{{ $reliefType->name_bn }}
 								</option>
 							@endforeach
 						</select>
@@ -82,8 +82,8 @@
 
 					<!-- Allocated Amount -->
 					<div>
-						<label for="allocated_amount" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-							Allocated Amount <span class="text-red-500">*</span>
+						<label for="allocated_amount" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 {{ app()->isLocale('bn') ? 'font-sans' : '' }}">
+							{{ __('Allocated Amount') }} <span class="text-red-500">*</span>
 						</label>
 						<div class="relative">
 							<input type="number" 
@@ -91,16 +91,16 @@
 								id="allocated_amount" 
 								value="{{ old('allocated_amount', $project->allocated_amount) }}"
 								class="input-field @error('allocated_amount') border-red-500 dark:border-red-400 @enderror pr-20"
-								placeholder="Enter allocated amount"
+								placeholder="{{ __('Enter allocated amount') }}"
 								min="0.01"
 								step="0.01"
 								required>
 							<div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-								<span class="text-gray-500 dark:text-gray-400 text-sm" id="unit-display">{{ $project->reliefType?->display_unit ?? 'Unit' }}</span>
+								<span class="text-gray-500 dark:text-gray-400 text-sm {{ app()->isLocale('bn') ? 'font-sans' : '' }}" id="unit-display">{{ $project->reliefType?->unit_bn ?? $project->reliefType?->unit ?? __('Unit') }}</span>
 							</div>
 						</div>
-						<p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-							Amount allocated for <span id="relief-type-display">{{ $project->reliefType?->display_name ?? 'this relief type' }}</span> in this economic year
+						<p class="mt-1 text-xs text-gray-500 dark:text-gray-400 {{ app()->isLocale('bn') ? 'font-sans' : '' }}">
+							{{ __('Amount allocated for') }} <span id="relief-type-display">{{ $project->reliefType?->name_bn ?? __('this relief type') }}</span>
 						</p>
 						@error('allocated_amount')
 							<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
@@ -109,14 +109,14 @@
 
 					<!-- Remarks -->
 					<div>
-						<label for="remarks" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-							Remarks
+						<label for="remarks" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 {{ app()->isLocale('bn') ? 'font-sans' : '' }}">
+							{{ __('Remarks') }}
 						</label>
 						<textarea name="remarks" 
 							id="remarks" 
 							rows="4"
 							class="input-field @error('remarks') border-red-500 dark:border-red-400 @enderror"
-							placeholder="Enter any additional remarks or notes">{{ old('remarks', $project->remarks) }}</textarea>
+							placeholder="{{ __('Enter any additional remarks or notes') }}">{{ old('remarks', $project->remarks) }}</textarea>
 						@error('remarks')
 							<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
 						@enderror
@@ -124,14 +124,14 @@
 
 					<!-- Ministry Address -->
 					<div>
-						<label for="ministry_address" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-							Ministry Address
+						<label for="ministry_address" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 {{ app()->isLocale('bn') ? 'font-sans' : '' }}">
+							{{ __('Ministry Address') }}
 						</label>
 						<textarea name="ministry_address" 
 							id="ministry_address" 
 							rows="3"
 							class="input-field @error('ministry_address') border-red-500 dark:border-red-400 @enderror"
-							placeholder="Enter ministry address">{{ old('ministry_address', $project->ministry_address) }}</textarea>
+							placeholder="{{ __('Enter ministry address') }}">{{ old('ministry_address', $project->ministry_address) }}</textarea>
 						@error('ministry_address')
 							<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
 						@enderror
@@ -139,15 +139,15 @@
 
 					<!-- Office Order Number -->
 					<div>
-						<label for="office_order_number" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-							Office Order Number
+						<label for="office_order_number" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 {{ app()->isLocale('bn') ? 'font-sans' : '' }}">
+							{{ __('Office Order Number') }}
 						</label>
 						<input type="text" 
 							name="office_order_number" 
 							id="office_order_number" 
 							value="{{ old('office_order_number', $project->office_order_number) }}"
 							class="input-field @error('office_order_number') border-red-500 dark:border-red-400 @enderror"
-							placeholder="Enter office order number">
+							placeholder="{{ __('Enter office order number') }}">
 						@error('office_order_number')
 							<p class="mt-1 text-sm text-red-600 dark:text-red-400">{{ $message }}</p>
 						@enderror
@@ -155,8 +155,8 @@
 
 					<!-- Office Order Date -->
 					<div>
-						<label for="office_order_date" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-							Office Order Date
+						<label for="office_order_date" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 {{ app()->isLocale('bn') ? 'font-sans' : '' }}">
+							{{ __('Office Order Date') }}
 						</label>
 						<input type="date" 
 							name="office_order_date" 
@@ -170,11 +170,11 @@
 
 					<!-- Submit Buttons -->
 					<div class="flex justify-end space-x-3">
-						<a href="{{ route('admin.projects.show', $project) }}" class="btn-secondary">
-							Cancel
+						<a href="{{ route('admin.projects.show', $project) }}" class="btn-secondary {{ app()->isLocale('bn') ? 'font-sans' : '' }}">
+							{{ __('Cancel') }}
 						</a>
-						<button type="submit" class="btn-primary">
-							Update Project
+						<button type="submit" class="btn-primary {{ app()->isLocale('bn') ? 'font-sans' : '' }}">
+							{{ __('Update Project') }}
 						</button>
 					</div>
 				</form>
@@ -187,7 +187,7 @@
 		const reliefTypes = {
 			@foreach($reliefTypes as $reliefType)
 				{{ $reliefType->id }}: {
-					unit: '{{ $reliefType->unit ?? "Unit" }}',
+					unit: '{{ $reliefType->unit_bn ?? $reliefType->unit ?? __('Unit') }}',
 					unit_bn: '{{ $reliefType->unit_bn ?? "" }}'
 				},
 			@endforeach
@@ -210,15 +210,15 @@
 				// Update placeholder and validation based on unit type
 				const amountInput = document.getElementById('allocated_amount');
 				if (unit === 'টাকা' || unit === 'Taka') {
-					amountInput.placeholder = 'Enter amount in Taka';
+					amountInput.placeholder = '{{ __('Enter amount in Taka') }}';
 					amountInput.min = '1000';
 				} else {
-					amountInput.placeholder = 'Enter quantity';
+					amountInput.placeholder = '{{ __('Enter quantity') }}';
 					amountInput.min = '0.01';
 				}
 			} else {
-				reliefTypeDisplay.textContent = 'this relief type';
-				unitDisplay.textContent = 'Unit';
+				reliefTypeDisplay.textContent = '{{ __('this relief type') }}';
+				unitDisplay.textContent = '{{ __('Unit') }}';
 			}
 		});
 

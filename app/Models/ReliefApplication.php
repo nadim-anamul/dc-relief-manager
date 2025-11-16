@@ -316,20 +316,70 @@ class ReliefApplication extends Model
 	}
 
 	/**
+	 * Update approved amount for an already approved application.
+	 * Handles adding back old amount and deducting new amount.
+	 */
+	public function updateApprovedAmount($newApprovedAmount, $projectId, $adminRemarks = null, $approvedBy = null, $oldApprovedAmount = 0): bool
+	{
+		return DB::transaction(function () use ($newApprovedAmount, $projectId, $adminRemarks, $approvedBy, $oldApprovedAmount) {
+			$project = Project::find($projectId);
+			if (!$project) {
+				throw new \Exception('Project not found');
+			}
+
+			// If application was already approved, add back the old amount first
+			if ($oldApprovedAmount > 0) {
+				$project->increment('available_amount', $oldApprovedAmount);
+			}
+
+			// Update application
+			$this->update([
+				'status' => 'approved',
+				'approved_amount' => $newApprovedAmount,
+				'project_id' => $projectId,
+				'admin_remarks' => $adminRemarks,
+				'approved_by' => $approvedBy,
+				'approved_at' => $this->approved_at ?? now(),
+				'rejected_by' => null,
+				'rejected_at' => null,
+			]);
+
+			// Deduct new approved amount from project
+			$project->decrement('available_amount', $newApprovedAmount);
+
+			return true;
+		});
+	}
+
+	/**
 	 * Reject the application.
+	 * If previously approved, returns the approved amount to the project.
 	 */
 	public function reject($adminRemarks = null, $rejectedBy = null): bool
 	{
-		$this->update([
-			'status' => 'rejected',
-			'admin_remarks' => $adminRemarks,
-			'rejected_by' => $rejectedBy,
-			'rejected_at' => now(),
-			'approved_by' => null,
-			'approved_at' => null,
-		]);
+		return DB::transaction(function () use ($adminRemarks, $rejectedBy) {
+			$wasApproved = $this->status === 'approved' && $this->approved_amount > 0 && $this->project_id;
+			
+			// If was approved, return the approved amount to the project
+			if ($wasApproved) {
+				$project = Project::find($this->project_id);
+				if ($project) {
+					$project->increment('available_amount', $this->approved_amount);
+				}
+			}
+			
+			$this->update([
+				'status' => 'rejected',
+				'admin_remarks' => $adminRemarks,
+				'rejected_by' => $rejectedBy,
+				'rejected_at' => now(),
+				'approved_by' => null,
+				'approved_at' => null,
+				'approved_amount' => null,
+			]);
 
-		return true;
+			return true;
+		});
 	}
 
 	/**
