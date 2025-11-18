@@ -29,7 +29,7 @@
 				</div>
 			</div>
 			<div class="p-8">
-				<form action="{{ route('relief-applications.store') }}" method="POST" enctype="multipart/form-data" class="space-y-8" x-data="reliefApplicationForm()">
+				<form action="{{ route('relief-applications.store') }}" method="POST" enctype="multipart/form-data" class="space-y-8" x-data="reliefApplicationForm()" @submit="handleFormSubmit($event)">
 					@csrf
 
 					<!-- 1. Application Type Selection -->
@@ -147,15 +147,17 @@
 									{{ __('Amount Requested') }} <span class="text-red-500">*</span>
 								</label>
 								<div class="relative">
-									<input type="number" 
-										name="amount_requested" 
+									<input type="text" 
 										id="amount_requested" 
-										value="{{ old('amount_requested') }}"
+										x-model="amountRequestedDisplay"
+										@input="handleAmountInput($event)"
+										@blur="handleAmountBlur($event)"
+										value="{{ old('amount_requested') ? bn_number(old('amount_requested')) : '' }}"
 										class="input-field @error('amount_requested') border-red-500 dark:border-red-400 @enderror pr-20"
 										placeholder="{{ __('Enter requested amount') }}"
-										min="0.01"
-										step="0.01"
 										required>
+									<!-- Hidden input to store English number for submission -->
+									<input type="hidden" name="amount_requested" id="amount_requested_en" value="{{ old('amount_requested') }}">
 									<div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
 										<span class="text-gray-500 dark:text-gray-400 text-sm" x-text="projectUnit || '{{ __('Select project first') }}'"></span>
 									</div>
@@ -643,6 +645,87 @@
 				pendingDuplicateExists: false,
 				pendingDuplicateCount: 0,
 				pendingDuplicateMessage: '',
+				amountRequestedDisplay: '{{ old('amount_requested') ? bn_number(old('amount_requested')) : '' }}',
+				
+				// Convert English numbers to Bangla
+				enToBanglaNumber(value) {
+					if (!value) return '';
+					const map = {'0':'০','1':'১','2':'২','3':'৩','4':'৪','5':'৫','6':'৬','7':'৭','8':'৮','9':'৯'};
+					return String(value).replace(/[0-9]/g, function(match) {
+						return map[match] || match;
+					});
+				},
+				
+				// Convert Bangla numbers to English
+				banglaToEnNumber(value) {
+					if (!value) return '';
+					const map = {'০':'0','১':'1','২':'2','৩':'3','৪':'4','৫':'5','৬':'6','৭':'7','৮':'8','৯':'9'};
+					return String(value).replace(/[০-৯]/g, function(match) {
+						return map[match] || match;
+					});
+				},
+				
+				// Handle amount input - allow both Bangla and English numbers
+				handleAmountInput(event) {
+					let value = event.target.value;
+					// Remove any characters that are not digits (Bangla or English) or decimal point
+					value = value.replace(/[^০-৯0-9.]/g, '');
+					// Ensure only one decimal point
+					const parts = value.split('.');
+					if (parts.length > 2) {
+						value = parts[0] + '.' + parts.slice(1).join('');
+					}
+					event.target.value = value;
+					this.amountRequestedDisplay = value;
+					
+					// Convert to English for hidden field (for form submission)
+					const englishValue = this.banglaToEnNumber(value);
+					const hiddenInput = document.getElementById('amount_requested_en');
+					if (hiddenInput) {
+						hiddenInput.value = englishValue;
+					}
+				},
+				
+				// Handle amount blur - convert to Bangla for display
+				handleAmountBlur(event) {
+					let value = event.target.value;
+					if (!value) return;
+					
+					// Convert to English first for validation
+					const englishValue = this.banglaToEnNumber(value);
+					
+					// Validate it's a valid number
+					const numValue = parseFloat(englishValue);
+					if (isNaN(numValue) || numValue < 0.01) {
+						// Invalid value, show error
+						event.target.classList.add('border-red-500');
+						return;
+					}
+					
+					event.target.classList.remove('border-red-500');
+					
+					// Preserve decimal places from user input, or default to 2
+					let formattedValue;
+					if (englishValue.includes('.')) {
+						const decimalPart = englishValue.split('.')[1];
+						// Preserve original decimal places, minimum 1 if decimal point exists
+						const decimalPlaces = Math.max(1, decimalPart.length);
+						formattedValue = numValue.toFixed(Math.min(decimalPlaces, 10)); // Max 10 decimal places
+					} else {
+						// No decimal point, keep as integer or default to 2 decimal places
+						formattedValue = numValue.toFixed(2);
+					}
+					
+					// Convert to Bangla for display
+					this.amountRequestedDisplay = this.enToBanglaNumber(formattedValue);
+					event.target.value = this.amountRequestedDisplay;
+					
+					// Update hidden field with English value (for form submission)
+					const hiddenInput = document.getElementById('amount_requested_en');
+					if (hiddenInput) {
+						hiddenInput.value = formattedValue;
+					}
+				},
 				
 				loadUpazilas() {
 					if (this.selectedZilla) {
@@ -804,6 +887,34 @@
 					}
 				},
 				
+				// Handle form submission - ensure amount is converted to English
+				handleFormSubmit(event) {
+					const amountInput = document.getElementById('amount_requested');
+					const hiddenInput = document.getElementById('amount_requested_en');
+					
+					if (amountInput && hiddenInput && amountInput.value) {
+						// Convert to English if not already done
+						const englishValue = this.banglaToEnNumber(amountInput.value);
+						const numValue = parseFloat(englishValue);
+						
+						if (!isNaN(numValue) && numValue >= 0.01) {
+							// Format the value
+							let formattedValue;
+							if (englishValue.includes('.')) {
+								const decimalPart = englishValue.split('.')[1];
+								const decimalPlaces = Math.max(1, decimalPart.length);
+								formattedValue = numValue.toFixed(Math.min(decimalPlaces, 10));
+							} else {
+								formattedValue = numValue.toFixed(2);
+							}
+							hiddenInput.value = formattedValue;
+						}
+					}
+					
+					// Allow form to submit normally
+					return true;
+				},
+				
 				init() {
 					if (this.selectedZilla) {
 						this.loadUpazilas();
@@ -823,6 +934,21 @@
 					// Initialize project details if already selected
 					if (this.selectedProject) {
 						this.updateProjectDetails();
+					}
+
+					// Initialize amount requested display
+					const amountInput = document.getElementById('amount_requested');
+					if (amountInput && amountInput.value) {
+						// Convert to Bangla for display
+						const englishValue = this.banglaToEnNumber(amountInput.value);
+						if (englishValue !== amountInput.value) {
+							// Input contains Bangla, ensure hidden field has English
+							const hiddenInput = document.getElementById('amount_requested_en');
+							if (hiddenInput) {
+								hiddenInput.value = englishValue;
+							}
+						}
+						this.amountRequestedDisplay = amountInput.value;
 					}
 
 					// Initial duplicate check if values prefilled

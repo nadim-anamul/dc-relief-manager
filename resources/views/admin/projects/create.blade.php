@@ -16,7 +16,7 @@
 				<h3 class="text-lg font-medium text-gray-900 dark:text-white">{{ __('Project Information') }}</h3>
 			</div>
 			<div class="p-6">
-				<form action="{{ route('admin.projects.store') }}" method="POST" class="space-y-6">
+				<form action="{{ route('admin.projects.store') }}" method="POST" class="space-y-6" x-data="projectForm()" @submit="handleFormSubmit($event)">
 					@csrf
 
 					<!-- Project Name -->
@@ -85,15 +85,17 @@
 						{{ __('Allocated Amount') }} <span class="text-red-500">*</span>
 					</label>
 						<div class="relative">
-							<input type="number" 
-								name="allocated_amount" 
+							<input type="text" 
 								id="allocated_amount" 
-								value="{{ old('allocated_amount') }}"
+								x-model="allocatedAmountDisplay"
+								@input="handleAllocatedAmountInput($event)"
+								@blur="handleAllocatedAmountBlur($event)"
+								value="{{ old('allocated_amount') ? bn_number(old('allocated_amount')) : '' }}"
 								class="input-field @error('allocated_amount') border-red-500 dark:border-red-400 @enderror pr-20"
 								placeholder="{{ __('Enter allocated amount') }}"
-								min="0.01"
-								step="0.01"
 								required>
+							<!-- Hidden input to store English number for submission -->
+							<input type="hidden" name="allocated_amount" id="allocated_amount_en" value="{{ old('allocated_amount') }}">
 							<div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
 								<span class="text-gray-500 dark:text-gray-400 text-sm" id="unit-display">{{ __('Unit') }}</span>
 							</div>
@@ -182,51 +184,184 @@
 	</div>
 
 	<script>
-		// Relief types data for unit display
-		const reliefTypes = {
-			@foreach($reliefTypes as $reliefType)
-				{{ $reliefType->id }}: {
-					unit: '{{ $reliefType->unit_bn ?? $reliefType->unit ?? "Unit" }}',
-					unit_bn: '{{ $reliefType->unit_bn ?? "" }}'
+		function projectForm() {
+			return {
+				allocatedAmountDisplay: '{{ old('allocated_amount') ? bn_number(old('allocated_amount')) : '' }}',
+				
+				// Relief types data for unit display
+				reliefTypes: {
+					@foreach($reliefTypes as $reliefType)
+						{{ $reliefType->id }}: {
+							unit: '{{ $reliefType->unit_bn ?? $reliefType->unit ?? "Unit" }}',
+							unit_bn: '{{ $reliefType->unit_bn ?? "" }}'
+						},
+					@endforeach
 				},
-			@endforeach
-		};
-
-		// Update relief type display and unit when relief type changes
-		document.getElementById('relief_type_id').addEventListener('change', function() {
-			const reliefTypeId = this.value;
-			const reliefTypeDisplay = document.getElementById('relief-type-display');
-			const unitDisplay = document.getElementById('unit-display');
-			
-			if (reliefTypeId && reliefTypes[reliefTypeId]) {
-				const selectedOption = this.options[this.selectedIndex];
-				const reliefTypeName = selectedOption.textContent;
-				const unit = reliefTypes[reliefTypeId].unit_bn || reliefTypes[reliefTypeId].unit;
 				
-				reliefTypeDisplay.textContent = reliefTypeName;
-				unitDisplay.textContent = unit;
+				// Convert English numbers to Bangla
+				enToBanglaNumber(value) {
+					if (!value) return '';
+					const map = {'0':'০','1':'১','2':'২','3':'৩','4':'৪','5':'৫','6':'৬','7':'৭','8':'৮','9':'৯'};
+					return String(value).replace(/[0-9]/g, function(match) {
+						return map[match] || match;
+					});
+				},
 				
-				// Update placeholder and validation based on unit type
-				const amountInput = document.getElementById('allocated_amount');
-				if (unit === 'টাকা' || unit === 'Taka') {
-					amountInput.placeholder = '{{ __('Enter amount in Taka') }}';
-					amountInput.min = '1000';
-				} else {
-					amountInput.placeholder = '{{ __('Enter quantity') }}';
-					amountInput.min = '0.01';
+				// Convert Bangla numbers to English
+				banglaToEnNumber(value) {
+					if (!value) return '';
+					const map = {'০':'0','১':'1','২':'2','৩':'3','৪':'4','৫':'5','৬':'6','৭':'7','৮':'8','৯':'9'};
+					return String(value).replace(/[০-৯]/g, function(match) {
+						return map[match] || match;
+					});
+				},
+				
+				// Handle allocated amount input - allow both Bangla and English numbers
+				handleAllocatedAmountInput(event) {
+					let value = event.target.value;
+					// Remove any characters that are not digits (Bangla or English) or decimal point
+					value = value.replace(/[^০-৯0-9.]/g, '');
+					// Ensure only one decimal point
+					const parts = value.split('.');
+					if (parts.length > 2) {
+						value = parts[0] + '.' + parts.slice(1).join('');
+					}
+					event.target.value = value;
+					this.allocatedAmountDisplay = value;
+					
+					// Convert to English for hidden field (for form submission)
+					const englishValue = this.banglaToEnNumber(value);
+					const hiddenInput = document.getElementById('allocated_amount_en');
+					if (hiddenInput) {
+						hiddenInput.value = englishValue;
+					}
+				},
+				
+				// Handle allocated amount blur - convert to Bangla for display
+				handleAllocatedAmountBlur(event) {
+					let value = event.target.value;
+					if (!value) return;
+					
+					// Convert to English first for validation
+					const englishValue = this.banglaToEnNumber(value);
+					
+					// Validate it's a valid number
+					const numValue = parseFloat(englishValue);
+					if (isNaN(numValue) || numValue < 0.01) {
+						// Invalid value, show error
+						event.target.classList.add('border-red-500');
+						return;
+					}
+					
+					event.target.classList.remove('border-red-500');
+					
+					// Preserve decimal places from user input, or default to 2
+					let formattedValue;
+					if (englishValue.includes('.')) {
+						const decimalPart = englishValue.split('.')[1];
+						// Preserve original decimal places, minimum 1 if decimal point exists
+						const decimalPlaces = Math.max(1, decimalPart.length);
+						formattedValue = numValue.toFixed(Math.min(decimalPlaces, 10)); // Max 10 decimal places
+					} else {
+						// No decimal point, keep as integer or default to 2 decimal places
+						formattedValue = numValue.toFixed(2);
+					}
+					
+					// Convert to Bangla for display
+					this.allocatedAmountDisplay = this.enToBanglaNumber(formattedValue);
+					event.target.value = this.allocatedAmountDisplay;
+					
+					// Update hidden field with English value (for form submission)
+					const hiddenInput = document.getElementById('allocated_amount_en');
+					if (hiddenInput) {
+						hiddenInput.value = formattedValue;
+					}
+				},
+				
+				// Handle form submission - ensure allocated amount is converted to English
+				handleFormSubmit(event) {
+					const allocatedAmountInput = document.getElementById('allocated_amount');
+					const hiddenInput = document.getElementById('allocated_amount_en');
+					
+					if (allocatedAmountInput && hiddenInput && allocatedAmountInput.value) {
+						// Convert to English if not already done
+						const englishValue = this.banglaToEnNumber(allocatedAmountInput.value);
+						const numValue = parseFloat(englishValue);
+						
+						if (!isNaN(numValue) && numValue >= 0.01) {
+							// Format the value
+							let formattedValue;
+							if (englishValue.includes('.')) {
+								const decimalPart = englishValue.split('.')[1];
+								const decimalPlaces = Math.max(1, decimalPart.length);
+								formattedValue = numValue.toFixed(Math.min(decimalPlaces, 10));
+							} else {
+								formattedValue = numValue.toFixed(2);
+							}
+							hiddenInput.value = formattedValue;
+						}
+					}
+					
+					// Allow form to submit normally
+					return true;
+				},
+				
+				// Update relief type display and unit when relief type changes
+				updateReliefType() {
+					const reliefTypeSelect = document.getElementById('relief_type_id');
+					if (!reliefTypeSelect) return;
+					
+					const reliefTypeId = reliefTypeSelect.value;
+					const reliefTypeDisplay = document.getElementById('relief-type-display');
+					const unitDisplay = document.getElementById('unit-display');
+					
+					if (reliefTypeId && this.reliefTypes[reliefTypeId]) {
+						const selectedOption = reliefTypeSelect.options[reliefTypeSelect.selectedIndex];
+						const reliefTypeName = selectedOption.textContent;
+						const unit = this.reliefTypes[reliefTypeId].unit_bn || this.reliefTypes[reliefTypeId].unit;
+						
+						if (reliefTypeDisplay) {
+							reliefTypeDisplay.textContent = reliefTypeName;
+						}
+						if (unitDisplay) {
+							unitDisplay.textContent = unit;
+						}
+					} else {
+						if (reliefTypeDisplay) {
+							reliefTypeDisplay.textContent = '{{ __('this relief type') }}';
+						}
+						if (unitDisplay) {
+							unitDisplay.textContent = '{{ __('Unit') }}';
+						}
+					}
+				},
+				
+				init() {
+					// Initialize allocated amount display
+					const allocatedAmountInput = document.getElementById('allocated_amount');
+					if (allocatedAmountInput && allocatedAmountInput.value) {
+						// Convert to Bangla for display if it contains English numbers
+						const englishValue = this.banglaToEnNumber(allocatedAmountInput.value);
+						if (englishValue !== allocatedAmountInput.value) {
+							// Input contains Bangla, ensure hidden field has English
+							const hiddenInput = document.getElementById('allocated_amount_en');
+							if (hiddenInput) {
+								hiddenInput.value = englishValue;
+							}
+						}
+						this.allocatedAmountDisplay = allocatedAmountInput.value;
+					}
+					
+					// Update relief type display on page load
+					this.updateReliefType();
+					
+					// Listen for relief type changes
+					const reliefTypeSelect = document.getElementById('relief_type_id');
+					if (reliefTypeSelect) {
+						reliefTypeSelect.addEventListener('change', () => this.updateReliefType());
+					}
 				}
-			} else {
-				reliefTypeDisplay.textContent = '{{ __('this relief type') }}';
-				unitDisplay.textContent = '{{ __('Unit') }}';
 			}
-		});
-
-		// Initialize relief type display on page load
-		document.addEventListener('DOMContentLoaded', function() {
-			const reliefTypeSelect = document.getElementById('relief_type_id');
-			if (reliefTypeSelect.value) {
-				reliefTypeSelect.dispatchEvent(new Event('change'));
-			}
-		});
+		}
 	</script>
 </x-main-layout>

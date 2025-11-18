@@ -31,7 +31,7 @@
                 <p class="mt-1 text-sm text-gray-600 dark:text-gray-400 {{ app()->isLocale('bn') ? 'font-sans' : '' }}">{{ __('Review the application details and make your decision.') }}</p>
 			</div>
 			<div class="p-6">
-				<form action="{{ route('admin.relief-applications.update', $reliefApplication) }}" method="POST" class="space-y-8" x-data="approvalForm()">
+				<form action="{{ route('admin.relief-applications.update', $reliefApplication) }}" method="POST" class="space-y-8" x-data="approvalForm()" @submit="handleFormSubmit($event)">
 					@csrf
 					@method('PUT')
 
@@ -250,21 +250,16 @@
                                         {{ __('Final Approval Amount') }} <span class="text-red-500">*</span>
                                     </label>
 									<div class="relative">
-										<input type="number" 
-											name="approved_amount" 
+										<input type="text" 
 											id="approved_amount"
-											value="{{ old('approved_amount', $reliefApplication->approved_amount) }}"
+											x-model="approvedAmountDisplay"
+											@input="handleApprovedAmountInput($event)"
+											@blur="handleApprovedAmountBlur($event)"
+											value="{{ old('approved_amount', $reliefApplication->approved_amount) ? bn_number(old('approved_amount', $reliefApplication->approved_amount)) : '' }}"
 											class="input-field @error('approved_amount') border-red-500 dark:border-red-400 @enderror"
-                                            placeholder="০.০০"
-											min="0"
-											max="{{ 
-												$reliefApplication->project 
-													? ($reliefApplication->project->available_amount + ($reliefApplication->status === 'approved' && $reliefApplication->approved_amount > 0 ? $reliefApplication->approved_amount : 0))
-													: 0 
-											}}"
-											step="0.01"
-											@input="validateApprovalAmount()"
 											required>
+										<!-- Hidden input to store English number for submission -->
+										<input type="hidden" name="approved_amount" id="approved_amount_en" value="{{ old('approved_amount', $reliefApplication->approved_amount) }}">
 										<div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
 											<span class="text-gray-500 dark:text-gray-400 text-sm {{ app()->isLocale('bn') ? 'font-sans' : '' }}">
 												@if($reliefApplication->project && $reliefApplication->project->reliefType)
@@ -398,6 +393,121 @@
 						? ($reliefApplication->project->available_amount + ($reliefApplication->status === 'approved' && $reliefApplication->approved_amount > 0 ? $reliefApplication->approved_amount : 0))
 						: 0 
 				}},
+				approvedAmountDisplay: '{{ old('approved_amount', $reliefApplication->approved_amount) ? bn_number(old('approved_amount', $reliefApplication->approved_amount)) : '' }}',
+				
+				// Convert English numbers to Bangla
+				enToBanglaNumber(value) {
+					if (!value) return '';
+					const map = {'0':'০','1':'১','2':'২','3':'৩','4':'৪','5':'৫','6':'৬','7':'৭','8':'৮','9':'৯'};
+					return String(value).replace(/[0-9]/g, function(match) {
+						return map[match] || match;
+					});
+				},
+				
+				// Convert Bangla numbers to English
+				banglaToEnNumber(value) {
+					if (!value) return '';
+					const map = {'০':'0','১':'1','২':'2','৩':'3','৪':'4','৫':'5','৬':'6','৭':'7','৮':'8','৯':'9'};
+					return String(value).replace(/[০-৯]/g, function(match) {
+						return map[match] || match;
+					});
+				},
+				
+				// Handle approved amount input - allow both Bangla and English numbers
+				handleApprovedAmountInput(event) {
+					let value = event.target.value;
+					// Remove any characters that are not digits (Bangla or English) or decimal point
+					value = value.replace(/[^০-৯0-9.]/g, '');
+					// Ensure only one decimal point
+					const parts = value.split('.');
+					if (parts.length > 2) {
+						value = parts[0] + '.' + parts.slice(1).join('');
+					}
+					event.target.value = value;
+					this.approvedAmountDisplay = value;
+					
+					// Convert to English for hidden field and validation
+					const englishValue = this.banglaToEnNumber(value);
+					const hiddenInput = document.getElementById('approved_amount_en');
+					if (hiddenInput) {
+						hiddenInput.value = englishValue;
+					}
+					
+					// Validate amount
+					this.validateApprovalAmount();
+				},
+				
+				// Handle approved amount blur - convert to Bangla for display
+				handleApprovedAmountBlur(event) {
+					let value = event.target.value;
+					if (!value) return;
+					
+					// Convert to English first for validation
+					const englishValue = this.banglaToEnNumber(value);
+					
+					// Validate it's a valid number
+					const numValue = parseFloat(englishValue);
+					if (isNaN(numValue) || numValue < 0) {
+						// Invalid value, show error
+						event.target.classList.add('border-red-500');
+						return;
+					}
+					
+					event.target.classList.remove('border-red-500');
+					
+					// Preserve decimal places from user input, or default to 2
+					let formattedValue;
+					if (englishValue.includes('.')) {
+						const decimalPart = englishValue.split('.')[1];
+						// Preserve original decimal places, minimum 1 if decimal point exists
+						const decimalPlaces = Math.max(1, decimalPart.length);
+						formattedValue = numValue.toFixed(Math.min(decimalPlaces, 10)); // Max 10 decimal places
+					} else {
+						// No decimal point, keep as integer or default to 2 decimal places
+						formattedValue = numValue.toFixed(2);
+					}
+					
+					// Convert to Bangla for display
+					this.approvedAmountDisplay = this.enToBanglaNumber(formattedValue);
+					event.target.value = this.approvedAmountDisplay;
+					
+					// Update hidden field with English value (for form submission)
+					const hiddenInput = document.getElementById('approved_amount_en');
+					if (hiddenInput) {
+						hiddenInput.value = formattedValue;
+					}
+					
+					// Validate amount
+					this.validateApprovalAmount();
+				},
+				
+				// Handle form submission - ensure approved amount is converted to English
+				handleFormSubmit(event) {
+					const approvedAmountInput = document.getElementById('approved_amount');
+					const hiddenInput = document.getElementById('approved_amount_en');
+					
+					if (approvedAmountInput && hiddenInput && approvedAmountInput.value) {
+						// Convert to English if not already done
+						const englishValue = this.banglaToEnNumber(approvedAmountInput.value);
+						const numValue = parseFloat(englishValue);
+						
+						if (!isNaN(numValue) && numValue >= 0) {
+							// Format the value
+							let formattedValue;
+							if (englishValue.includes('.')) {
+								const decimalPart = englishValue.split('.')[1];
+								const decimalPlaces = Math.max(1, decimalPart.length);
+								formattedValue = numValue.toFixed(Math.min(decimalPlaces, 10));
+							} else {
+								formattedValue = numValue.toFixed(2);
+							}
+							hiddenInput.value = formattedValue;
+						}
+					}
+					
+					// Allow form to submit normally
+					return true;
+				},
 				
 				updateFormVisibility() {
 					// Reset validation when changing status
@@ -414,7 +524,7 @@
 						let value = approvalAmountInput.value;
 						
 						// Convert Bengali numbers to English for validation
-						value = this.convertBengaliToEnglish(value);
+						value = this.banglaToEnNumber(value);
 						const approvalAmount = parseFloat(value) || 0;
 						this.insufficientFunds = approvalAmount > this.availableBudget;
 					} else {
@@ -422,27 +532,20 @@
 					}
 				},
 				
-				convertBengaliToEnglish(text) {
-					const bengaliToEnglish = {
-						'০': '0', '১': '1', '২': '2', '৩': '3', '৪': '4',
-						'৫': '5', '৬': '6', '৭': '7', '৮': '8', '৯': '9'
-					};
-					
-					return text.replace(/[০-৯]/g, function(match) {
-						return bengaliToEnglish[match] || match;
-					});
-				},
-				
 				init() {
-					// Add event listener to approval amount input
-					const approvalAmountInput = document.getElementById('approved_amount');
-					if (approvalAmountInput) {
-						approvalAmountInput.addEventListener('input', () => this.validateApprovalAmount());
-						
-						// Convert Bengali input to English before form submission
-						approvalAmountInput.addEventListener('blur', (e) => {
-							e.target.value = this.convertBengaliToEnglish(e.target.value);
-						});
+					// Initialize approved amount display
+					const approvedAmountInput = document.getElementById('approved_amount');
+					if (approvedAmountInput && approvedAmountInput.value) {
+						// Convert to Bangla for display if it contains English numbers
+						const englishValue = this.banglaToEnNumber(approvedAmountInput.value);
+						if (englishValue !== approvedAmountInput.value) {
+							// Input contains Bangla, ensure hidden field has English
+							const hiddenInput = document.getElementById('approved_amount_en');
+							if (hiddenInput) {
+								hiddenInput.value = englishValue;
+							}
+						}
+						this.approvedAmountDisplay = approvedAmountInput.value;
 					}
 					
 					// Initial validation
